@@ -1,0 +1,26 @@
+import { Routes } from '@angular/router';
+import { authGuard } from './core/auth/auth.guard';
+
+export const routes: Routes = [
+  { path: 'login', loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent) },
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./core/layout/layout.component').then(m => m.LayoutComponent),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'clientes' },
+      { path: 'clientes', loadComponent: () => import('./features/clientes/clientes-list.component').then(m => m.ClientesListComponent) },
+      { path: 'clientes/novo', loadComponent: () => import('./features/clientes/cliente-form.component').then(m => m.ClienteFormComponent) },
+      { path: 'clientes/:id/editar', loadComponent: () => import('./features/clientes/cliente-form.component').then(m => m.ClienteFormComponent) },
+      { path: 'clientes/:id', loadComponent: () => import('./features/clientes/cliente-detalhe.component').then(m => m.ClienteDetalheComponent) },
+      { path: 'contratacoes', loadComponent: () => import('./features/contratacoes/contratacoes-list.component').then(m => m.ContratacoesListComponent) },
+      { path: 'contratacoes/nova', loadComponent: () => import('./features/contratacoes/contratacao-form.component').then(m => m.ContratacaoFormComponent) },
+      { path: 'contratacoes/:id', loadComponent: () => import('./features/contratacoes/contratacao-detalhe.component').then(m => m.ContratacaoDetalheComponent) },
+      { path: 'catalogo/produtos', loadComponent: () => import('./features/catalogo/produtos.component').then(m => m.ProdutosComponent) },
+      { path: 'catalogo/recursos', loadComponent: () => import('./features/catalogo/recursos.component').then(m => m.RecursosComponent) },
+      { path: 'catalogo/planos', loadComponent: () => import('./features/catalogo/planos.component').then(m => m.PlanosComponent) },
+      { path: 'catalogo/adicionais', loadComponent: () => import('./features/catalogo/adicionais.component').then(m => m.AdicionaisComponent) }
+    ]
+  },
+  { path: '**', redirectTo: '' }
+];

@@ -1,0 +1,300 @@
+/** Espelho dos DTOs do `central-api-back` (pacotes `comercial/dto` e `integracao`). */
+
+export type TipoCliente = 'PF' | 'PJ';
+export type TipoRecurso = 'LIMITE' | 'FUNCIONALIDADE';
+export type Periodicidade = 'MENSAL' | 'ANUAL';
+export type SituacaoComercial = 'TRIAL' | 'ATIVA' | 'INADIMPLENTE' | 'BLOQUEADA' | 'CANCELADA';
+export type SituacaoProvisionamento = 'PENDENTE' | 'PROCESSANDO' | 'ATIVA' | 'ERRO';
+export type StatusCobranca = 'ABERTA' | 'PAGA' | 'CANCELADA';
+export type FormaPagamento = 'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO' | 'DINHEIRO' | 'TRANSFERENCIA' | 'BOLETO' | 'OUTRO';
+
+// ---- Clientes
+
+export interface Contato {
+  nome: string;
+  email: string | null;
+  telefone: string | null;
+  principal: boolean;
+}
+
+export interface ContatoResponse extends Contato {
+  id: string;
+}
+
+export interface SalvarClienteRequest {
+  tipo: TipoCliente;
+  documento: string;
+  nome: string;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+  cep: string | null;
+  contatos: Contato[];
+}
+
+export interface Cliente extends Omit<SalvarClienteRequest, 'contatos'> {
+  id: string;
+  contatos: ContatoResponse[];
+}
+
+// ---- Catálogo
+
+export interface Produto {
+  id: string;
+  codigo: string;
+  nome: string;
+  urlBaseIntegracao: string | null;
+  ativo: boolean;
+}
+
+export interface SalvarProdutoRequest {
+  codigo: string;
+  nome: string;
+  urlBaseIntegracao: string | null;
+  ativo: boolean;
+}
+
+export interface Recurso {
+  id: string;
+  produtoId: string;
+  codigo: string;
+  nome: string;
+  tipo: TipoRecurso;
+  unidade: string | null;
+}
+
+export interface SalvarRecursoRequest {
+  produtoId: string;
+  codigo: string;
+  nome: string;
+  tipo: TipoRecurso;
+  unidade: string | null;
+}
+
+export interface RecursoDoPlano {
+  recursoId: string;
+  codigo: string;
+  tipo: TipoRecurso;
+  valor: number;
+}
+
+export interface Preco {
+  id: string;
+  periodicidade: Periodicidade;
+  valor: number;
+  vigenteDesde: string;
+}
+
+export interface Plano {
+  id: string;
+  produtoId: string;
+  codigo: string;
+  nome: string;
+  ativo: boolean;
+  precoMensal: number | null;
+  precoAnual: number | null;
+  recursos: RecursoDoPlano[];
+  precos: Preco[];
+}
+
+export interface SalvarPlanoRequest {
+  produtoId: string;
+  codigo: string;
+  nome: string;
+  ativo: boolean;
+  recursos: { recursoId: string; valor: number }[];
+}
+
+export interface NovoPrecoRequest {
+  periodicidade: Periodicidade;
+  valor: number;
+  vigenteDesde: string;
+}
+
+export interface Adicional {
+  id: string;
+  produtoId: string;
+  recursoId: string;
+  recursoCodigo: string;
+  codigo: string;
+  nome: string;
+  quantidade: number;
+  preco: number;
+  ativo: boolean;
+}
+
+export interface SalvarAdicionalRequest {
+  produtoId: string;
+  recursoId: string;
+  codigo: string;
+  nome: string;
+  quantidade: number;
+  preco: number;
+  ativo: boolean;
+}
+
+// ---- Contratações
+
+export interface AdicionalContratado {
+  adicionalId: string;
+  quantidade: number;
+}
+
+export interface CriarContratacaoRequest {
+  clienteId: string;
+  produtoId: string;
+  planoId: string;
+  periodicidade: Periodicidade;
+  valor: number | null;
+  diaVencimento: number;
+  inicio: string;
+  situacaoComercial: SituacaoComercial | null;
+  nomeInstancia: string;
+  slugInstancia: string;
+  adminNome: string;
+  adminEmail: string;
+  observacoes: string | null;
+  adicionais: AdicionalContratado[];
+}
+
+export interface AtualizarProvisionamentoRequest {
+  nomeInstancia: string;
+  slugInstancia: string;
+  adminNome: string;
+  adminEmail: string;
+}
+
+export interface AlterarPlanoRequest {
+  planoId: string;
+  periodicidade: Periodicidade;
+  valor: number | null;
+  diaVencimento: number;
+  aPartirDe: string;
+  motivo: string | null;
+}
+
+export interface ContratacaoResumo {
+  id: string;
+  clienteId: string;
+  clienteNome: string;
+  produtoId: string;
+  produtoCodigo: string;
+  planoId: string;
+  planoCodigo: string;
+  periodicidade: Periodicidade;
+  valor: number;
+  diaVencimento: number;
+  vigenteAte: string | null;
+  situacaoComercial: SituacaoComercial;
+  situacaoProvisionamento: SituacaoProvisionamento;
+  versaoDireitos: number;
+  acessoLiberado: boolean;
+  nomeInstancia: string;
+  slugInstancia: string;
+}
+
+export interface Direitos {
+  contratacaoId: string;
+  clienteId: string;
+  produto: string;
+  tenantId: string | null;
+  versao: number;
+  situacao: string;
+  acessoLiberado: boolean;
+  motivoBloqueio: string | null;
+  vigenteAte: string | null;
+  plano: { codigo: string; nome: string } | null;
+  limites: Record<string, number>;
+  funcionalidades: string[];
+  geradoEm: string;
+}
+
+export interface AdicionalContratadoResponse {
+  adicionalId: string;
+  codigo: string;
+  recursoCodigo: string;
+  quantidadeUnitaria: number;
+  quantidade: number;
+}
+
+export interface Historico {
+  id: string;
+  acao: string;
+  motivo: string | null;
+  operadorId: string | null;
+  versaoDireitos: number;
+  criadoEm: string;
+}
+
+export interface Contratacao {
+  id: string;
+  clienteId: string;
+  produtoId: string;
+  produtoCodigo: string;
+  planoId: string;
+  planoCodigo: string;
+  planoNome: string;
+  periodicidade: Periodicidade;
+  valor: number;
+  diaVencimento: number;
+  inicio: string;
+  vigenteAte: string | null;
+  situacaoComercial: SituacaoComercial;
+  situacaoProvisionamento: SituacaoProvisionamento;
+  idempotencyKey: string;
+  idExterno: string | null;
+  provisionamentoEditavel: boolean;
+  nomeInstancia: string;
+  slugInstancia: string;
+  adminNome: string;
+  adminEmail: string;
+  versaoDireitos: number;
+  direitos: Direitos;
+  adicionais: AdicionalContratadoResponse[];
+  historico: Historico[];
+}
+
+export interface Suporte {
+  codigo: string;
+  urlAcesso: string;
+  expiraEm: string;
+}
+
+// ---- Financeiro
+
+export interface Cobranca {
+  id: string;
+  contratacaoId: string;
+  competenciaInicio: string;
+  competenciaFim: string;
+  vencimento: string;
+  valor: number;
+  status: StatusCobranca;
+  vencida: boolean;
+  pagoEm: string | null;
+  valorPago: number | null;
+  formaPagamento: FormaPagamento | null;
+  observacao: string | null;
+}
+
+export interface Financeiro {
+  cobrancas: Cobranca[];
+  resumo: {
+    vencidas: number;
+    diasAtraso: number;
+    valorEmAtraso: number;
+    proximoVencimento: string | null;
+    totalPagoNoAno: number;
+  };
+}
+
+export interface RegistrarPagamentoRequest {
+  cobrancaIds: string[];
+  pagoEm: string;
+  formaPagamento: FormaPagamento;
+  valorPago: number | null;
+  observacao: string | null;
+}
