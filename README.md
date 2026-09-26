@@ -20,9 +20,13 @@ sessão renova pelo cookie com CSRF.
 |---|---|---|
 | Login | `/login` | e-mail e senha do operador |
 | Clientes | `/clientes`, `/clientes/novo`, `/clientes/:id`, `/clientes/:id/editar` | lista com busca; cadastro PF/PJ com endereço e contatos; detalhe com a grade de contratações |
-| Contratações | `/contratacoes`, `/contratacoes/nova`, `/contratacoes/:id` | grade (aplicativo, instância, plano, situação, vencimento, provisionamento) com "Tentar novamente" em ERRO; nova contratação com adicionais; detalhe em abas |
+| Contratações | `/contratacoes`, `/contratacoes/nova`, `/contratacoes/:id` | grade (aplicativo, instância, plano, situação, vencimento, provisionamento) com "Tentar novamente" em ERRO; cancelada que nunca chegou ao app aparece como "Não enviada"; nova contratação com adicionais; detalhe em abas |
 | Detalhe da contratação | abas Resumo, Financeiro, Histórico | direitos enviados, edição de nome/slug/admin (só se `provisionamentoEditavel`), troca de plano, adicionais, bloquear/desbloquear/cancelar, entrar em suporte; cobranças, pagamento, estorno, isenção, cobranças adiantadas; histórico |
 | Catálogo | `/catalogo/produtos`, `/recursos`, `/planos`, `/adicionais` | produtos (código `SERVIRE` + URL de integração), recursos, planos com limites e preços, adicionais |
+
+Cadastro de cliente com máscara e validação (CPF para PF, CNPJ para PJ, inclusive alfanumérico;
+CEP, UF, telefone e e-mail dos contatos) e endereço preenchido pelo CEP (ViaCEP). Mesmas regras de
+`web/Formatos` da API, que grava tudo formatado (26/09/2026).
 
 Nada de dado de negócio dos apps (só contagens e o id da instância) e nenhum
 segredo de integração no front.
@@ -31,13 +35,15 @@ segredo de integração no front.
 
 ```bash
 npm ci
-npm start               # http://localhost:4200, API em http://localhost:8081
+npm start -- --port 4201   # http://localhost:4201 (a 4200 fica com o front do Servire); API em http://localhost:8081
 npm test                # Karma + Chrome headless
 npm run build:prod
 ```
 
-A API da Central precisa de `CORS_ALLOWED_ORIGINS` com a origem do painel.
-O roteiro das duas APIs juntas está no README do `central-api-back`.
+A API da Central precisa de `CORS_ALLOWED_ORIGINS` com a origem do painel
+(`http://localhost:4201`). O roteiro completo no PC (banco no Docker, variáveis das duas APIs,
+login do operador, comando para dar pull nos quatro repositórios, problemas já vistos) está no
+README do `central-api-back`, seção "Ponta a ponta local (Windows, tudo no PC)".
 
 ## Autenticação
 
