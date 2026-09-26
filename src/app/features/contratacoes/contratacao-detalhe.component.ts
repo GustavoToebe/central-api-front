@@ -3,21 +3,26 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { codigoApi, mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
-import { Adicional, Contratacao, Financeiro, FormaPagamento, Periodicidade, Plano, Suporte } from '../../core/api/central.models';
 import {
-  FORMAS_PAGAMENTO, data, porVencimento, dinheiro, hojeIso, podeBloquear, podeCancelar, podeDesbloquear, podeEditarProvisionamento,
-  podeEntrarEmSuporte, podeTentarNovamente, rotuloAcaoHistorico, rotuloFormaPagamento, rotuloPeriodicidade,
-  rotuloProvisionamento, rotuloSituacao, rotuloStatusCobranca, textoOuNulo, tomCobranca, tomProvisionamento, tomSituacao
+  Adicional, Contratacao, Financeiro, Periodicidade, Plano, RegistrarPagamentoRequest, Suporte
+} from '../../core/api/central.models';
+import {
+  PERIODICIDADES, competencia, data, mesSeguinte, porVencimento, dinheiro, hojeIso, podeBloquear, podeCancelar, podeDesbloquear,
+  podeEditarProvisionamento, podeEntrarEmSuporte, podeTentarNovamente, rotuloAcaoHistorico, rotuloFormaPagamento,
+  rotuloPeriodicidade, rotuloProvisionamento, rotuloSituacao, rotuloStatusCobranca, textoOuNulo, tomCobranca,
+  tomProvisionamento, tomSituacao
 } from '../comum/rotulos';
 import { emailValido } from '../comum/formatos';
-import { adicionaisValidos, montarPagamento, montarProvisionamentoRequest, montarTrocaDePlano } from './contratacao.form';
+import { CobrancaDetalheModalComponent } from '../cobrancas/cobranca-detalhe-modal.component';
+import { CobrancaAPagar, PagamentoModalComponent } from '../cobrancas/pagamento-modal.component';
+import { adicionaisValidos, montarProvisionamentoRequest, montarTrocaDePlano } from './contratacao.form';
 
 type Aba = 'resumo' | 'financeiro' | 'historico';
 type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
 
 @Component({
   selector: 'app-contratacao-detalhe',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/contratacoes" class="bo-link">← Contratações</a>
@@ -139,7 +144,9 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                     </select>
                   </label>
                   <label><span class="bo-label">Periodicidade</span>
-                    <select class="bo-field" name="tpPer" [(ngModel)]="troca.periodicidade"><option value="MENSAL">Mensal</option><option value="ANUAL">Anual</option></select>
+                    <select class="bo-field" name="tpPer" [(ngModel)]="troca.periodicidade">
+                      @for (p of periodicidades; track p) { <option [value]="p">{{ rotuloPeriodicidade(p) }}</option> }
+                    </select>
                   </label>
                   <label><span class="bo-label">Valor (vazio = preço do plano)</span><input class="bo-field" name="tpValor" [(ngModel)]="troca.valor"></label>
                   <label><span class="bo-label">Dia de vencimento</span><input class="bo-field" type="number" min="1" max="28" name="tpDia" [(ngModel)]="troca.diaVencimento"></label>
@@ -188,20 +195,24 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
               <div class="bo-card p-4"><div class="text-xs text-neutral-500">Próximo vencimento</div><div class="text-xl font-bold">{{ data(financeiro.resumo.proximoVencimento) }}</div></div>
               <div class="bo-card p-4"><div class="text-xs text-neutral-500">Pago no ano</div><div class="text-xl font-bold">{{ dinheiro(financeiro.resumo.totalPagoNoAno) }}</div></div>
             </div>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <p class="bo-sub">Clique numa cobrança para ver o detalhamento (plano e adicionais).</p>
+              <button type="button" class="bo-btn" [disabled]="ocupado || !selecionadas.size" (click)="abrirPagamento()">Pagar ({{ selecionadas.size }})</button>
+            </div>
             <div class="bo-table-wrap">
               <table class="bo-table">
                 <thead><tr><th></th><th>Competência</th><th>Vencimento</th><th>Valor</th><th>Situação</th><th>Pagamento</th><th></th></tr></thead>
                 <tbody>
                   @for (cb of cobrancasOrdenadas(); track cb.id) {
-                    <tr>
-                      <td>@if (cb.status === 'ABERTA') { <input type="checkbox" [checked]="selecionadas.has(cb.id)" (change)="alternar(cb.id)" [attr.aria-label]="'Selecionar cobrança de ' + data(cb.vencimento)"> }</td>
-                      <td>{{ data(cb.competenciaInicio) }} a {{ data(cb.competenciaFim) }}</td>
+                    <tr class="cursor-pointer" (click)="detalheId = cb.id">
+                      <td (click)="$event.stopPropagation()">@if (cb.status === 'ABERTA') { <input type="checkbox" [checked]="selecionadas.has(cb.id)" (change)="alternar(cb.id)" [attr.aria-label]="'Selecionar cobrança de ' + data(cb.vencimento)"> }</td>
+                      <td>{{ competencia(cb.competenciaInicio, cb.competenciaFim) }}</td>
                       <td>{{ data(cb.vencimento) }}</td>
                       <td>{{ dinheiro(cb.valor) }}</td>
                       <td><span [class]="tomCobranca(cb.status, cb.vencida)">{{ rotuloStatusCobranca(cb.status, cb.vencida) }}</span></td>
                       <td>@if (cb.pagoEm) { {{ data(cb.pagoEm) }} · {{ rotuloFormaPagamento(cb.formaPagamento) }} · {{ dinheiro(cb.valorPago) }} } @else { — }
                         @if (cb.observacao) { <span class="block text-xs text-neutral-500">{{ cb.observacao }}</span> }</td>
-                      <td class="whitespace-nowrap text-right">
+                      <td class="whitespace-nowrap text-right" (click)="$event.stopPropagation()">
                         @if (cb.status === 'PAGA') { <button type="button" class="bo-link" (click)="estornar(cb.id)">Estornar</button> }
                         @if (cb.status === 'ABERTA') { <button type="button" class="bo-link" (click)="isentar(cb.id)">Isentar</button> }
                       </td>
@@ -210,22 +221,15 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                 </tbody>
               </table>
             </div>
-            <section class="bo-card grid gap-3 p-5 md:grid-cols-5">
-              <h2 class="text-sm font-extrabold uppercase tracking-wider text-neutral-400 md:col-span-5">Registrar pagamento ({{ selecionadas.size }} selecionada(s))</h2>
-              <label><span class="bo-label">Pago em</span><input class="bo-field" type="date" name="pgData" [(ngModel)]="pagamento.pagoEm"></label>
-              <label><span class="bo-label">Forma</span>
-                <select class="bo-field" name="pgForma" [(ngModel)]="pagamento.formaPagamento">
-                  @for (f of formas; track f) { <option [value]="f">{{ rotuloFormaPagamento(f) }}</option> }
-                </select>
-              </label>
-              <label><span class="bo-label">Valor pago (vazio = soma)</span><input class="bo-field" name="pgValor" [(ngModel)]="pagamento.valorPago"></label>
-              <label><span class="bo-label">Observação</span><input class="bo-field" name="pgObs" [(ngModel)]="pagamento.observacao"></label>
-              <div class="flex items-end"><button type="button" class="bo-btn w-full" [disabled]="ocupado || !selecionadas.size || !pagamento.pagoEm" (click)="registrarPagamento()">Registrar</button></div>
-            </section>
-            <section class="bo-card flex flex-wrap items-end gap-3 p-5">
-              <label><span class="bo-label">Gerar cobranças adiantadas até</span><input class="bo-field" type="month" name="ate" [(ngModel)]="adiantarAte"></label>
-              <button type="button" class="bo-btn-ghost" [disabled]="ocupado || !adiantarAte" (click)="gerarAdiantadas()">Gerar</button>
-            </section>
+            @if (c.situacaoComercial !== 'CANCELADA') {
+              <section class="bo-card flex flex-wrap items-end gap-3 p-5">
+                <h2 class="w-full text-sm font-extrabold uppercase tracking-wider text-neutral-400">Gerar cobranças adiantadas</h2>
+                <label><span class="bo-label">Competência de</span><input class="bo-field" type="month" name="de" [(ngModel)]="adiantarDe"></label>
+                <label><span class="bo-label">até</span><input class="bo-field" type="month" name="ate" [(ngModel)]="adiantarAte" [min]="adiantarDe"></label>
+                <button type="button" class="bo-btn-ghost" [disabled]="ocupado || !adiantarDe || !adiantarAte || adiantarAte < adiantarDe" (click)="gerarAdiantadas()">Gerar</button>
+                <p class="bo-sub w-full">Só cria as competências que ainda não existem; as já geradas não mudam.</p>
+              </section>
+            }
           } @else { <p class="bo-sub">Carregando...</p> }
         }
 
@@ -249,6 +253,14 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
         }
       }
     </div>
+
+    @if (pagando) {
+      <app-pagamento-modal [cobrancas]="aPagar()" [ocupado]="ocupado" [erro]="erroPagamento"
+        (pagar)="registrarPagamento($event)" (fechar)="pagando = false" />
+    }
+    @if (detalheId) {
+      <app-cobranca-detalhe-modal [cobrancaId]="detalheId" (fechar)="detalheId = null" />
+    }
   `
 })
 export class ContratacaoDetalheComponent implements OnInit {
@@ -277,9 +289,13 @@ export class ContratacaoDetalheComponent implements OnInit {
   troca = { planoId: '', periodicidade: 'MENSAL' as Periodicidade, valor: '', diaVencimento: 10, aPartirDe: hojeIso(), motivo: '' };
 
   selecionadas = new Set<string>();
-  pagamento = { pagoEm: hojeIso(), formaPagamento: 'PIX' as FormaPagamento, valorPago: '', observacao: '' };
+  pagando = false;
+  erroPagamento = '';
+  detalheId: string | null = null;
+  adiantarDe = '';
   adiantarAte = '';
-  readonly formas = FORMAS_PAGAMENTO;
+  readonly periodicidades = PERIODICIDADES;
+  readonly competencia = competencia;
 
   readonly data = data;
   readonly dinheiro = dinheiro;
@@ -452,9 +468,18 @@ export class ContratacaoDetalheComponent implements OnInit {
 
   carregarFinanceiro(): void {
     this.api.financeiro(this.id()).subscribe({
-      next: f => { this.financeiro = f; this.selecionadas.clear(); },
+      next: f => { this.aplicarFinanceiro(f); },
       error: e => this.erro = mensagemApi(e, 'Não foi possível carregar o financeiro.')
     });
+  }
+
+  /** Sugere gerar a partir do mês seguinte à última competência que já existe. */
+  private aplicarFinanceiro(f: Financeiro): void {
+    this.financeiro = f;
+    this.selecionadas.clear();
+    const ultimoFim = f.cobrancas.map(cb => cb.competenciaFim).sort().at(-1);
+    this.adiantarDe = mesSeguinte(ultimoFim);
+    this.adiantarAte = this.adiantarDe;
   }
 
   cobrancasOrdenadas() {
@@ -466,9 +491,31 @@ export class ContratacaoDetalheComponent implements OnInit {
     else this.selecionadas.add(id);
   }
 
-  registrarPagamento(): void {
-    const corpo = montarPagamento({ ...this.pagamento, cobrancaIds: [...this.selecionadas] });
-    this.executarFinanceiro(this.api.registrarPagamento(this.id(), corpo), 'Pagamento registrado.');
+  aPagar(): CobrancaAPagar[] {
+    return this.cobrancasOrdenadas().filter(cb => this.selecionadas.has(cb.id)).map(cb => ({
+      id: cb.id, descricao: `Competência ${competencia(cb.competenciaInicio, cb.competenciaFim)}`, valor: cb.valor
+    }));
+  }
+
+  abrirPagamento(): void {
+    this.erroPagamento = '';
+    this.pagando = true;
+  }
+
+  registrarPagamento(corpo: RegistrarPagamentoRequest): void {
+    this.ocupado = true;
+    this.erroPagamento = '';
+    this.limparMensagens();
+    this.api.registrarPagamento(this.id(), corpo).subscribe({
+      next: f => {
+        this.aplicarFinanceiro(f);
+        this.ocupado = false;
+        this.pagando = false;
+        this.aviso = 'Pagamento registrado.';
+        this.carregar();
+      },
+      error: e => { this.ocupado = false; this.erroPagamento = mensagemApi(e, 'Não foi possível registrar o pagamento.'); }
+    });
   }
 
   estornar(cobrancaId: string): void {
@@ -480,7 +527,7 @@ export class ContratacaoDetalheComponent implements OnInit {
   }
 
   gerarAdiantadas(): void {
-    this.executarFinanceiro(this.api.gerarAdiantadas(this.id(), this.adiantarAte), 'Cobranças geradas.');
+    this.executarFinanceiro(this.api.gerarAdiantadas(this.id(), this.adiantarDe, this.adiantarAte), 'Cobranças geradas.');
   }
 
   // ---- Apoio
@@ -499,8 +546,7 @@ export class ContratacaoDetalheComponent implements OnInit {
     this.limparMensagens();
     chamada.subscribe({
       next: f => {
-        this.financeiro = f;
-        this.selecionadas.clear();
+        this.aplicarFinanceiro(f);
         this.ocupado = false;
         this.aviso = sucesso;
         this.carregar();

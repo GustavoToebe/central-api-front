@@ -62,10 +62,15 @@ describe('CentralApiService', () => {
     ['tentarProvisionamento', s => s.tentarProvisionamento('k1'), 'POST', '/contratacoes/k1/tentar-provisionamento', {}],
     ['suporte', s => s.suporte('k1', 'ajuda na escala'), 'POST', '/contratacoes/k1/suporte', { motivo: 'ajuda na escala' }],
     ['financeiro', s => s.financeiro('k1'), 'GET', '/contratacoes/k1/financeiro', null],
-    ['gerarAdiantadas', s => s.gerarAdiantadas('k1', '2026-12'), 'POST', '/contratacoes/k1/cobrancas/adiantadas', { ate: '2026-12' }],
+    ['gerarAdiantadas', s => s.gerarAdiantadas('k1', '2026-11', '2026-12'), 'POST', '/contratacoes/k1/cobrancas/adiantadas', { de: '2026-11', ate: '2026-12' }],
     ['registrarPagamento', s => s.registrarPagamento('k1', pagamento), 'POST', '/contratacoes/k1/pagamentos', pagamento],
     ['estornar', s => s.estornar('k1', 'cb1'), 'POST', '/contratacoes/k1/cobrancas/cb1/estornar', {}],
-    ['isentar', s => s.isentar('k1', 'cb1', 'cortesia'), 'POST', '/contratacoes/k1/cobrancas/cb1/isentar', { motivo: 'cortesia' }]
+    ['isentar', s => s.isentar('k1', 'cb1', 'cortesia'), 'POST', '/contratacoes/k1/cobrancas/cb1/isentar', { motivo: 'cortesia' }],
+    ['cobrancas sem filtro', s => s.cobrancas({ produtoId: '', situacao: '', busca: '  ' }), 'GET', '/cobrancas', null],
+    ['cobrancas com filtros', s => s.cobrancas({ situacao: 'VENCIDA', competencia: '2026-10', busca: ' Ana ' }), 'GET',
+      '/cobrancas?situacao=VENCIDA&competencia=2026-10&busca=Ana', null],
+    ['cobranca', s => s.cobranca('cb1'), 'GET', '/cobrancas/cb1', null],
+    ['pagarCobrancas', s => s.pagarCobrancas(pagamento), 'POST', '/cobrancas/pagamentos', pagamento]
   ];
 
   beforeEach(() => {

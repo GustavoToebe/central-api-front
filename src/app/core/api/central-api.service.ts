@@ -2,8 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
-  Adicional, AlterarPlanoRequest, AtualizarProvisionamentoRequest, Cliente, Contratacao, ContratacaoResumo,
-  CriarContratacaoRequest, Financeiro, NovoPrecoRequest, Plano, Produto, AdicionalContratado, Recurso,
+  Adicional, AlterarPlanoRequest, AtualizarProvisionamentoRequest, Cliente, CobrancaDetalhe, CobrancaLinha, Contratacao,
+  ContratacaoResumo, CriarContratacaoRequest, Financeiro, FiltroCobrancas, NovoPrecoRequest, Plano, Produto, AdicionalContratado, Recurso,
   RegistrarPagamentoRequest, SalvarAdicionalRequest, SalvarClienteRequest, SalvarPlanoRequest,
   SalvarProdutoRequest, SalvarRecursoRequest, Suporte
 } from './central.models';
@@ -64,8 +64,9 @@ export class CentralApiService {
 
   // ---- Financeiro da contratação
   financeiro(id: string) { return this.http.get<Financeiro>(`${this.api}/contratacoes/${id}/financeiro`); }
-  gerarAdiantadas(id: string, ate: string) {
-    return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/adiantadas`, { ate });
+  /** `de` e `ate` em `YYYY-MM`; `de` nulo = desde o início. Só cria as que faltam. */
+  gerarAdiantadas(id: string, de: string | null, ate: string) {
+    return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/adiantadas`, { de, ate });
   }
   registrarPagamento(id: string, corpo: RegistrarPagamentoRequest) {
     return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/pagamentos`, corpo);
@@ -76,6 +77,21 @@ export class CentralApiService {
   isentar(id: string, cobrancaId: string, motivo: string | null) {
     return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/${cobrancaId}/isentar`, { motivo });
   }
+
+  // ---- Cobranças (todas as contratações)
+  cobrancas(filtro: FiltroCobrancas) { return this.http.get<CobrancaLinha[]>(`${this.api}/cobrancas`, { params: parametros(filtro) }); }
+  cobranca(id: string) { return this.http.get<CobrancaDetalhe>(`${this.api}/cobrancas/${id}`); }
+  pagarCobrancas(corpo: RegistrarPagamentoRequest) { return this.http.post<void>(`${this.api}/cobrancas/pagamentos`, corpo); }
+}
+
+/** Só os filtros preenchidos viram parâmetro. */
+export function parametros(filtro: FiltroCobrancas): HttpParams {
+  let params = new HttpParams();
+  for (const [chave, valor] of Object.entries(filtro)) {
+    const texto = typeof valor === 'string' ? valor.trim() : '';
+    if (texto) params = params.set(chave, texto);
+  }
+  return params;
 }
 
 function filtroProduto(produtoId?: string): HttpParams {

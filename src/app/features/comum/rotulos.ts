@@ -79,8 +79,31 @@ export function rotuloFormaPagamento(f: FormaPagamento | null): string {
   return f ? (FORMA_PAGAMENTO[f] ?? f) : '—';
 }
 
+const PERIODICIDADE: Record<Periodicidade, string> = {
+  MENSAL: 'Mensal',
+  TRIMESTRAL: 'Trimestral',
+  SEMESTRAL: 'Semestral',
+  ANUAL: 'Anual'
+};
+
+export const PERIODICIDADES = Object.keys(PERIODICIDADE) as Periodicidade[];
+
 export function rotuloPeriodicidade(p: Periodicidade): string {
-  return p === 'ANUAL' ? 'Anual' : 'Mensal';
+  return PERIODICIDADE[p] ?? p;
+}
+
+/** Competência como mês: `10/2026`; período de vários meses: `10/2026 a 12/2026`. */
+export function competencia(inicio: string, fim: string): string {
+  const mes = (iso: string) => `${iso.slice(5, 7)}/${iso.slice(0, 4)}`;
+  return inicio.slice(0, 7) === fim.slice(0, 7) ? mes(inicio) : `${mes(inicio)} a ${mes(fim)}`;
+}
+
+/** `YYYY-MM` do mês seguinte ao de uma data ISO (sem data, ao mês de hoje). */
+export function mesSeguinte(iso: string | null | undefined, hoje: string = hojeIso()): string {
+  const base = iso ?? hoje;
+  const ano = Number(base.slice(0, 4));
+  const mes = Number(base.slice(5, 7));
+  return mes === 12 ? `${ano + 1}-01` : `${ano}-${String(mes + 1).padStart(2, '0')}`;
 }
 
 export function rotuloTipoCliente(t: TipoCliente): string {

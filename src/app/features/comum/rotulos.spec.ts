@@ -1,5 +1,5 @@
 import {
-  data, dinheiro, hojeIso, iniciais, podeBloquear, podeCancelar, podeDesbloquear, podeEditarProvisionamento,
+  competencia, data, dinheiro, hojeIso, iniciais, mesSeguinte, rotuloPeriodicidade, podeBloquear, podeCancelar, podeDesbloquear, podeEditarProvisionamento,
   podeEntrarEmSuporte, podeTentarNovamente, porVencimento, rotuloAcaoHistorico, rotuloFormaPagamento, rotuloProvisionamento,
   rotuloSituacao, rotuloStatusCobranca, sugerirSlug, textoOuNulo, tomCobranca, tomProvisionamento, tomSituacao
 } from './rotulos';
@@ -104,5 +104,24 @@ describe('rotulos', () => {
     expect(rotuloAcaoHistorico('PROVISIONADA')).toBe('Instância criada no aplicativo');
     expect(rotuloAcaoHistorico('TROCA_PLANO')).toBe('Troca de plano');
     expect(rotuloAcaoHistorico('NOVA_ACAO')).toBe('NOVA_ACAO');
+  });
+
+  it('competência como mês e período de vários meses', () => {
+    expect(competencia('2026-10-01', '2026-10-31')).toBe('10/2026');
+    expect(competencia('2026-10-01', '2026-12-31')).toBe('10/2026 a 12/2026');
+    expect(competencia('2026-09-01', '2027-08-31')).toBe('09/2026 a 08/2027');
+  });
+
+  it('mês seguinte vira o ano em dezembro e usa hoje sem data', () => {
+    expect(mesSeguinte('2026-10-31')).toBe('2026-11');
+    expect(mesSeguinte('2026-12-31')).toBe('2027-01');
+    expect(mesSeguinte(undefined, '2026-09-26')).toBe('2026-10');
+  });
+
+  it('traduz as quatro periodicidades', () => {
+    expect(rotuloPeriodicidade('MENSAL')).toBe('Mensal');
+    expect(rotuloPeriodicidade('TRIMESTRAL')).toBe('Trimestral');
+    expect(rotuloPeriodicidade('SEMESTRAL')).toBe('Semestral');
+    expect(rotuloPeriodicidade('ANUAL')).toBe('Anual');
   });
 });

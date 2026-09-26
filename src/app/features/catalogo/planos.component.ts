@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Periodicidade, Plano, Produto, Recurso, TipoRecurso } from '../../core/api/central.models';
-import { data, dinheiro, hojeIso, rotuloPeriodicidade } from '../comum/rotulos';
+import { PERIODICIDADES, data, dinheiro, hojeIso, rotuloPeriodicidade } from '../comum/rotulos';
 import { montarPlanoRequest, montarPrecoRequest } from './catalogo.form';
 
 interface LinhaRecurso { recursoId: string; codigo: string; nome: string; tipo: TipoRecurso; unidade: string | null; valor: string; marcado: boolean; }
@@ -68,7 +68,7 @@ interface LinhaRecurso { recursoId: string; codigo: string; nome: string; tipo: 
           @if (precoDoPlano === p.id) {
             <form class="grid gap-3 md:grid-cols-4" (ngSubmit)="salvarPreco(p.id)">
               <label><span class="bo-label">Periodicidade</span>
-                <select class="bo-field" name="pPer" [(ngModel)]="preco.periodicidade"><option value="MENSAL">Mensal</option><option value="ANUAL">Anual</option></select></label>
+                <select class="bo-field" name="pPer" [(ngModel)]="preco.periodicidade">@for (per of periodicidades; track per) { <option [value]="per">{{ rotuloPeriodicidade(per) }}</option> }</select></label>
               <label><span class="bo-label">Valor</span><input class="bo-field" name="pValor" [(ngModel)]="preco.valor" placeholder="49,90"></label>
               <label><span class="bo-label">Vigente desde</span><input class="bo-field" type="date" name="pData" [(ngModel)]="preco.vigenteDesde"></label>
               <div class="flex items-end gap-2">
@@ -109,6 +109,7 @@ export class PlanosComponent implements OnInit {
   readonly dinheiro = dinheiro;
   readonly data = data;
   readonly rotuloPeriodicidade = rotuloPeriodicidade;
+  readonly periodicidades = PERIODICIDADES;
 
   ngOnInit(): void {
     this.api.produtos().subscribe({

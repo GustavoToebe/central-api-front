@@ -5,7 +5,8 @@ import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Adicional, Cliente, Plano, Produto } from '../../core/api/central.models';
 import { emailValido } from '../comum/formatos';
-import { dinheiro, hojeIso, sugerirSlug } from '../comum/rotulos';
+import { PERIODICIDADES, dinheiro, hojeIso, rotuloPeriodicidade, sugerirSlug } from '../comum/rotulos';
+import { precoVigente } from '../catalogo/catalogo.form';
 import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
 
 @Component({
@@ -41,7 +42,7 @@ import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
           </label>
           <label><span class="bo-label">Periodicidade *</span>
             <select class="bo-field" name="periodicidade" [(ngModel)]="form.periodicidade">
-              <option value="MENSAL">Mensal</option><option value="ANUAL">Anual</option>
+              @for (p of periodicidades; track p) { <option [value]="p">{{ rotuloPeriodicidade(p) }}</option> }
             </select>
           </label>
           <label><span class="bo-label">Valor (vazio = preço do plano)</span>
@@ -128,6 +129,8 @@ export class ContratacaoFormComponent implements OnInit {
   salvando = false;
   slugEditado = false;
   readonly dinheiro = dinheiro;
+  readonly periodicidades = PERIODICIDADES;
+  readonly rotuloPeriodicidade = rotuloPeriodicidade;
 
   form: ContratacaoForm = {
     clienteId: '', produtoId: '', planoId: '', periodicidade: 'MENSAL', valor: '', diaVencimento: 10,
@@ -165,7 +168,7 @@ export class ContratacaoFormComponent implements OnInit {
   precoSugerido(): string {
     const plano = this.planos.find(p => p.id === this.form.planoId);
     if (!plano) return '';
-    return dinheiro(this.form.periodicidade === 'ANUAL' ? plano.precoAnual : plano.precoMensal);
+    return dinheiro(precoVigente(plano.precos, this.form.periodicidade));
   }
 
   completo(): boolean {

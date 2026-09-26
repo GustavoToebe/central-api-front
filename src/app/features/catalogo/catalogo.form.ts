@@ -1,6 +1,6 @@
-import { NovoPrecoRequest, Periodicidade, SalvarAdicionalRequest, SalvarPlanoRequest, SalvarProdutoRequest, SalvarRecursoRequest, TipoRecurso } from '../../core/api/central.models';
+import { NovoPrecoRequest, Periodicidade, Preco, SalvarAdicionalRequest, SalvarPlanoRequest, SalvarProdutoRequest, SalvarRecursoRequest, TipoRecurso } from '../../core/api/central.models';
 import { valorOuNulo } from '../contratacoes/contratacao.form';
-import { textoOuNulo } from '../comum/rotulos';
+import { hojeIso, textoOuNulo } from '../comum/rotulos';
 
 /** Códigos em maiúsculas, sem espaço (o app pede exatamente `SERVIRE`). */
 export function codigo(texto: string): string {
@@ -40,4 +40,12 @@ export function montarAdicionalRequest(f: {
     produtoId: f.produtoId, recursoId: f.recursoId, codigo: codigo(f.codigo), nome: f.nome.trim(),
     quantidade: valorOuNulo(f.quantidade) ?? 0, preco: valorOuNulo(f.preco) ?? 0, ativo: f.ativo
   };
+}
+
+/** Preço em vigor numa data: o mais recente da periodicidade que já começou (mesma regra do back). */
+export function precoVigente(precos: Preco[], periodicidade: Periodicidade, hoje: string = hojeIso()): number | null {
+  const vigentes = precos
+    .filter(p => p.periodicidade === periodicidade && p.vigenteDesde <= hoje)
+    .sort((a, b) => b.vigenteDesde.localeCompare(a.vigenteDesde));
+  return vigentes.length ? vigentes[0].valor : null;
 }

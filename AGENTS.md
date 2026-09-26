@@ -25,6 +25,8 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - `features/comum/rotulos.ts` — funções puras: rótulos, cores, formatação e as regras
   de botão (`podeTentarNovamente`, `podeEditarProvisionamento`...).
 - `features/*/*.form.ts` — montagem das requisições (funções puras, com spec).
+- `features/cobrancas/` — tela Cobranças e os modais `app-pagamento-modal` e `app-cobranca-detalhe-modal`,
+  usados também na aba Financeiro da contratação.
 - `features/comum/formatos.ts` (+ `mascara.directive.ts`, `cep.service.ts`) — máscara e validação de
   CPF/CNPJ (inclusive alfanumérico), CEP, UF, telefone e e-mail; CEP pelo ViaCEP via `fetch` (nunca
   pelo HttpClient: o interceptor mandaria token e cookies para fora). Mesmas regras do `web/Formatos`

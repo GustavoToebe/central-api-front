@@ -2,7 +2,7 @@
 
 export type TipoCliente = 'PF' | 'PJ';
 export type TipoRecurso = 'LIMITE' | 'FUNCIONALIDADE';
-export type Periodicidade = 'MENSAL' | 'ANUAL';
+export type Periodicidade = 'MENSAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
 export type SituacaoComercial = 'TRIAL' | 'ATIVA' | 'INADIMPLENTE' | 'BLOQUEADA' | 'CANCELADA';
 export type SituacaoProvisionamento = 'PENDENTE' | 'PROCESSANDO' | 'ATIVA' | 'ERRO';
 export type StatusCobranca = 'ABERTA' | 'PAGA' | 'CANCELADA';
@@ -297,4 +297,54 @@ export interface RegistrarPagamentoRequest {
   formaPagamento: FormaPagamento;
   valorPago: number | null;
   observacao: string | null;
+}
+
+// ---- Cobranças (lista geral e detalhe)
+
+/** Todos opcionais; `situacao` aceita também `VENCIDA` (aberta com vencimento passado). */
+export interface FiltroCobrancas {
+  produtoId?: string;
+  situacao?: StatusCobranca | 'VENCIDA' | '';
+  formaPagamento?: FormaPagamento | '';
+  vencimentoDe?: string;
+  vencimentoAte?: string;
+  /** `YYYY-MM` */
+  competencia?: string;
+  busca?: string;
+}
+
+export interface CobrancaLinha {
+  id: string;
+  contratacaoId: string;
+  clienteId: string;
+  clienteNome: string;
+  produtoCodigo: string;
+  nomeInstancia: string;
+  planoNome: string;
+  periodicidade: Periodicidade;
+  competenciaInicio: string;
+  competenciaFim: string;
+  vencimento: string;
+  valor: number;
+  status: StatusCobranca;
+  vencida: boolean;
+  pagoEm: string | null;
+  valorPago: number | null;
+  formaPagamento: FormaPagamento | null;
+}
+
+export interface CobrancaItem {
+  tipo: 'PLANO' | 'ADICIONAL';
+  descricao: string;
+  quantidade: number;
+  /** PLANO: preço do período. ADICIONAL: preço mensal do pacote. */
+  valorUnitario: number;
+  meses: number;
+  valor: number;
+}
+
+export interface CobrancaDetalhe {
+  cobranca: CobrancaLinha;
+  observacao: string | null;
+  itens: CobrancaItem[];
 }
