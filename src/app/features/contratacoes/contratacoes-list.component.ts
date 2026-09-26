@@ -19,7 +19,7 @@ import { GradeContratacoesComponent } from './grade-contratacoes.component';
         <a routerLink="/contratacoes/nova" class="bo-btn">Nova contratação</a>
       </div>
       <div class="flex flex-wrap gap-3">
-        <input class="bo-field max-w-sm" placeholder="Buscar cliente, instância ou slug" name="busca" [(ngModel)]="busca">
+        <input class="bo-field max-w-sm" placeholder="Buscar cliente, instância, slug ou número" name="busca" [(ngModel)]="busca">
         <select class="bo-field max-w-[14rem]" name="situacao" [(ngModel)]="situacao">
           <option value="">Todas as situações</option>
           <option value="TRIAL">Teste</option>
@@ -64,6 +64,7 @@ export class ContratacoesListComponent implements OnInit {
     return this.contratacoes.filter(c =>
       (!this.situacao || c.situacaoComercial === this.situacao)
       && (!this.soErro || c.situacaoProvisionamento === 'ERRO')
-      && (!termo || [c.clienteNome, c.nomeInstancia, c.slugInstancia].some(v => v.toLowerCase().includes(termo))));
+      && (!termo || String(c.sequencial) === termo
+        || [c.clienteNome, c.nomeInstancia, c.slugInstancia].some(v => v.toLowerCase().includes(termo))));
   }
 }

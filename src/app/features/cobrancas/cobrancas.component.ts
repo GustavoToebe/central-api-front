@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -16,7 +17,7 @@ import { CobrancaAPagar, PagamentoModalComponent } from './pagamento-modal.compo
  */
 @Component({
   selector: 'app-cobrancas',
-  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent],
+  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, NumeroComponent],
   template: `
     <div class="space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -29,7 +30,7 @@ import { CobrancaAPagar, PagamentoModalComponent } from './pagamento-modal.compo
 
       <form class="bo-card grid gap-3 p-4 md:grid-cols-4 xl:grid-cols-7" (ngSubmit)="carregar()">
         <label class="md:col-span-2 xl:col-span-2"><span class="bo-label">Cliente ou instância</span>
-          <input class="bo-field" name="busca" [(ngModel)]="filtro.busca" placeholder="Nome, CPF/CNPJ ou instância"></label>
+          <input class="bo-field" name="busca" [(ngModel)]="filtro.busca" placeholder="Nome, CPF/CNPJ, instância ou número"></label>
         <label><span class="bo-label">Produto</span>
           <select class="bo-field" name="produto" [(ngModel)]="filtro.produtoId" (ngModelChange)="carregar()">
             <option value="">Todos</option>
@@ -85,7 +86,7 @@ import { CobrancaAPagar, PagamentoModalComponent } from './pagamento-modal.compo
                 </td>
                 <td>{{ c.clienteNome }}<div class="text-xs text-neutral-500">{{ c.nomeInstancia }}</div></td>
                 <td>{{ c.produtoCodigo }}<div class="text-xs text-neutral-500">{{ c.planoNome }}</div></td>
-                <td>{{ competencia(c.competenciaInicio, c.competenciaFim) }}</td>
+                <td>{{ competencia(c.competenciaInicio, c.competenciaFim) }}<app-numero [numero]="c.sequencial" /></td>
                 <td>{{ data(c.vencimento) }}</td>
                 <td>{{ dinheiro(c.valor) }}</td>
                 <td><span [class]="tomCobranca(c.status, c.vencida)">{{ rotuloStatusCobranca(c.status, c.vencida) }}</span></td>

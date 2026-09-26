@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -23,7 +24,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
 
 @Component({
   selector: 'app-contratacao-detalhe',
-  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent],
+  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent, NumeroComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/contratacoes" class="bo-link">← Contratações</a>
@@ -33,7 +34,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div class="text-xs font-extrabold uppercase tracking-wider text-neutral-500">{{ c.produtoCodigo }}</div>
-            <h1 class="bo-title">{{ c.nomeInstancia }}</h1>
+            <h1 class="bo-title">{{ c.nomeInstancia }}<app-numero [numero]="c.sequencial" /></h1>
             <p class="bo-sub"><a [routerLink]="['/clientes', c.clienteId]" class="hover:text-white">Ver cliente</a> · slug {{ c.slugInstancia }}</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
@@ -208,7 +209,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                   @for (cb of cobrancasOrdenadas(); track cb.id) {
                     <tr class="cursor-pointer" (click)="detalheId = cb.id">
                       <td (click)="$event.stopPropagation()">@if (cb.status === 'ABERTA') { <input type="checkbox" [checked]="selecionadas.has(cb.id)" (change)="alternar(cb.id)" [attr.aria-label]="'Selecionar cobrança de ' + data(cb.vencimento)"> }</td>
-                      <td>{{ competencia(cb.competenciaInicio, cb.competenciaFim) }}</td>
+                      <td>{{ competencia(cb.competenciaInicio, cb.competenciaFim) }}<app-numero [numero]="cb.sequencial" /></td>
                       <td>{{ data(cb.vencimento) }}</td>
                       <td>{{ dinheiro(cb.valor) }}</td>
                       <td><span [class]="tomCobranca(cb.status, cb.vencida)">{{ rotuloStatusCobranca(cb.status, cb.vencida) }}</span></td>

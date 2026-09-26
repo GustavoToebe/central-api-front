@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
@@ -13,7 +14,7 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
  */
 @Component({
   selector: 'app-planos',
-  imports: [FormsModule],
+  imports: [FormsModule, NumeroComponent],
   template: `
     <div class="space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -82,7 +83,7 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
         <section class="bo-card space-y-3 p-5">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 class="text-lg font-bold">{{ p.nome }} <span class="text-sm text-neutral-500">{{ p.codigo }}</span></h2>
+              <h2 class="text-lg font-bold">{{ p.nome }}<app-numero [numero]="p.sequencial" /> <span class="text-sm text-neutral-500">{{ p.codigo }}</span></h2>
               <p class="bo-sub">
                 @for (v of p.precosVigentes; track v.periodicidade) { {{ rotuloPeriodicidade(v.periodicidade) }} {{ dinheiro(v.valor) }} · }
                 @if (!p.precosVigentes.length) { Sem preço · }

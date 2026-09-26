@@ -36,6 +36,8 @@ export interface SalvarClienteRequest {
 }
 
 export interface Cliente extends Omit<SalvarClienteRequest, 'contatos'> {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   contatos: ContatoResponse[];
 }
@@ -43,6 +45,8 @@ export interface Cliente extends Omit<SalvarClienteRequest, 'contatos'> {
 // ---- Catálogo
 
 export interface Produto {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   codigo: string;
   nome: string;
@@ -58,6 +62,8 @@ export interface SalvarProdutoRequest {
 }
 
 export interface Recurso {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   produtoId: string;
   codigo: string;
@@ -92,6 +98,8 @@ export interface Preco {
 }
 
 export interface Plano {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   produtoId: string;
   codigo: string;
@@ -120,6 +128,8 @@ export interface NovoPrecoRequest {
 }
 
 export interface Adicional {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   produtoId: string;
   recursoId: string;
@@ -182,6 +192,8 @@ export interface AlterarPlanoRequest {
 }
 
 export interface ContratacaoResumo {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   clienteId: string;
   clienteNome: string;
@@ -235,6 +247,8 @@ export interface Historico {
 }
 
 export interface Contratacao {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   clienteId: string;
   produtoId: string;
@@ -271,6 +285,8 @@ export interface Suporte {
 // ---- Financeiro
 
 export interface Cobranca {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   contratacaoId: string;
   competenciaInicio: string;
@@ -319,6 +335,8 @@ export interface FiltroCobrancas {
 }
 
 export interface CobrancaLinha {
+  /** Número curto para ditar e copiar. */
+  sequencial: number;
   id: string;
   contratacaoId: string;
   clienteId: string;

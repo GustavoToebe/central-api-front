@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
@@ -14,7 +15,7 @@ import {
  */
 @Component({
   selector: 'app-grade-contratacoes',
-  imports: [RouterLink],
+  imports: [RouterLink, NumeroComponent],
   template: `
     @if (erro) { <div class="bo-erro mb-3">{{ erro }}</div> }
     <div class="bo-table-wrap">
@@ -31,7 +32,7 @@ import {
               @if (mostrarCliente) { <td><a [routerLink]="['/clientes', c.clienteId]" class="hover:text-[#ff4d47]">{{ c.clienteNome }}</a></td> }
               <td class="font-semibold">{{ c.produtoCodigo }}</td>
               <td>
-                <a [routerLink]="['/contratacoes', c.id]" class="font-semibold hover:text-[#ff4d47]">{{ c.nomeInstancia }}</a>
+                <a [routerLink]="['/contratacoes', c.id]" class="font-semibold hover:text-[#ff4d47]">{{ c.nomeInstancia }}</a><app-numero [numero]="c.sequencial" />
                 <div class="text-xs text-neutral-500">{{ c.slugInstancia }}</div>
               </td>
               <td>{{ c.planoCodigo }}<div class="text-xs text-neutral-500">{{ rotuloPeriodicidade(c.periodicidade) }} · {{ dinheiro(c.valor) }}</div></td>

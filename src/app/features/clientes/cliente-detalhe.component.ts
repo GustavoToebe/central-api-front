@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
@@ -8,7 +9,7 @@ import { rotuloTipoCliente } from '../comum/rotulos';
 
 @Component({
   selector: 'app-cliente-detalhe',
-  imports: [RouterLink, GradeContratacoesComponent],
+  imports: [RouterLink, GradeContratacoesComponent, NumeroComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/clientes" class="bo-link">← Clientes</a>
@@ -16,7 +17,7 @@ import { rotuloTipoCliente } from '../comum/rotulos';
       @if (cliente) {
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 class="bo-title">{{ cliente.nome }}</h1>
+            <h1 class="bo-title">{{ cliente.nome }}<app-numero [numero]="cliente.sequencial" /></h1>
             <p class="bo-sub">{{ rotuloTipoCliente(cliente.tipo) }} · {{ cliente.documento }}</p>
           </div>
           <div class="flex gap-2">

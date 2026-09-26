@@ -25,6 +25,8 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - `features/comum/rotulos.ts` — funções puras: rótulos, cores, formatação e as regras
   de botão (`podeTentarNovamente`, `podeEditarProvisionamento`...).
 - `features/*/*.form.ts` — montagem das requisições (funções puras, com spec).
+- `features/comum/numero.component.ts` — `<app-numero [numero]="x.sequencial" />`: número curto "(2108)" que copia ao
+  clicar; use ao lado do nome de todo cadastro que tem `sequencial`.
 - `features/cobrancas/` — tela Cobranças e os modais `app-pagamento-modal` e `app-cobranca-detalhe-modal`,
   usados também na aba Financeiro da contratação.
 - `features/comum/formatos.ts` (+ `mascara.directive.ts`, `cep.service.ts`) — máscara e validação de

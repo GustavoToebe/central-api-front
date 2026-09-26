@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
@@ -7,7 +8,7 @@ import { montarProdutoRequest } from './catalogo.form';
 
 @Component({
   selector: 'app-produtos',
-  imports: [FormsModule],
+  imports: [FormsModule, NumeroComponent],
   template: `
     <div class="space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -37,7 +38,7 @@ import { montarProdutoRequest } from './catalogo.form';
           <tbody>
             @for (p of produtos; track p.id) {
               <tr>
-                <td class="font-semibold">{{ p.codigo }}</td><td>{{ p.nome }}</td>
+                <td class="font-semibold">{{ p.codigo }}</td><td>{{ p.nome }}<app-numero [numero]="p.sequencial" /></td>
                 <td class="break-all text-neutral-400">{{ p.urlBaseIntegracao || '—' }}</td>
                 <td><span [class]="p.ativo ? 'bo-ok' : 'bo-mute'">{{ p.ativo ? 'Ativo' : 'Inativo' }}</span></td>
                 <td class="text-right"><button type="button" class="bo-link" (click)="editar(p)">Editar</button></td>

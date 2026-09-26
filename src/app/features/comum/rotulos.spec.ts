@@ -92,7 +92,7 @@ describe('rotulos', () => {
 
   it('ordena cobranças do vencimento mais antigo para o mais novo', () => {
     const cb = (id: string, vencimento: string) => ({
-      id, contratacaoId: 'k', competenciaInicio: vencimento, competenciaFim: vencimento, vencimento, valor: 1,
+      id, sequencial: 1, contratacaoId: 'k', competenciaInicio: vencimento, competenciaFim: vencimento, vencimento, valor: 1,
       status: 'ABERTA' as const, vencida: false, pagoEm: null, valorPago: null, formaPagamento: null, observacao: null
     });
     const lista = [cb('out', '2026-10-10'), cb('set', '2026-09-25'), cb('nov', '2026-11-10')];

@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -8,7 +9,7 @@ import { iniciais } from '../comum/rotulos';
 
 @Component({
   selector: 'app-clientes-list',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, NumeroComponent],
   template: `
     <div class="space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -18,7 +19,7 @@ import { iniciais } from '../comum/rotulos';
         </div>
         <a routerLink="/clientes/novo" class="bo-btn">Novo cliente</a>
       </div>
-      <input class="bo-field max-w-md" placeholder="Buscar por nome, documento ou cidade" [(ngModel)]="busca" name="busca">
+      <input class="bo-field max-w-md" placeholder="Buscar por nome, número, documento ou cidade" [(ngModel)]="busca" name="busca">
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       <div class="bo-table-wrap">
         <table class="bo-table">
@@ -28,7 +29,7 @@ import { iniciais } from '../comum/rotulos';
               <tr>
                 <td>
                   <a [routerLink]="['/clientes', c.id]" class="flex items-center gap-3 font-semibold hover:text-[#ff4d47]">
-                    <span class="bo-avatar h-8 w-8 text-[11px]">{{ iniciais(c.nome) }}</span>{{ c.nome }}
+                    <span class="bo-avatar h-8 w-8 text-[11px]">{{ iniciais(c.nome) }}</span>{{ c.nome }}<app-numero [numero]="c.sequencial" />
                   </a>
                 </td>
                 <td>{{ c.tipo }}</td>
@@ -65,7 +66,7 @@ export class ClientesListComponent implements OnInit {
     const termo = this.busca.trim().toLowerCase();
     if (!termo) return this.clientes;
     return this.clientes.filter(c =>
-      [c.nome, c.documento, c.cidade ?? ''].some(v => v.toLowerCase().includes(termo)));
+      String(c.sequencial) === termo || [c.nome, c.documento, c.cidade ?? ''].some(v => v.toLowerCase().includes(termo)));
   }
 
   principal(c: Cliente): string {

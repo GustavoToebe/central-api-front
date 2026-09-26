@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, HostListener, OnInit, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
@@ -10,7 +11,7 @@ import {
 /** Detalhe de uma cobrança: de onde vem o valor (plano e adicionais) e o pagamento. */
 @Component({
   selector: 'app-cobranca-detalhe-modal',
-  imports: [RouterLink],
+  imports: [RouterLink, NumeroComponent],
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" (click)="fechar.emit()">
       <section class="bo-card max-h-[90vh] w-full max-w-2xl space-y-4 overflow-y-auto p-5" role="dialog" aria-modal="true"
@@ -19,7 +20,7 @@ import {
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div class="text-xs font-extrabold uppercase tracking-wider text-neutral-500">{{ d.cobranca.produtoCodigo }} · {{ d.cobranca.nomeInstancia }}</div>
-              <h2 id="titulo-cobranca" class="text-lg font-bold">Competência {{ competencia(d.cobranca.competenciaInicio, d.cobranca.competenciaFim) }}</h2>
+              <h2 id="titulo-cobranca" class="text-lg font-bold">Competência {{ competencia(d.cobranca.competenciaInicio, d.cobranca.competenciaFim) }}<app-numero [numero]="d.cobranca.sequencial" /></h2>
               <p class="bo-sub">{{ d.cobranca.clienteNome }} · {{ d.cobranca.planoNome }} ({{ rotuloPeriodicidade(d.cobranca.periodicidade) }})</p>
             </div>
             <span [class]="tomCobranca(d.cobranca.status, d.cobranca.vencida)">{{ rotuloStatusCobranca(d.cobranca.status, d.cobranca.vencida) }}</span>

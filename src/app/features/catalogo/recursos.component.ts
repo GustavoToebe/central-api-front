@@ -1,3 +1,4 @@
+import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
@@ -12,7 +13,7 @@ import { montarRecursoRequest } from './catalogo.form';
  */
 @Component({
   selector: 'app-recursos',
-  imports: [FormsModule],
+  imports: [FormsModule, NumeroComponent],
   template: `
     <div class="space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -74,7 +75,7 @@ import { montarRecursoRequest } from './catalogo.form';
           <tbody>
             @for (r of recursos; track r.id) {
               <tr>
-                <td>{{ nomeProduto(r.produtoId) }}</td><td class="font-semibold">{{ r.codigo }}</td><td>{{ r.nome }}</td>
+                <td>{{ nomeProduto(r.produtoId) }}</td><td class="font-semibold">{{ r.codigo }}</td><td>{{ r.nome }}<app-numero [numero]="r.sequencial" /></td>
                 <td>{{ r.tipo === 'LIMITE' ? 'Limite' : 'Funcionalidade' }}</td><td>{{ r.unidade || '—' }}</td><td>{{ r.valorPadrao ?? '—' }}</td>
                 <td class="text-right"><button type="button" class="bo-link" (click)="editar(r)">Editar</button></td>
               </tr>

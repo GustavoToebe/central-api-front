@@ -36,7 +36,7 @@ describe('montarClienteRequest', () => {
 
   it('carrega o cliente da API no formulário', () => {
     const form = clienteFormDe({
-      id: 'c1', tipo: 'PJ', documento: '1', nome: 'Mitra', logradouro: null, numero: null, complemento: null,
+      id: 'c1', sequencial: 1, tipo: 'PJ', documento: '1', nome: 'Mitra', logradouro: null, numero: null, complemento: null,
       bairro: null, cidade: 'Toledo', uf: 'PR', cep: null,
       contatos: [{ id: 'k', nome: 'Ana', email: null, telefone: null, principal: true }]
     });
@@ -47,7 +47,7 @@ describe('montarClienteRequest', () => {
 
   it('abre o cadastro antigo já formatado', () => {
     const form = clienteFormDe({
-      id: 'c2', tipo: 'PF', documento: '52998224725', nome: 'Maria', logradouro: null, numero: null, complemento: null,
+      id: 'c2', sequencial: 2, tipo: 'PF', documento: '52998224725', nome: 'Maria', logradouro: null, numero: null, complemento: null,
       bairro: null, cidade: null, uf: null, cep: '85800000',
       contatos: [{ id: 'k', nome: 'Maria', email: null, telefone: '45999998888', principal: true }]
     });
