@@ -71,7 +71,9 @@ describe('CentralApiService', () => {
     ['cobrancas com filtros', s => s.cobrancas({ situacao: 'VENCIDA', competencia: '2026-10', busca: ' Ana ' }), 'GET',
       '/cobrancas?situacao=VENCIDA&competencia=2026-10&busca=Ana', null],
     ['cobranca', s => s.cobranca('cb1'), 'GET', '/cobrancas/cb1', null],
-    ['pagarCobrancas', s => s.pagarCobrancas(pagamento), 'POST', '/cobrancas/pagamentos', pagamento]
+    ['pagarCobrancas', s => s.pagarCobrancas(pagamento), 'POST', '/cobrancas/pagamentos', pagamento],
+    ['erros', s => s.erros({ contratacaoId: 'k1', de: '2026-09-01', busca: ' storage ' }), 'GET',
+      '/erros?contratacaoId=k1&de=2026-09-01&busca=storage', null]
   ];
 
   beforeEach(() => {

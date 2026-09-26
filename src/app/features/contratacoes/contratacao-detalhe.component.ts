@@ -14,15 +14,16 @@ import {
 } from '../comum/rotulos';
 import { emailValido } from '../comum/formatos';
 import { CobrancaDetalheModalComponent } from '../cobrancas/cobranca-detalhe-modal.component';
+import { LogsComponent } from '../logs/logs.component';
 import { CobrancaAPagar, PagamentoModalComponent } from '../cobrancas/pagamento-modal.component';
 import { adicionaisValidos, montarProvisionamentoRequest, montarTrocaDePlano } from './contratacao.form';
 
-type Aba = 'resumo' | 'financeiro' | 'historico';
+type Aba = 'resumo' | 'financeiro' | 'historico' | 'erros';
 type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
 
 @Component({
   selector: 'app-contratacao-detalhe',
-  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent],
+  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/contratacoes" class="bo-link">← Contratações</a>
@@ -45,6 +46,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
           <button type="button" class="bo-tab" [class.active]="aba === 'resumo'" (click)="aba = 'resumo'">Resumo</button>
           <button type="button" class="bo-tab" [class.active]="aba === 'financeiro'" (click)="abrirFinanceiro()">Financeiro</button>
           <button type="button" class="bo-tab" [class.active]="aba === 'historico'" (click)="aba = 'historico'">Histórico ({{ c.historico.length }})</button>
+          <button type="button" class="bo-tab" [class.active]="aba === 'erros'" (click)="aba = 'erros'">Erros</button>
         </nav>
 
         @if (aba === 'resumo') {
@@ -232,6 +234,8 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
             }
           } @else { <p class="bo-sub">Carregando...</p> }
         }
+
+        @if (aba === 'erros') { <app-logs [contratacaoId]="c.id" /> }
 
         @if (aba === 'historico') {
           <div class="bo-table-wrap">

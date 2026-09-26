@@ -365,3 +365,32 @@ export interface RecursoDoApp {
   /** Já existe recurso com este código exato no produto. */
   cadastrado: boolean;
 }
+
+// ---- Logs de erro dos aplicativos (contrato 6.2)
+
+export interface FiltroErros {
+  produtoId?: string;
+  contratacaoId?: string;
+  /** `YYYY-MM-DD`, pela data em que ocorreu. */
+  de?: string;
+  ate?: string;
+  busca?: string;
+}
+
+export interface ErroAplicativo {
+  id: string;
+  ocorridoEm: string;
+  produtoCodigo: string;
+  contratacaoId: string | null;
+  clienteNome: string | null;
+  nomeInstancia: string | null;
+  tenantId: string | null;
+  /** Só o id: a Central não guarda nome nem e-mail de usuário dos apps. */
+  usuarioId: string | null;
+  metodo: string | null;
+  rota: string | null;
+  status: number;
+  codigo: string | null;
+  mensagem: string | null;
+  requestId: string | null;
+}

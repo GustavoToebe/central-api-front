@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   Adicional, AlterarPlanoRequest, AtualizarProvisionamentoRequest, Cliente, CobrancaDetalhe, CobrancaLinha, Contratacao,
-  ContratacaoResumo, CriarContratacaoRequest, Financeiro, FiltroCobrancas, NovoPrecoRequest, Plano, Produto, AdicionalContratado, Recurso,
+  ContratacaoResumo, CriarContratacaoRequest, ErroAplicativo, Financeiro, FiltroCobrancas, FiltroErros, NovoPrecoRequest, Plano, Produto, AdicionalContratado, Recurso,
   RecursoDoApp, RegistrarPagamentoRequest, SalvarAdicionalRequest, SalvarClienteRequest, SalvarPlanoRequest,
   SalvarProdutoRequest, SalvarRecursoRequest, Suporte
 } from './central.models';
@@ -84,10 +84,13 @@ export class CentralApiService {
   cobrancas(filtro: FiltroCobrancas) { return this.http.get<CobrancaLinha[]>(`${this.api}/cobrancas`, { params: parametros(filtro) }); }
   cobranca(id: string) { return this.http.get<CobrancaDetalhe>(`${this.api}/cobrancas/${id}`); }
   pagarCobrancas(corpo: RegistrarPagamentoRequest) { return this.http.post<void>(`${this.api}/cobrancas/pagamentos`, corpo); }
+
+  // ---- Logs de erro dos aplicativos
+  erros(filtro: FiltroErros) { return this.http.get<ErroAplicativo[]>(`${this.api}/erros`, { params: parametros(filtro) }); }
 }
 
 /** Só os filtros preenchidos viram parâmetro. */
-export function parametros(filtro: FiltroCobrancas): HttpParams {
+export function parametros(filtro: FiltroCobrancas | FiltroErros): HttpParams {
   let params = new HttpParams();
   for (const [chave, valor] of Object.entries(filtro)) {
     const texto = typeof valor === 'string' ? valor.trim() : '';
