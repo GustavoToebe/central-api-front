@@ -1,4 +1,8 @@
 import { Cliente, Contato, SalvarClienteRequest, TipoCliente } from '../../core/api/central.models';
+import {
+  cepValido, cnpjValido, cpfValido, emailValido, formatarCep, formatarCnpj, formatarCpf, formatarTelefone,
+  telefoneValido, ufValida
+} from '../comum/formatos';
 import { textoOuNulo } from '../comum/rotulos';
 
 export interface ClienteForm {
@@ -24,11 +28,35 @@ export function clienteFormVazio(): ClienteForm {
 
 export function clienteFormDe(c: Cliente): ClienteForm {
   return {
-    tipo: c.tipo, documento: c.documento, nome: c.nome,
-    cep: c.cep ?? '', logradouro: c.logradouro ?? '', numero: c.numero ?? '', complemento: c.complemento ?? '',
+    tipo: c.tipo, documento: formatarDocumento(c.tipo, c.documento), nome: c.nome,
+    cep: formatarCep(c.cep), logradouro: c.logradouro ?? '', numero: c.numero ?? '', complemento: c.complemento ?? '',
     bairro: c.bairro ?? '', cidade: c.cidade ?? '', uf: c.uf ?? '',
-    contatos: c.contatos.map(ct => ({ nome: ct.nome, email: ct.email ?? '', telefone: ct.telefone ?? '', principal: ct.principal }))
+    contatos: c.contatos.map(ct => ({
+      nome: ct.nome, email: ct.email ?? '', telefone: formatarTelefone(ct.telefone), principal: ct.principal
+    }))
   };
+}
+
+export function formatarDocumento(tipo: TipoCliente, documento: string | null | undefined): string {
+  return tipo === 'PJ' ? formatarCnpj(documento) : formatarCpf(documento);
+}
+
+/**
+ * Mesmas regras da API (web/Formatos): o primeiro problema, ou null. Contato
+ * sem nome não é conferido porque não vai para a API.
+ */
+export function problemaNoCliente(f: ClienteForm): string | null {
+  const documentoOk = f.tipo === 'PJ' ? cnpjValido(f.documento) : cpfValido(f.documento);
+  if (!documentoOk) return f.tipo === 'PJ' ? 'CNPJ inválido.' : 'CPF inválido.';
+  if (f.cep.trim() && !cepValido(f.cep)) return 'CEP deve ter 8 números.';
+  if (f.uf.trim() && !ufValida(f.uf)) return 'UF inválida.';
+  for (const c of f.contatos.filter(ct => ct.nome.trim())) {
+    if (c.email.trim() && !emailValido(c.email)) return `E-mail do contato ${c.nome.trim()} inválido.`;
+    if (c.telefone.trim() && !telefoneValido(c.telefone)) {
+      return `Telefone do contato ${c.nome.trim()} inválido. Informe o DDD e o número.`;
+    }
+  }
+  return null;
 }
 
 /**

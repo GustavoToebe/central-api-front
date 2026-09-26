@@ -9,6 +9,7 @@ import {
   podeEntrarEmSuporte, podeTentarNovamente, rotuloAcaoHistorico, rotuloFormaPagamento, rotuloPeriodicidade,
   rotuloProvisionamento, rotuloSituacao, rotuloStatusCobranca, textoOuNulo, tomCobranca, tomProvisionamento, tomSituacao
 } from '../comum/rotulos';
+import { emailValido } from '../comum/formatos';
 import { adicionaisValidos, montarPagamento, montarProvisionamentoRequest, montarTrocaDePlano } from './contratacao.form';
 
 type Aba = 'resumo' | 'financeiro' | 'historico';
@@ -330,8 +331,12 @@ export class ContratacaoDetalheComponent implements OnInit {
   }
 
   salvarProvisionamento(): void {
-    this.ocupado = true;
     this.limparMensagens();
+    if (!emailValido(this.prov.adminEmail)) {
+      this.erro = 'E-mail do administrador inválido.';
+      return;
+    }
+    this.ocupado = true;
     this.api.atualizarProvisionamento(this.id(), montarProvisionamentoRequest(this.prov)).subscribe({
       next: c => { this.c = c; this.ocupado = false; this.editandoProvisionamento = false; this.aviso = 'Dados salvos; o envio ao aplicativo sai em até um minuto.'; },
       error: e => {

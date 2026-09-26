@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Adicional, Cliente, Plano, Produto } from '../../core/api/central.models';
+import { emailValido } from '../comum/formatos';
 import { dinheiro, hojeIso, sugerirSlug } from '../comum/rotulos';
 import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
 
@@ -71,7 +72,11 @@ import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
             <input class="bo-field" name="adminNome" [(ngModel)]="form.adminNome" required>
           </label>
           <label><span class="bo-label">E-mail do administrador *</span>
-            <input class="bo-field" type="email" name="adminEmail" [(ngModel)]="form.adminEmail" required>
+            <input class="bo-field" type="email" name="adminEmail" [(ngModel)]="form.adminEmail" required #adminEmailCampo="ngModel"
+              placeholder="nome@exemplo.com">
+            @if (adminEmailCampo.touched && form.adminEmail.trim() && !emailValido(form.adminEmail)) {
+              <span class="mt-1 block text-xs text-red-400">E-mail inválido.</span>
+            }
           </label>
           <p class="bo-sub md:col-span-2">Nome, slug e administrador só podem ser corrigidos enquanto o aplicativo não tiver criado a instância.</p>
         </section>
@@ -108,6 +113,7 @@ import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
   `
 })
 export class ContratacaoFormComponent implements OnInit {
+  readonly emailValido = emailValido;
   private api = inject(CentralApiService);
   private router = inject(Router);
 
@@ -165,7 +171,7 @@ export class ContratacaoFormComponent implements OnInit {
   completo(): boolean {
     const f = this.form;
     return !!(f.clienteId && f.produtoId && f.planoId && f.inicio && f.nomeInstancia.trim()
-      && f.slugInstancia.trim() && f.adminNome.trim() && f.adminEmail.trim());
+      && f.slugInstancia.trim() && f.adminNome.trim() && emailValido(f.adminEmail));
   }
 
   salvar(): void {

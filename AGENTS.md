@@ -25,6 +25,10 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - `features/comum/rotulos.ts` — funções puras: rótulos, cores, formatação e as regras
   de botão (`podeTentarNovamente`, `podeEditarProvisionamento`...).
 - `features/*/*.form.ts` — montagem das requisições (funções puras, com spec).
+- `features/comum/formatos.ts` (+ `mascara.directive.ts`, `cep.service.ts`) — máscara e validação de
+  CPF/CNPJ (inclusive alfanumérico), CEP, UF, telefone e e-mail; CEP pelo ViaCEP via `fetch` (nunca
+  pelo HttpClient: o interceptor mandaria token e cookies para fora). Mesmas regras do `web/Formatos`
+  da API; mudou uma, muda a outra.
 
 ## Regras
 - O painel nunca exibe dado de negócio dos apps (nomes de pessoas etc.), só contagens.
@@ -33,4 +37,5 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
   nome/slug/admin segue `provisionamentoEditavel` da API e trata `409 PROVISIONAMENTO_NAO_EDITAVEL`.
 - Rota nova da API: método no `CentralApiService` + caso no spec (URL, método, corpo).
 - `[name]` com `ngModel` não vira atributo HTML; em teste de navegador, ache o campo pelo rótulo.
+- Confirmação é painel na própria tela, nunca `confirm()`/`alert()` do navegador.
 - Antes de commitar: `npm test` e `npm run build:prod` verdes.
