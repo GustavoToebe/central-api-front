@@ -37,7 +37,7 @@ import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
           <label><span class="bo-label">Plano *</span>
             <select class="bo-field" name="planoId" [(ngModel)]="form.planoId" required [disabled]="!form.produtoId">
               <option value="" disabled>Escolha o plano</option>
-              @for (p of planos; track p.id) { <option [value]="p.id">{{ p.nome }} · {{ dinheiro(p.precoMensal) }}/mês</option> }
+              @for (p of planos; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
             </select>
           </label>
           <label><span class="bo-label">Periodicidade *</span>

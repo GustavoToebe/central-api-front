@@ -140,7 +140,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                 <form class="grid gap-3 md:grid-cols-3" (ngSubmit)="salvarTrocaDePlano()">
                   <label><span class="bo-label">Plano</span>
                     <select class="bo-field" name="tpPlano" [(ngModel)]="troca.planoId">
-                      @for (p of planos; track p.id) { <option [value]="p.id">{{ p.nome }} · {{ dinheiro(p.precoMensal) }}/mês</option> }
+                      @for (p of planos; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
                     </select>
                   </label>
                   <label><span class="bo-label">Periodicidade</span>

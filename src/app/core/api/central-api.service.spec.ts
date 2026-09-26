@@ -20,8 +20,8 @@ describe('CentralApiService', () => {
     bairro: null, cidade: null, uf: null, cep: null, contatos: []
   };
   const produto: SalvarProdutoRequest = { codigo: 'SERVIRE', nome: 'Servire', urlBaseIntegracao: null, ativo: true };
-  const recurso: SalvarRecursoRequest = { produtoId: 'p1', codigo: 'VOLUNTARIOS', nome: 'Voluntários', tipo: 'LIMITE', unidade: null };
-  const plano: SalvarPlanoRequest = { produtoId: 'p1', codigo: 'PRO', nome: 'Profissional', ativo: true, recursos: [] };
+  const recurso: SalvarRecursoRequest = { produtoId: 'p1', codigo: 'VOLUNTARIOS', nome: 'Voluntários', tipo: 'LIMITE', unidade: null, valorPadrao: 100 };
+  const plano: SalvarPlanoRequest = { produtoId: 'p1', codigo: 'PRO', nome: 'Profissional', ativo: true, recursos: [], precos: [{ periodicidade: 'TRIMESTRAL', valor: 140 }] };
   const preco: NovoPrecoRequest = { periodicidade: 'MENSAL', valor: 49.9, vigenteDesde: '2026-10-01' };
   const adicional: SalvarAdicionalRequest = { produtoId: 'p1', recursoId: 'r1', codigo: 'MAIS50', nome: '+50', quantidade: 50, preco: 15, ativo: true };
   const contratacao = { clienteId: 'c1' } as CriarContratacaoRequest;

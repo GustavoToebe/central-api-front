@@ -1,4 +1,4 @@
-import { NovoPrecoRequest, Periodicidade, Preco, SalvarAdicionalRequest, SalvarPlanoRequest, SalvarProdutoRequest, SalvarRecursoRequest, TipoRecurso } from '../../core/api/central.models';
+import { Periodicidade, Preco, SalvarAdicionalRequest, SalvarPlanoRequest, SalvarProdutoRequest, SalvarRecursoRequest, TipoRecurso } from '../../core/api/central.models';
 import { valorOuNulo } from '../contratacoes/contratacao.form';
 import { hojeIso, textoOuNulo } from '../comum/rotulos';
 
@@ -12,25 +12,47 @@ export function montarProdutoRequest(f: { codigo: string; nome: string; urlBaseI
   return { codigo: codigo(f.codigo), nome: f.nome.trim(), urlBaseIntegracao: url ? url.replace(/\/+$/, '') : null, ativo: f.ativo };
 }
 
-export function montarRecursoRequest(f: { produtoId: string; codigo: string; nome: string; tipo: TipoRecurso; unidade: string }): SalvarRecursoRequest {
-  return { produtoId: f.produtoId, codigo: codigo(f.codigo), nome: f.nome.trim(), tipo: f.tipo, unidade: textoOuNulo(f.unidade) };
+/** Valor padrão só vai para LIMITE (o back ignora nos outros). */
+export function montarRecursoRequest(f: {
+  produtoId: string; codigo: string; nome: string; tipo: TipoRecurso; unidade: string; valorPadrao: string;
+}): SalvarRecursoRequest {
+  return {
+    produtoId: f.produtoId, codigo: codigo(f.codigo), nome: f.nome.trim(), tipo: f.tipo, unidade: textoOuNulo(f.unidade),
+    valorPadrao: f.tipo === 'LIMITE' ? valorOuNulo(f.valorPadrao) : null
+  };
 }
 
-/** Recurso sem valor fica de fora do plano; funcionalidade marcada vale 1. */
+/** Recurso escolhido para o plano: limite com valor, funcionalidade só pela presença. */
+export interface LinhaRecursoDoPlano {
+  recursoId: string;
+  tipo: TipoRecurso;
+  valor: string;
+}
+
+/** Limite sem valor ainda não pode ser salvo (o operador adicionou e esqueceu de preencher). */
+export function limitesSemValor(linhas: LinhaRecursoDoPlano[]): boolean {
+  return linhas.some(l => l.tipo === 'LIMITE' && valorOuNulo(l.valor) == null);
+}
+
+/**
+ * Plano com os recursos escolhidos (funcionalidade vale 1) e os preços por
+ * periodicidade; preço vazio fica de fora e não muda o que já existe.
+ */
 export function montarPlanoRequest(f: {
   produtoId: string; codigo: string; nome: string; ativo: boolean;
-  recursos: { recursoId: string; tipo: TipoRecurso; valor: string; marcado: boolean }[];
+  recursos: LinhaRecursoDoPlano[];
+  precos: Partial<Record<Periodicidade, string>>;
 }): SalvarPlanoRequest {
   const recursos = f.recursos.flatMap(r => {
-    if (r.tipo === 'FUNCIONALIDADE') return r.marcado ? [{ recursoId: r.recursoId, valor: 1 }] : [];
+    if (r.tipo === 'FUNCIONALIDADE') return [{ recursoId: r.recursoId, valor: 1 }];
     const valor = valorOuNulo(r.valor);
     return valor == null ? [] : [{ recursoId: r.recursoId, valor }];
   });
-  return { produtoId: f.produtoId, codigo: codigo(f.codigo), nome: f.nome.trim(), ativo: f.ativo, recursos };
-}
-
-export function montarPrecoRequest(f: { periodicidade: Periodicidade; valor: string; vigenteDesde: string }): NovoPrecoRequest {
-  return { periodicidade: f.periodicidade, valor: valorOuNulo(f.valor) ?? 0, vigenteDesde: f.vigenteDesde };
+  const precos = (Object.entries(f.precos) as [Periodicidade, string][]).flatMap(([periodicidade, texto]) => {
+    const valor = valorOuNulo(texto);
+    return valor == null ? [] : [{ periodicidade, valor }];
+  });
+  return { produtoId: f.produtoId, codigo: codigo(f.codigo), nome: f.nome.trim(), ativo: f.ativo, recursos, precos };
 }
 
 export function montarAdicionalRequest(f: {

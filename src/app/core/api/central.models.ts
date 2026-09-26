@@ -64,6 +64,8 @@ export interface Recurso {
   nome: string;
   tipo: TipoRecurso;
   unidade: string | null;
+  /** Só LIMITE: vem preenchido quando o recurso entra num plano. */
+  valorPadrao: number | null;
 }
 
 export interface SalvarRecursoRequest {
@@ -72,6 +74,7 @@ export interface SalvarRecursoRequest {
   nome: string;
   tipo: TipoRecurso;
   unidade: string | null;
+  valorPadrao: number | null;
 }
 
 export interface RecursoDoPlano {
@@ -94,8 +97,8 @@ export interface Plano {
   codigo: string;
   nome: string;
   ativo: boolean;
-  precoMensal: number | null;
-  precoAnual: number | null;
+  /** Preço em vigor hoje; periodicidade sem preço não aparece. */
+  precosVigentes: { periodicidade: Periodicidade; valor: number }[];
   recursos: RecursoDoPlano[];
   precos: Preco[];
 }
@@ -106,6 +109,8 @@ export interface SalvarPlanoRequest {
   nome: string;
   ativo: boolean;
   recursos: { recursoId: string; valor: number }[];
+  /** Vale a partir de hoje; periodicidade fora da lista não muda. */
+  precos: { periodicidade: Periodicidade; valor: number }[];
 }
 
 export interface NovoPrecoRequest {

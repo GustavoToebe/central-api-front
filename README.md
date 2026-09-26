@@ -23,7 +23,7 @@ sessão renova pelo cookie com CSRF.
 | Contratações | `/contratacoes`, `/contratacoes/nova`, `/contratacoes/:id` | grade (aplicativo, instância, plano, situação, vencimento, provisionamento) com "Tentar novamente" em ERRO; cancelada que nunca chegou ao app aparece como "Não enviada"; nova contratação com adicionais; detalhe em abas |
 | Detalhe da contratação | abas Resumo, Financeiro, Histórico | direitos enviados, edição de nome/slug/admin (só se `provisionamentoEditavel`), troca de plano, adicionais, bloquear/desbloquear/cancelar, entrar em suporte; cobranças com competência `10/2026`, botão "Pagar" (modal), detalhe da cobrança ao clicar, estorno, isenção, cobranças adiantadas com competência inicial e final; histórico |
 | Cobranças | `/cobrancas` | todas as cobranças com filtros (cliente/instância, produto, situação, forma, competência, vencimento); pagar várias de clientes diferentes no mesmo modal; detalhe com plano e adicionais |
-| Catálogo | `/catalogo/produtos`, `/recursos`, `/planos`, `/adicionais` | produtos (código `SERVIRE` + URL de integração), recursos, planos com limites e preços, adicionais |
+| Catálogo | `/catalogo/produtos`, `/recursos`, `/planos`, `/adicionais` | produtos (código `SERVIRE` + URL de integração), recursos (limite com valor padrão), planos com preço por periodicidade no próprio cadastro e recursos adicionados um a um, adicionais |
 
 Cadastro de cliente com máscara e validação (CPF para PF, CNPJ para PJ, inclusive alfanumérico;
 CEP, UF, telefone e e-mail dos contatos) e endereço preenchido pelo CEP (ViaCEP). Mesmas regras de
