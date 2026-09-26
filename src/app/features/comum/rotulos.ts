@@ -47,11 +47,21 @@ export function tomSituacao(s: SituacaoComercial): Tom {
   return SITUACAO_COMERCIAL[s]?.tom ?? 'bo-mute';
 }
 
-export function rotuloProvisionamento(s: SituacaoProvisionamento): string {
+/**
+ * Cancelada que nunca chegou ao app não será mais enviada (o back descarta o
+ * provisionamento): "Aguardando envio" ali enganaria.
+ */
+function naoSeraEnviada(s: SituacaoProvisionamento, comercial?: SituacaoComercial): boolean {
+  return comercial === 'CANCELADA' && s !== 'ATIVA';
+}
+
+export function rotuloProvisionamento(s: SituacaoProvisionamento, comercial?: SituacaoComercial): string {
+  if (naoSeraEnviada(s, comercial)) return 'Não enviada';
   return PROVISIONAMENTO[s]?.rotulo ?? s;
 }
 
-export function tomProvisionamento(s: SituacaoProvisionamento): Tom {
+export function tomProvisionamento(s: SituacaoProvisionamento, comercial?: SituacaoComercial): Tom {
+  if (naoSeraEnviada(s, comercial)) return 'bo-mute';
   return PROVISIONAMENTO[s]?.tom ?? 'bo-mute';
 }
 
@@ -169,7 +179,8 @@ const ACOES_HISTORICO: Record<string, string> = {
   ISENCAO: 'Cobrança isenta',
   DADOS_PROVISIONAMENTO: 'Nome, slug ou administrador alterados',
   PROVISIONADA: 'Instância criada no aplicativo',
-  PROVISIONAMENTO_ERRO: 'Erro no provisionamento'
+  PROVISIONAMENTO_ERRO: 'Erro no provisionamento',
+  PROVISIONAMENTO_DESCARTADO: 'Envio ao aplicativo descartado'
 };
 
 /** Ação do histórico em português; ação desconhecida aparece como veio. */

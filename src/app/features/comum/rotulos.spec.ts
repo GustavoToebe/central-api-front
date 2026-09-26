@@ -20,6 +20,14 @@ describe('rotulos', () => {
     expect(tomProvisionamento('PROCESSANDO')).toBe('bo-warn');
   });
 
+  it('cancelada que não chegou ao app aparece como não enviada', () => {
+    expect(rotuloProvisionamento('PENDENTE', 'CANCELADA')).toBe('Não enviada');
+    expect(tomProvisionamento('ERRO', 'CANCELADA')).toBe('bo-mute');
+    expect(rotuloProvisionamento('ATIVA', 'CANCELADA')).toBe('Criada no app');
+    expect(rotuloProvisionamento('PENDENTE', 'ATIVA')).toBe('Aguardando envio');
+    expect(rotuloAcaoHistorico('PROVISIONAMENTO_DESCARTADO')).toBe('Envio ao aplicativo descartado');
+  });
+
   it('cobrança aberta e vencida aparece como vencida, em vermelho', () => {
     expect(rotuloStatusCobranca('ABERTA', true)).toBe('Vencida');
     expect(tomCobranca('ABERTA', true)).toBe('bo-bad');

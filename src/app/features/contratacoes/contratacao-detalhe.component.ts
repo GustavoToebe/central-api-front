@@ -31,7 +31,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <span class="bo-chip" [class]="tomSituacao(c.situacaoComercial)">{{ rotuloSituacao(c.situacaoComercial) }}</span>
-            <span class="bo-chip" [class]="tomProvisionamento(c.situacaoProvisionamento)">{{ rotuloProvisionamento(c.situacaoProvisionamento) }}</span>
+            <span class="bo-chip" [class]="tomProvisionamento(c.situacaoProvisionamento, c.situacaoComercial)">{{ rotuloProvisionamento(c.situacaoProvisionamento, c.situacaoComercial) }}</span>
           </div>
         </div>
 
@@ -80,7 +80,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
               </div>
             </div>
             <dl class="grid gap-3 text-sm md:grid-cols-4">
-              <div><dt class="text-neutral-500">Situação</dt><dd [class]="tomProvisionamento(c.situacaoProvisionamento)">{{ rotuloProvisionamento(c.situacaoProvisionamento) }}</dd></div>
+              <div><dt class="text-neutral-500">Situação</dt><dd [class]="tomProvisionamento(c.situacaoProvisionamento, c.situacaoComercial)">{{ rotuloProvisionamento(c.situacaoProvisionamento, c.situacaoComercial) }}</dd></div>
               <div><dt class="text-neutral-500">Id no aplicativo</dt><dd class="break-all">{{ c.idExterno || '—' }}</dd></div>
               <div><dt class="text-neutral-500">Administrador</dt><dd>{{ c.adminNome }}<span class="block text-neutral-400">{{ c.adminEmail }}</span></dd></div>
               <div><dt class="text-neutral-500">Idempotency-Key</dt><dd class="break-all text-neutral-400">{{ c.idempotencyKey }}</dd></div>

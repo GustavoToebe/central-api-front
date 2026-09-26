@@ -38,7 +38,7 @@ import {
               <td><span [class]="tomSituacao(c.situacaoComercial)">{{ rotuloSituacao(c.situacaoComercial) }}</span></td>
               <td>Dia {{ c.diaVencimento }}<div class="text-xs text-neutral-500">pago até {{ data(c.vigenteAte) }}</div></td>
               <td>
-                <span [class]="tomProvisionamento(c.situacaoProvisionamento)">{{ rotuloProvisionamento(c.situacaoProvisionamento) }}</span>
+                <span [class]="tomProvisionamento(c.situacaoProvisionamento, c.situacaoComercial)">{{ rotuloProvisionamento(c.situacaoProvisionamento, c.situacaoComercial) }}</span>
                 @if (podeTentarNovamente(c)) {
                   <button type="button" class="bo-btn-line ml-2 !px-3 !py-1" [disabled]="enviando === c.id" (click)="tentar(c)">
                     {{ enviando === c.id ? 'Enviando...' : 'Tentar novamente' }}
