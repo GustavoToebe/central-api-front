@@ -37,6 +37,7 @@ describe('CentralApiService', () => {
     ['produtos', s => s.produtos(), 'GET', '/produtos', null],
     ['criarProduto', s => s.criarProduto(produto), 'POST', '/produtos', produto],
     ['atualizarProduto', s => s.atualizarProduto('p1', produto), 'PUT', '/produtos/p1', produto],
+    ['recursosDoApp', s => s.recursosDoApp('p1'), 'GET', '/produtos/p1/recursos-do-app', null],
     ['recursos', s => s.recursos(), 'GET', '/recursos', null],
     ['recursos do produto', s => s.recursos('p1'), 'GET', '/recursos?produtoId=p1', null],
     ['criarRecurso', s => s.criarRecurso(recurso), 'POST', '/recursos', recurso],

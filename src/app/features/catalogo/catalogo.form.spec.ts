@@ -1,5 +1,5 @@
 import {
-  codigo, limitesSemValor, montarAdicionalRequest, montarPlanoRequest, montarProdutoRequest, montarRecursoRequest, precoVigente
+  codigo, codigoRecurso, limitesSemValor, montarAdicionalRequest, montarPlanoRequest, montarProdutoRequest, montarRecursoRequest, precoVigente
 } from './catalogo.form';
 
 describe('catalogo.form', () => {
@@ -16,7 +16,7 @@ describe('catalogo.form', () => {
 
   it('recurso: valor padrão só em limite', () => {
     expect(montarRecursoRequest({ produtoId: 'p1', codigo: 'voluntarios', nome: ' Voluntários ', tipo: 'LIMITE', unidade: '', valorPadrao: '100' }))
-      .toEqual({ produtoId: 'p1', codigo: 'VOLUNTARIOS', nome: 'Voluntários', tipo: 'LIMITE', unidade: null, valorPadrao: 100 });
+      .toEqual({ produtoId: 'p1', codigo: 'voluntarios', nome: 'Voluntários', tipo: 'LIMITE', unidade: null, valorPadrao: 100 });
     expect(montarRecursoRequest({ produtoId: 'p1', codigo: 'escalas', nome: 'Escalas', tipo: 'FUNCIONALIDADE', unidade: '', valorPadrao: '5' }).valorPadrao)
       .toBeNull();
   });
@@ -55,5 +55,10 @@ describe('catalogo.form', () => {
     expect(precoVigente(precos, 'TRIMESTRAL', '2026-09-26')).toBe(140);
     expect(precoVigente(precos, 'MENSAL', '2026-09-26')).toBe(49.9);
     expect(precoVigente(precos, 'ANUAL', '2026-09-26')).toBeNull();
+  });
+
+  it('código do recurso mantém maiúsculas e minúsculas do app', () => {
+    expect(codigoRecurso(' voluntarios ')).toBe('voluntarios');
+    expect(codigoRecurso('INSCRICAO PUBLICA')).toBe('INSCRICAO_PUBLICA');
   });
 });

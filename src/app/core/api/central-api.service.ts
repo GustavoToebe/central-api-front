@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environment';
 import {
   Adicional, AlterarPlanoRequest, AtualizarProvisionamentoRequest, Cliente, CobrancaDetalhe, CobrancaLinha, Contratacao,
   ContratacaoResumo, CriarContratacaoRequest, Financeiro, FiltroCobrancas, NovoPrecoRequest, Plano, Produto, AdicionalContratado, Recurso,
-  RegistrarPagamentoRequest, SalvarAdicionalRequest, SalvarClienteRequest, SalvarPlanoRequest,
+  RecursoDoApp, RegistrarPagamentoRequest, SalvarAdicionalRequest, SalvarClienteRequest, SalvarPlanoRequest,
   SalvarProdutoRequest, SalvarRecursoRequest, Suporte
 } from './central.models';
 
@@ -25,6 +25,8 @@ export class CentralApiService {
   produtos() { return this.http.get<Produto[]>(`${this.api}/produtos`); }
   criarProduto(corpo: SalvarProdutoRequest) { return this.http.post<Produto>(`${this.api}/produtos`, corpo); }
   atualizarProduto(id: string, corpo: SalvarProdutoRequest) { return this.http.put<Produto>(`${this.api}/produtos/${id}`, corpo); }
+  /** Limites e funcionalidades que o aplicativo do produto entende (a Central pergunta ao app). */
+  recursosDoApp(produtoId: string) { return this.http.get<RecursoDoApp[]>(`${this.api}/produtos/${produtoId}/recursos-do-app`); }
 
   recursos(produtoId?: string) { return this.http.get<Recurso[]>(`${this.api}/recursos`, { params: filtroProduto(produtoId) }); }
   criarRecurso(corpo: SalvarRecursoRequest) { return this.http.post<Recurso>(`${this.api}/recursos`, corpo); }

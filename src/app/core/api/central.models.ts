@@ -353,3 +353,15 @@ export interface CobrancaDetalhe {
   observacao: string | null;
   itens: CobrancaItem[];
 }
+
+/** Sugestão do aplicativo para a tela de Recursos (contrato 5.5). */
+export interface RecursoDoApp {
+  codigo: string;
+  nome: string;
+  tipo: TipoRecurso;
+  unidade: string | null;
+  /** O app já faz valer o limite/funcionalidade. */
+  aplicado: boolean;
+  /** Já existe recurso com este código exato no produto. */
+  cadastrado: boolean;
+}

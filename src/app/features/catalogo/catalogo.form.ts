@@ -12,12 +12,20 @@ export function montarProdutoRequest(f: { codigo: string; nome: string; urlBaseI
   return { codigo: codigo(f.codigo), nome: f.nome.trim(), urlBaseIntegracao: url ? url.replace(/\/+$/, '') : null, ativo: f.ativo };
 }
 
+/**
+ * Código do recurso fica como o aplicativo usa (`voluntarios`, `ESCALAS`): em maiúsculas
+ * nunca casaria com o que o app lê nos direitos. Só troca espaço por `_`.
+ */
+export function codigoRecurso(texto: string): string {
+  return texto.trim().replace(/\s+/g, '_');
+}
+
 /** Valor padrão só vai para LIMITE (o back ignora nos outros). */
 export function montarRecursoRequest(f: {
   produtoId: string; codigo: string; nome: string; tipo: TipoRecurso; unidade: string; valorPadrao: string;
 }): SalvarRecursoRequest {
   return {
-    produtoId: f.produtoId, codigo: codigo(f.codigo), nome: f.nome.trim(), tipo: f.tipo, unidade: textoOuNulo(f.unidade),
+    produtoId: f.produtoId, codigo: codigoRecurso(f.codigo), nome: f.nome.trim(), tipo: f.tipo, unidade: textoOuNulo(f.unidade),
     valorPadrao: f.tipo === 'LIMITE' ? valorOuNulo(f.valorPadrao) : null
   };
 }
