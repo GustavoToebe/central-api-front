@@ -27,6 +27,10 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - `features/*/*.form.ts` — montagem das requisições (funções puras, com spec).
 - `features/comum/numero.component.ts` — `<app-numero [numero]="x.sequencial" />`: número curto "(2108)" que copia ao
   clicar; use ao lado do nome de todo cadastro que tem `sequencial`.
+- Datas: nunca `type="date"`/`type="month"` nativo. `app-campo-data` (ngModel ISO, tela `DD/MM/AAAA`),
+  `app-campo-competencia` (ngModel `AAAA-MM`, tela `MM/AAAA`, sem nome de mês) e, em filtro, `app-periodo`
+  (`[(de)]`/`[(ate)]` + `(aplicado)`, com períodos prontos). Painéis abrem no `body` (`painel-flutuante.ts`).
+  Filtro por competência já vem com o mês atual.
 - `features/cobrancas/` — tela Cobranças e os modais `app-pagamento-modal` e `app-cobranca-detalhe-modal`,
   usados também na aba Financeiro da contratação.
 - `features/comum/formatos.ts` (+ `mascara.directive.ts`, `cep.service.ts`) — máscara e validação de

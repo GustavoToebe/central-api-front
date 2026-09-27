@@ -1,3 +1,5 @@
+import { CampoCompetenciaComponent } from '../comum/campo-competencia.component';
+import { CampoDataComponent } from '../comum/campo-data.component';
 import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +26,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
 
 @Component({
   selector: 'app-contratacao-detalhe',
-  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent, NumeroComponent],
+  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent, NumeroComponent, CampoDataComponent, CampoCompetenciaComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/contratacoes" class="bo-link">← Contratações</a>
@@ -153,7 +155,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                   </label>
                   <label><span class="bo-label">Valor (vazio = preço do plano)</span><input class="bo-field" name="tpValor" [(ngModel)]="troca.valor"></label>
                   <label><span class="bo-label">Dia de vencimento</span><input class="bo-field" type="number" min="1" max="28" name="tpDia" [(ngModel)]="troca.diaVencimento"></label>
-                  <label><span class="bo-label">A partir de</span><input class="bo-field" type="date" name="tpData" [(ngModel)]="troca.aPartirDe"></label>
+                  <label><span class="bo-label">A partir de</span><app-campo-data name="tpData" [(ngModel)]="troca.aPartirDe" [limpavel]="false" /></label>
                   <label><span class="bo-label">Motivo</span><input class="bo-field" name="tpMotivo" [(ngModel)]="troca.motivo"></label>
                   <p class="bo-sub md:col-span-3">Cobranças pagas ficam; as abertas a partir da data são refeitas com o valor novo.</p>
                   <div class="flex gap-2 md:col-span-3">
@@ -227,8 +229,8 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
             @if (c.situacaoComercial !== 'CANCELADA') {
               <section class="bo-card flex flex-wrap items-end gap-3 p-5">
                 <h2 class="w-full text-sm font-extrabold uppercase tracking-wider text-neutral-400">Gerar cobranças adiantadas</h2>
-                <label><span class="bo-label">Competência de</span><input class="bo-field" type="month" name="de" [(ngModel)]="adiantarDe"></label>
-                <label><span class="bo-label">até</span><input class="bo-field" type="month" name="ate" [(ngModel)]="adiantarAte" [min]="adiantarDe"></label>
+                <label><span class="bo-label">Competência de</span><app-campo-competencia name="de" [(ngModel)]="adiantarDe" [limpavel]="false" /></label>
+                <label><span class="bo-label">até</span><app-campo-competencia name="ate" [(ngModel)]="adiantarAte" [min]="adiantarDe" [limpavel]="false" /></label>
                 <button type="button" class="bo-btn-ghost" [disabled]="ocupado || !adiantarDe || !adiantarAte || adiantarAte < adiantarDe" (click)="gerarAdiantadas()">Gerar</button>
                 <p class="bo-sub w-full">Só cria as competências que ainda não existem; as já geradas não mudam.</p>
               </section>

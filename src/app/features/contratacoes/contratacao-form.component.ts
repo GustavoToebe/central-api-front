@@ -5,13 +5,14 @@ import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Adicional, Cliente, Plano, Produto } from '../../core/api/central.models';
 import { emailValido } from '../comum/formatos';
+import { CampoDataComponent } from '../comum/campo-data.component';
 import { PERIODICIDADES, dinheiro, hojeIso, rotuloPeriodicidade, sugerirSlug } from '../comum/rotulos';
 import { precoVigente } from '../catalogo/catalogo.form';
 import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
 
 @Component({
   selector: 'app-contratacao-form',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, CampoDataComponent],
   template: `
     <div class="mx-auto max-w-4xl space-y-6">
       <div>
@@ -52,7 +53,7 @@ import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
             <input class="bo-field" type="number" min="1" max="28" name="diaVencimento" [(ngModel)]="form.diaVencimento" required>
           </label>
           <label><span class="bo-label">Início *</span>
-            <input class="bo-field" type="date" name="inicio" [(ngModel)]="form.inicio" required>
+            <app-campo-data name="inicio" [(ngModel)]="form.inicio" required [limpavel]="false" />
           </label>
           <label><span class="bo-label">Situação inicial</span>
             <select class="bo-field" name="situacao" [(ngModel)]="form.situacaoComercial">

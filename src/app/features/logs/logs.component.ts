@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { ErroAplicativo, FiltroErros, Produto } from '../../core/api/central.models';
+import { PeriodoComponent } from '../comum/periodo.component';
 import { data } from '../comum/rotulos';
 
 /**
@@ -13,7 +14,7 @@ import { data } from '../comum/rotulos';
  */
 @Component({
   selector: 'app-logs',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PeriodoComponent],
   template: `
     <div class="space-y-6">
       @if (!contratacaoId()) {
@@ -33,8 +34,9 @@ import { data } from '../comum/rotulos';
             </select>
           </label>
         }
-        <label><span class="bo-label">De</span><input class="bo-field" type="date" name="de" [(ngModel)]="filtro.de" (ngModelChange)="carregar()"></label>
-        <label><span class="bo-label">Até</span><input class="bo-field" type="date" name="ate" [(ngModel)]="filtro.ate" (ngModelChange)="carregar()"></label>
+        <label class="xl:col-span-2"><span class="bo-label">Período</span>
+          <app-periodo [de]="filtro.de ?? ''" (deChange)="filtro.de = $event"
+            [ate]="filtro.ate ?? ''" (ateChange)="filtro.ate = $event" (aplicado)="carregar()" /></label>
         <div class="flex items-end gap-2 md:col-span-2 xl:col-span-5">
           <button class="bo-btn" type="submit">Buscar</button>
           <button class="bo-btn-ghost" type="button" (click)="limpar()">Limpar filtros</button>

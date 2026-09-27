@@ -1,4 +1,7 @@
+import { CampoCompetenciaComponent } from '../comum/campo-competencia.component';
+import { competenciaAtual } from '../comum/datas';
 import { NumeroComponent } from '../comum/numero.component';
+import { PeriodoComponent } from '../comum/periodo.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,7 +20,7 @@ import { CobrancaAPagar, PagamentoModalComponent } from './pagamento-modal.compo
  */
 @Component({
   selector: 'app-cobrancas',
-  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, NumeroComponent],
+  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, NumeroComponent, CampoCompetenciaComponent, PeriodoComponent],
   template: `
     <div class="space-y-6">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -53,11 +56,10 @@ import { CobrancaAPagar, PagamentoModalComponent } from './pagamento-modal.compo
           </select>
         </label>
         <label><span class="bo-label">Competência</span>
-          <input class="bo-field" type="month" name="competencia" [(ngModel)]="filtro.competencia" (ngModelChange)="carregar()"></label>
-        <div class="grid grid-cols-2 gap-2 md:col-span-2 xl:col-span-1">
-          <label><span class="bo-label">Vence de</span><input class="bo-field" type="date" name="vDe" [(ngModel)]="filtro.vencimentoDe" (ngModelChange)="carregar()"></label>
-          <label><span class="bo-label">até</span><input class="bo-field" type="date" name="vAte" [(ngModel)]="filtro.vencimentoAte" (ngModelChange)="carregar()"></label>
-        </div>
+          <app-campo-competencia name="competencia" [(ngModel)]="filtro.competencia" (ngModelChange)="carregar()" /></label>
+        <label class="md:col-span-2 xl:col-span-1"><span class="bo-label">Vencimento</span>
+          <app-periodo [de]="filtro.vencimentoDe ?? ''" (deChange)="filtro.vencimentoDe = $event"
+            [ate]="filtro.vencimentoAte ?? ''" (ateChange)="filtro.vencimentoAte = $event" (aplicado)="carregar()" /></label>
         <div class="flex items-end gap-2 md:col-span-4 xl:col-span-7">
           <button class="bo-btn" type="submit">Buscar</button>
           <button class="bo-btn-ghost" type="button" (click)="limpar()">Limpar filtros</button>
@@ -205,6 +207,7 @@ export class CobrancasComponent implements OnInit {
   }
 }
 
+/** A competência do mês já vem aplicada (teste de telas de 27/09/2026); o "✕" do campo tira. */
 function filtroVazio(): FiltroCobrancas {
-  return { produtoId: '', situacao: '', formaPagamento: '', vencimentoDe: '', vencimentoAte: '', competencia: '', busca: '' };
+  return { produtoId: '', situacao: '', formaPagamento: '', vencimentoDe: '', vencimentoAte: '', competencia: competenciaAtual(), busca: '' };
 }

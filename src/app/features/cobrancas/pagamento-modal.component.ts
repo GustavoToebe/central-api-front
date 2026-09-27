@@ -2,6 +2,7 @@ import { Component, HostListener, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FormaPagamento, RegistrarPagamentoRequest } from '../../core/api/central.models';
 import { montarPagamento } from '../contratacoes/contratacao.form';
+import { CampoDataComponent } from '../comum/campo-data.component';
 import { FORMAS_PAGAMENTO, dinheiro, hojeIso, rotuloFormaPagamento } from '../comum/rotulos';
 
 /** Uma cobrança escolhida para pagar: o suficiente para o operador conferir. */
@@ -17,7 +18,7 @@ export interface CobrancaAPagar {
  */
 @Component({
   selector: 'app-pagamento-modal',
-  imports: [FormsModule],
+  imports: [FormsModule, CampoDataComponent],
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" (click)="fechar.emit()">
       <form class="bo-card max-h-[90vh] w-full max-w-lg space-y-4 overflow-y-auto p-5" role="dialog" aria-modal="true"
@@ -30,7 +31,7 @@ export interface CobrancaAPagar {
         </ul>
         <p class="flex justify-between border-t border-[#262626] pt-2 font-bold"><span>Total</span><span>{{ dinheiro(total()) }}</span></p>
         <div class="grid gap-3 sm:grid-cols-2">
-          <label><span class="bo-label">Pago em *</span><input class="bo-field" type="date" name="pgData" [(ngModel)]="form.pagoEm" [max]="hoje"></label>
+          <label><span class="bo-label">Pago em *</span><app-campo-data name="pgData" [(ngModel)]="form.pagoEm" [max]="hoje" [limpavel]="false" /></label>
           <label><span class="bo-label">Forma *</span>
             <select class="bo-field" name="pgForma" [(ngModel)]="form.formaPagamento">
               @for (f of formas; track f) { <option [value]="f">{{ rotuloFormaPagamento(f) }}</option> }
