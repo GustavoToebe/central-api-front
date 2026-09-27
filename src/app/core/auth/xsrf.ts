@@ -3,7 +3,8 @@ import { HttpRequest } from '@angular/common/http';
 const METODOS_SEGUROS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /**
- * Header CSRF lido do cookie `XSRF-TOKEN` que a API grava (`csrf.spa()`).
+ * Header CSRF lido do cookie `CENTRAL-XSRF-TOKEN` que a API grava. Nome próprio: o Servire grava
+ * `XSRF-TOKEN` no mesmo domínio pai e um derrubava a sessão do outro (27/09/2026).
  *
  * O `withXsrfConfiguration` do Angular não serve aqui: ele ignora URL
  * absoluta, e a API fica em outra origem. A Central só exige o token nas
@@ -12,10 +13,12 @@ const METODOS_SEGUROS = new Set(['GET', 'HEAD', 'OPTIONS']);
  * (`CENTRAL_CSRF_COOKIE_DOMAIN` na API) para este `document.cookie` enxergá-lo.
  * Mesma solução do `servire-api-front` (`core/auth/xsrf.ts`).
  */
+const COOKIE = 'CENTRAL-XSRF-TOKEN=';
+
 export function cabecalhoXsrf(): Record<string, string> {
-  const cookie = document.cookie.split('; ').find(parte => parte.startsWith('XSRF-TOKEN='));
+  const cookie = document.cookie.split('; ').find(parte => parte.startsWith(COOKIE));
   if (!cookie) return {};
-  return { 'X-XSRF-TOKEN': decodeURIComponent(cookie.slice('XSRF-TOKEN='.length)) };
+  return { 'X-XSRF-TOKEN': decodeURIComponent(cookie.slice(COOKIE.length)) };
 }
 
 /** Acrescenta o header CSRF em métodos que alteram estado. */

@@ -52,11 +52,11 @@ README do `central-api-back`, seção "Ponta a ponta local (Windows, tudo no PC)
 - Access token (15 min) no `sessionStorage`; refresh só no cookie httpOnly
   `central_refresh_token` (path `/auth`), que o JS não lê.
 - `centralAuthInterceptor`: `withCredentials`, Bearer fora de `/auth/`,
-  `X-XSRF-TOKEN` nas escritas (lido do cookie `XSRF-TOKEN`, `core/auth/xsrf.ts`);
+  `X-XSRF-TOKEN` nas escritas (lido do cookie `CENTRAL-XSRF-TOKEN`, `core/auth/xsrf.ts`);
   um 401 faz **um** refresh compartilhado e repete a requisição; refresh que
   falha limpa a sessão e volta ao login.
 - `authGuard`: sem token, tenta renovar pelo cookie antes de mandar ao login.
 - Produção com painel e API em subdomínios: a API precisa de
   `CENTRAL_CSRF_COOKIE_DOMAIN` com o domínio pai, senão o painel não lê o
-  `XSRF-TOKEN` e refresh/logout voltam 403. A URL da API de produção fica em
+  `CENTRAL-XSRF-TOKEN` e refresh/logout voltam 403. A URL da API de produção fica em
   `src/environments/environment.prod.ts`.

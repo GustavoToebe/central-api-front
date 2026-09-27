@@ -27,7 +27,7 @@ export class AuthService {
 
   /**
    * Aba nova sem token, mas com o cookie de refresh ainda válido: renova em
-   * silêncio. O interceptor manda o X-XSRF-TOKEN. Sem o cookie XSRF-TOKEN a
+   * silêncio. O interceptor manda o X-XSRF-TOKEN. Sem o cookie CENTRAL-XSRF-TOKEN a
    * Central recusa o refresh (403), então nem tenta: vai direto ao login.
    */
   renovarSilencioso(): Observable<boolean> {

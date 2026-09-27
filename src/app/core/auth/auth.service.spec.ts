@@ -54,14 +54,14 @@ describe('AuthService', () => {
     expect(auth.operador()).toBeNull();
   });
 
-  it('renovarSilencioso sem cookie XSRF-TOKEN nem chama a API', async () => {
+  it('renovarSilencioso sem cookie CENTRAL-XSRF-TOKEN nem chama a API', async () => {
     cookieComo('outro=1');
     expect(await firstValueFrom(auth.renovarSilencioso())).toBeFalse();
     httpMock.expectNone(`${api}/auth/refresh`);
   });
 
   it('renovarSilencioso guarda a sessão e devolve true', async () => {
-    cookieComo('XSRF-TOKEN=tok');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok');
     const p = firstValueFrom(auth.renovarSilencioso());
     const req = httpMock.expectOne(`${api}/auth/refresh`);
     expect(req.request.withCredentials).toBeTrue();
@@ -71,7 +71,7 @@ describe('AuthService', () => {
   });
 
   it('renovarSilencioso devolve false sem cookie de refresh válido', async () => {
-    cookieComo('XSRF-TOKEN=tok');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok');
     const p = firstValueFrom(auth.renovarSilencioso());
     httpMock.expectOne(`${api}/auth/refresh`).flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(await p).toBeFalse();

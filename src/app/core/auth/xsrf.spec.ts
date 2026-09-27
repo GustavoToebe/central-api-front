@@ -14,8 +14,8 @@ describe('xsrf', () => {
     Object.defineProperty(document, 'cookie', { configurable: true, get: () => valor });
   }
 
-  it('lê XSRF-TOKEN do cookie e devolve o header', () => {
-    cookieComo('outro=1; XSRF-TOKEN=abc%2F123');
+  it('lê CENTRAL-XSRF-TOKEN do cookie e devolve o header', () => {
+    cookieComo('outro=1; XSRF-TOKEN=do-servire; CENTRAL-XSRF-TOKEN=abc%2F123');
     expect(cabecalhoXsrf()).toEqual({ 'X-XSRF-TOKEN': 'abc/123' });
   });
 
@@ -25,13 +25,13 @@ describe('xsrf', () => {
   });
 
   it('não altera GET', () => {
-    cookieComo('XSRF-TOKEN=tok');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok');
     const req = new HttpRequest('GET', 'http://localhost:8081/clientes');
     expect(comXsrf(req)).toBe(req);
   });
 
   it('acrescenta o header em POST quando o cookie existe', () => {
-    cookieComo('XSRF-TOKEN=tok');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok');
     const req = new HttpRequest('POST', 'http://localhost:8081/auth/logout', {});
     const comHeader = comXsrf(req);
     expect(comHeader.headers.get('X-XSRF-TOKEN')).toBe('tok');

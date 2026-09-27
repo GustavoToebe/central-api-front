@@ -67,7 +67,7 @@ describe('centralAuthInterceptor', () => {
   });
 
   it('manda X-XSRF-TOKEN no logout e no refresh, lido do cookie', () => {
-    cookieComo('XSRF-TOKEN=tok%2F1');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok%2F1');
     http.post(`${api}/auth/logout`, {}).subscribe();
     const logout = httpMock.expectOne(`${api}/auth/logout`);
     expect(logout.request.headers.get('X-XSRF-TOKEN')).toBe('tok/1');
@@ -80,7 +80,7 @@ describe('centralAuthInterceptor', () => {
   });
 
   it('não manda X-XSRF-TOKEN em GET', () => {
-    cookieComo('XSRF-TOKEN=tok');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok');
     http.get(`${api}/clientes`).subscribe();
     const req = httpMock.expectOne(`${api}/clientes`);
     expect(req.request.headers.has('X-XSRF-TOKEN')).toBeFalse();
@@ -88,7 +88,7 @@ describe('centralAuthInterceptor', () => {
   });
 
   it('renova uma vez só para vários 401 simultâneos, com X-XSRF-TOKEN, e repete com o token novo', async () => {
-    cookieComo('XSRF-TOKEN=tok');
+    cookieComo('CENTRAL-XSRF-TOKEN=tok');
     sessionStorage.setItem('central_access', 'velho');
     const a = firstValueFrom(http.get(`${api}/clientes`));
     const b = firstValueFrom(http.get(`${api}/contratacoes`));
