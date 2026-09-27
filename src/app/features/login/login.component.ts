@@ -1,3 +1,4 @@
+import { OlhoSenhaComponent } from '../comum/olho-senha.component';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,7 +7,7 @@ import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, OlhoSenhaComponent],
   template: `
     <div class="bo relative grid min-h-screen place-items-center overflow-hidden p-4">
       <div class="pointer-events-none absolute left-1/2 top-0 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-[#e10600]/20 blur-3xl"></div>
@@ -23,7 +24,7 @@ import { AuthService } from '../../core/auth/auth.service';
           </div>
           <div>
             <label class="bo-label" for="senha">Senha</label>
-            <input id="senha" class="bo-field" type="password" formControlName="senha" autocomplete="current-password">
+            <div class="relative"><input #campoSenha id="senha" class="bo-field pr-11" type="password" formControlName="senha" autocomplete="current-password"><app-olho-senha [campo]="campoSenha" /></div>
           </div>
           @if (erro) {
             <div class="bo-erro">{{ erro }}</div>

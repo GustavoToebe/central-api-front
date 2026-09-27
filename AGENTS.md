@@ -31,6 +31,7 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
   `app-campo-competencia` (ngModel `AAAA-MM`, tela `MM/AAAA`, sem nome de mês) e, em filtro, `app-periodo`
   (`[(de)]`/`[(ate)]` + `(aplicado)`, com períodos prontos). Painéis abrem no `body` (`painel-flutuante.ts`).
   Filtro por competência já vem com o mês atual.
+- Campo de senha sempre com o olho: `<div class="relative"><input #s type="password" class="bo-field pr-11"><app-olho-senha [campo]="s" /></div>`.
 - `features/cobrancas/` — tela Cobranças e os modais `app-pagamento-modal` e `app-cobranca-detalhe-modal`,
   usados também na aba Financeiro da contratação.
 - `features/comum/formatos.ts` (+ `mascara.directive.ts`, `cep.service.ts`) — máscara e validação de
