@@ -25,6 +25,7 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - `features/comum/rotulos.ts` — funções puras: rótulos, cores, formatação e as regras
   de botão (`podeTentarNovamente`, `podeEditarProvisionamento`...).
 - `features/*/*.form.ts` — montagem das requisições (funções puras, com spec).
+- `features/perfil/` — "Meu perfil" (link no nome, no topo): troca da própria senha.
 - `features/comum/numero.component.ts` — `<app-numero [numero]="x.sequencial" />`: número curto "(2108)" que copia ao
   clicar; use ao lado do nome de todo cadastro que tem `sequencial`.
 - Datas: nunca `type="date"`/`type="month"` nativo. `app-campo-data` (ngModel ISO, tela `DD/MM/AAAA`),

@@ -24,13 +24,13 @@ interface ItemMenu {
           <span>CENTRAL</span>
         </a>
         <span class="hidden text-xs font-medium text-neutral-500 sm:block">Gestão comercial dos aplicativos</span>
-        <div class="ml-auto flex items-center gap-3">
+        <a routerLink="/meu-perfil" class="ml-auto flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-white/5" title="Meu perfil">
           <div class="hidden text-right leading-tight sm:block">
             <div class="text-sm font-semibold">{{ operadorNome }}</div>
             <div class="text-[11px] text-neutral-500">{{ operadorEmail }}</div>
           </div>
           <div class="bo-avatar h-9 w-9 text-xs ring-2 ring-[#e10600]">{{ marca }}</div>
-        </div>
+        </a>
       </header>
 
       <aside class="bo-rail fixed bottom-0 left-0 top-14 z-30 flex flex-col gap-1 p-3 transition-transform lg:translate-x-0"
@@ -56,7 +56,12 @@ interface ItemMenu {
             </a>
           }
         }
-        <button class="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-400 hover:bg-[#161616] hover:text-white" (click)="sair()">
+        <a routerLink="/meu-perfil" routerLinkActive="active" (click)="menuAberto = false"
+          class="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold">
+          <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+          <span>Meu perfil</span>
+        </a>
+        <button class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-400 hover:bg-[#161616] hover:text-white" (click)="sair()">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/><path d="M13 16l4-4-4-4"/><path d="M17 12H9"/></svg>
           Sair
         </button>

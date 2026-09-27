@@ -15,6 +15,10 @@ export class CentralApiService {
 
   constructor(private http: HttpClient) {}
 
+  // ---- Operador
+  /** Troca a própria senha; a API derruba as outras sessões e devolve o cookie de refresh novo. */
+  trocarSenha(corpo: { senhaAtual: string; novaSenha: string }) { return this.http.put<void>(`${this.api}/operadores/eu/senha`, corpo); }
+
   // ---- Clientes
   clientes() { return this.http.get<Cliente[]>(`${this.api}/clientes`); }
   cliente(id: string) { return this.http.get<Cliente>(`${this.api}/clientes/${id}`); }
