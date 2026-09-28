@@ -9,25 +9,24 @@ import { CampoDataComponent } from '../comum/campo-data.component';
 import { PERIODICIDADES, dinheiro, hojeIso, rotuloPeriodicidade, sugerirSlug } from '../comum/rotulos';
 import { precoVigente } from '../catalogo/catalogo.form';
 import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
+import { SelectBuscaComponent, OpcaoSelectBusca } from '../comum/select-busca.component';
+import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
+import { RodapeFormComponent } from '../comum/rodape-form.component';
 
 @Component({
   selector: 'app-contratacao-form',
-  imports: [FormsModule, RouterLink, CampoDataComponent],
+  imports: [FormsModule, RouterLink, CampoDataComponent, SelectBuscaComponent, CabecalhoPaginaComponent, RodapeFormComponent],
   template: `
     <div class="mx-auto max-w-4xl space-y-6">
-      <div>
-        <a [routerLink]="clienteId() ? ['/clientes', clienteId()] : ['/contratacoes']" class="bo-link">← Voltar</a>
-        <h1 class="bo-title mt-2">Nova contratação</h1>
-        <p class="bo-sub">Ao salvar, a Central manda o aplicativo criar a instância e convidar o administrador (em até um minuto).</p>
-      </div>
+      <app-cabecalho-pagina titulo="Nova contratação"
+        subtitulo="Ao salvar, a Central manda o aplicativo criar a instância e convidar o administrador (em até um minuto).">
+        <a [routerLink]="voltar()" class="bo-link" acoes>← Voltar</a>
+      </app-cabecalho-pagina>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       <form class="space-y-6" (ngSubmit)="salvar()">
         <section class="bo-card grid gap-4 p-5 md:grid-cols-2">
           <label class="md:col-span-2"><span class="bo-label">Cliente *</span>
-            <select class="bo-field" name="clienteId" [(ngModel)]="form.clienteId" required>
-              <option value="" disabled>Escolha o cliente</option>
-              @for (c of clientes; track c.id) { <option [value]="c.id">{{ c.nome }} · {{ c.documento }}</option> }
-            </select>
+            <app-select-busca name="clienteId" [(ngModel)]="form.clienteId" [opcoes]="opcoesClientes" placeholder="Escolha o cliente" />
           </label>
           <label><span class="bo-label">Aplicativo *</span>
             <select class="bo-field" name="produtoId" [(ngModel)]="form.produtoId" (ngModelChange)="trocarProduto()" required>
@@ -107,9 +106,7 @@ import { ContratacaoForm, montarContratacaoRequest } from './contratacao.form';
           </label>
         </section>
 
-        <div class="flex justify-end gap-3">
-          <button class="bo-btn" type="submit" [disabled]="salvando || !completo()">{{ salvando ? 'Salvando...' : 'Contratar' }}</button>
-        </div>
+        <app-rodape-form [voltarUrl]="voltar()" rotuloSalvar="Contratar" [carregando]="salvando" [desabilitado]="!completo()" />
       </form>
     </div>
   `
@@ -123,6 +120,7 @@ export class ContratacaoFormComponent implements OnInit {
   readonly clienteId = input<string>();
 
   clientes: Cliente[] = [];
+  opcoesClientes: OpcaoSelectBusca[] = [];
   produtos: Produto[] = [];
   planos: Plano[] = [];
   adicionais: Adicional[] = [];
@@ -141,7 +139,7 @@ export class ContratacaoFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.form.clienteId = this.clienteId() ?? '';
-    this.api.clientes().subscribe({ next: l => this.clientes = l, error: e => this.erro = mensagemApi(e, 'Não foi possível carregar os clientes.') });
+    this.api.clientes().subscribe({ next: l => { this.clientes = l; this.opcoesClientes = opcoesDeClientes(l); }, error: e => this.erro = mensagemApi(e, 'Não foi possível carregar os clientes.') });
     this.api.produtos().subscribe({
       next: l => {
         this.produtos = l.filter(p => p.ativo);
@@ -172,6 +170,11 @@ export class ContratacaoFormComponent implements OnInit {
     return dinheiro(precoVigente(plano.precos, this.form.periodicidade));
   }
 
+  voltar(): string[] {
+    const id = this.clienteId();
+    return id ? ['/clientes', id] : ['/contratacoes'];
+  }
+
   completo(): boolean {
     const f = this.form;
     return !!(f.clienteId && f.produtoId && f.planoId && f.inicio && f.nomeInstancia.trim()
@@ -186,4 +189,9 @@ export class ContratacaoFormComponent implements OnInit {
       error: e => { this.salvando = false; this.erro = mensagemApi(e, 'Não foi possível criar a contratação.'); }
     });
   }
+}
+
+/** Cliente no select com busca: nome, e documento + número embaixo. */
+export function opcoesDeClientes(clientes: Cliente[]): OpcaoSelectBusca[] {
+  return clientes.map(c => ({ valor: c.id, rotulo: c.nome, detalhe: [c.documento, c.sequencial ? `nº ${c.sequencial}` : ''].filter(Boolean).join(' · ') }));
 }

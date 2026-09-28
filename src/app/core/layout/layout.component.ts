@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { iniciais } from '../../features/comum/rotulos';
@@ -7,6 +7,20 @@ interface ItemMenu {
   rotulo: string;
   url: string;
   icone: 'clientes' | 'contratos' | 'cobrancas' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional';
+}
+
+const CHAVE_RECOLHIDO = 'central.menuRecolhido';
+
+function ehDesktop(): boolean {
+  return typeof window === 'undefined' || !window.matchMedia || window.matchMedia('(min-width: 1024px)').matches;
+}
+
+function lerRecolhido(): boolean {
+  try { return localStorage.getItem(CHAVE_RECOLHIDO) === 'true'; } catch { return false; }
+}
+
+function gravarRecolhido(v: boolean): void {
+  try { if (v) localStorage.setItem(CHAVE_RECOLHIDO, 'true'); else localStorage.removeItem(CHAVE_RECOLHIDO); } catch { /* noop */ }
 }
 
 /** Moldura do painel: barra preta com filete vermelho e menu lateral (backoffice antigo do Servire). */
@@ -33,13 +47,21 @@ interface ItemMenu {
         </a>
       </header>
 
-      <aside class="bo-rail fixed bottom-0 left-0 top-14 z-30 flex flex-col gap-1 p-3 transition-transform lg:translate-x-0"
+      <aside
+        [class.recolhido]="compacto()"
+        class="bo-rail fixed bottom-0 left-0 top-14 z-30 flex flex-col gap-1 overflow-hidden lg:translate-x-0"
         [class.-translate-x-full]="!menuAberto" [class.translate-x-0]="menuAberto">
+
         @for (grupo of grupos; track grupo.titulo) {
-          <div class="px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-widest text-neutral-600">{{ grupo.titulo }}</div>
+          @if (!compacto()) {
+            <div class="px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-widest text-neutral-600">{{ grupo.titulo }}</div>
+          } @else {
+            <div class="pt-3"></div>
+          }
           @for (item of grupo.itens; track item.url) {
             <a [routerLink]="item.url" routerLinkActive="active" (click)="menuAberto = false"
-              class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold">
+              class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold"
+              [title]="compacto() ? item.rotulo : ''">
               <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 @switch (item.icone) {
                   @case ('clientes') { <path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"/><circle cx="9.5" cy="8" r="3"/><path d="M20 19v-1a3.5 3.5 0 0 0-2.5-3.35"/><path d="M16.5 5.1a3 3 0 0 1 0 5.8"/> }
@@ -52,25 +74,37 @@ interface ItemMenu {
                   @case ('adicional') { <circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/> }
                 }
               </svg>
-              <span>{{ item.rotulo }}</span>
+              @if (!compacto()) { <span>{{ item.rotulo }}</span> }
             </a>
           }
         }
+
         <a routerLink="/meu-perfil" routerLinkActive="active" (click)="menuAberto = false"
-          class="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold">
+          class="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold"
+          [title]="compacto() ? 'Meu perfil' : ''">
           <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
-          <span>Meu perfil</span>
+          @if (!compacto()) { <span>Meu perfil</span> }
         </a>
-        <button class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-400 hover:bg-[#161616] hover:text-white" (click)="sair()">
+        <button class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-400 hover:bg-[#161616] hover:text-white"
+          [title]="compacto() ? 'Sair' : ''" (click)="sair()">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/><path d="M13 16l4-4-4-4"/><path d="M17 12H9"/></svg>
-          Sair
+          @if (!compacto()) { <span>Sair</span> }
+        </button>
+
+        <!-- Botão recolher/expandir (só desktop) -->
+        <button type="button"
+          class="hidden lg:flex items-center justify-center rounded-xl px-3 py-2.5 text-xs text-neutral-500 hover:text-neutral-300"
+          [attr.aria-label]="recolhido() ? 'Expandir menu' : 'Recolher menu'"
+          data-menu="recolher"
+          (click)="alternarRecolhido()">
+          {{ recolhido() ? '»' : '«' }}
         </button>
       </aside>
 
       @if (menuAberto) {
         <div class="fixed inset-0 z-20 bg-black/60 lg:hidden" (click)="menuAberto = false"></div>
       }
-      <main class="bo-main"><router-outlet /></main>
+      <main class="bo-main" [class.recolhido]="compacto()"><router-outlet /></main>
     </div>
   `
 })
@@ -79,6 +113,15 @@ export class LayoutComponent {
   private router = inject(Router);
 
   menuAberto = false;
+
+  @HostListener('window:resize')
+  aoRedimensionar(): void {
+    this.desktop.set(ehDesktop());
+  }
+  readonly recolhido = signal(lerRecolhido());
+  /** Recolher só vale no desktop; no celular o menu segue como gaveta com os rótulos. */
+  readonly desktop = signal(ehDesktop());
+  readonly compacto = computed(() => this.recolhido() && this.desktop());
   operadorNome = this.auth.operador()?.nome ?? 'Operador';
   operadorEmail = this.auth.operador()?.email ?? '';
   marca = iniciais(this.operadorNome);
@@ -103,6 +146,16 @@ export class LayoutComponent {
       ]
     }
   ];
+
+  alternarRecolhido(): void {
+    const novo = !this.recolhido();
+    this.recolhido.set(novo);
+    gravarRecolhido(novo);
+  }
+
+  larguraMenu(): number {
+    return this.compacto() ? 64 : 220;
+  }
 
   async sair(): Promise<void> {
     await this.auth.logout();

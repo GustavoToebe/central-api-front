@@ -1,3 +1,4 @@
+import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,16 +15,12 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
  */
 @Component({
   selector: 'app-planos',
-  imports: [FormsModule, NumeroComponent],
+  imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent],
   template: `
     <div class="space-y-6">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 class="bo-title">Planos e preços</h1>
-          <p class="bo-sub">Preço por periodicidade, limites e funcionalidades de cada plano.</p>
-        </div>
-        <button type="button" class="bo-btn" [disabled]="!produtoId || !recursosCarregados" (click)="novo()">Novo plano</button>
-      </div>
+      <app-cabecalho-pagina titulo="Planos e preços" subtitulo="Preço por periodicidade, limites e funcionalidades de cada plano.">
+        <button type="button" class="bo-btn" acoes [disabled]="!produtoId || !recursosCarregados" (click)="novo()">Novo plano</button>
+      </app-cabecalho-pagina>
       <select class="bo-field max-w-xs" name="produto" [(ngModel)]="produtoId" (ngModelChange)="trocarProduto()">
         <option value="" disabled>Escolha o produto</option>
         @for (p of produtos; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
@@ -73,9 +70,9 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
             } @else if (!recursos.length) { <p class="bo-sub">Este produto ainda não tem recursos; cadastre em Recursos.</p> }
           </fieldset>
 
-          <div class="flex gap-2">
-            <button class="bo-btn" type="submit" [disabled]="salvando || !form.codigo.trim() || !form.nome.trim() || limitesSemValor(form.recursos)">Salvar plano</button>
+          <div class="flex justify-between gap-2 border-t border-[#262626] pt-4">
             <button class="bo-btn-ghost" type="button" (click)="editando = false">Cancelar</button>
+            <button class="bo-btn" type="submit" [disabled]="salvando || !form.codigo.trim() || !form.nome.trim() || limitesSemValor(form.recursos)">Salvar plano</button>
           </div>
         </form>
       }

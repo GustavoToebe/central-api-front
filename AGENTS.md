@@ -35,10 +35,24 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - Campo de senha sempre com o olho: `<div class="relative"><input #s type="password" class="bo-field pr-11"><app-olho-senha [campo]="s" /></div>`.
 - `features/cobrancas/` — tela Cobranças e os modais `app-pagamento-modal` e `app-cobranca-detalhe-modal`,
   usados também na aba Financeiro da contratação.
+- `features/comum/` do padrão de telas: `app-cabecalho-pagina`, `app-barra-filtros`, `Selecao` (`selecao.ts`),
+  `app-estado-lista`, `app-select-busca`, `app-rodape-form` e `app-modal`. Menu lateral recolhível no desktop
+  (`localStorage` `central.menuRecolhido`). `CentralApiService.produtos()` fica em cache; salvar produto invalida.
 - `features/comum/formatos.ts` (+ `mascara.directive.ts`, `cep.service.ts`) — máscara e validação de
   CPF/CNPJ (inclusive alfanumérico), CEP, UF, telefone e e-mail; CEP pelo ViaCEP via `fetch` (nunca
   pelo HttpClient: o interceptor mandaria token e cookies para fora). Mesmas regras do `web/Formatos`
   da API; mudou uma, muda a outra.
+
+## Padrão de telas (estrutura do SIN+, cores da Central)
+- Lista = `app-cabecalho-pagina` (ação principal em `[acoes]`) + `app-barra-filtros` (busca, Opções com as ações sobre os
+  marcados, Buscar e a seta ▾ que abre o painel de filtros) + `.bo-table-wrap > .bo-table-rolagem > table.bo-table` +
+  `app-estado-lista`. Linha com `clicavel`, `tabindex="0"`, clique/Enter abre o registro; checkbox, link e botão da linha
+  usam `$event.stopPropagation()`.
+- Formulário = seções com título e linha fina + `app-rodape-form` (Cancelar à esquerda, Salvar à direita).
+- Opção longa (cliente, por exemplo) = `app-select-busca`; lista curta continua `<select>`.
+- Modal = `app-modal` (Esc, foco preso, rodapé `[rodape]`).
+- Desempenho: `OnPush` + `markForCheck()` depois de cada carga, `track` por id, nada que crie array no template,
+  debounce de 300 ms em busca que vai à API.
 
 ## Regras
 - O painel nunca exibe dado de negócio dos apps (nomes de pessoas etc.), só contagens.

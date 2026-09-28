@@ -84,6 +84,16 @@ describe('CentralApiService', () => {
 
   afterEach(() => httpMock.verify());
 
+  it('produtos fica em cache: duas chamadas fazem uma requisição; salvar invalida', () => {
+    api.produtos().subscribe();
+    api.produtos().subscribe();
+    httpMock.expectOne(`${base}/produtos`).flush([]);
+    api.criarProduto(produto).subscribe();
+    httpMock.expectOne(r => r.method === 'POST').flush({});
+    api.produtos().subscribe();
+    httpMock.expectOne(`${base}/produtos`).flush([]);
+  });
+
   for (const [nome, chamar, metodo, caminho, corpo] of casos) {
     it(`${nome}: ${metodo} ${caminho}`, () => {
       chamar(api).subscribe();

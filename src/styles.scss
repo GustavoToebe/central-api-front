@@ -77,24 +77,39 @@ button, input, select, textarea { font: inherit; }
 .bo-btn-line:hover { background: rgba(225, 6, 0, 0.12); }
 .bo-link { color: #ff4d47; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
 .bo-link:hover { color: #ff8a86; }
+/* Lista padrão PLANO-002 */
 .bo-table { width: 100%; border-collapse: collapse; }
 .bo-table th {
-  background: #2a2a2a;
+  background: #1c1c1c;
+  height: 45px;
   color: #e5e5e5;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-align: left;
   text-transform: uppercase;
-  padding: 12px 16px;
+  padding: 0 16px;
 }
 .bo-table td {
   background: #141414;
   border-bottom: 1px solid #222;
   padding: 14px 16px;
   vertical-align: middle;
+  min-height: 55px;
 }
+.bo-table tbody tr:nth-child(even) td { background: #121212; }
 .bo-table tbody tr:hover td { background: #1b1b1b; }
+.bo-table tr.marcada td { background: rgba(225, 6, 0, 0.10); }
+.bo-table tr.clicavel { cursor: pointer; }
+.bo-table-rolagem {
+  overflow: auto;
+  max-height: calc(100vh - 260px);
+}
+.bo-table-rolagem .bo-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 .bo-avatar {
   display: inline-flex;
   align-items: center;
@@ -129,8 +144,12 @@ button, input, select, textarea { font: inherit; }
   transition: transform .15s ease;
 }
 .bo-switch.on span { transform: translateX(20px); }
+/* Menu recolhido (só no desktop): 220 → 64 px. */
+.bo-rail, .bo-main { transition: width .2s, margin-left .2s, transform .2s; }
+.bo-rail.recolhido { width: 64px; }
+.bo-main.recolhido { margin-left: 64px; }
 @media (max-width: 1023px) {
-  .bo-main { margin-left: 0; padding: 76px 16px 48px; }
+  .bo-main, .bo-main.recolhido { margin-left: 0; padding: 76px 16px 48px; }
 }
 
 /* Complementos do painel da Central. */

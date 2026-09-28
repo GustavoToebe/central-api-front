@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, catchError, shareReplay, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   Adicional, AlterarPlanoRequest, AtualizarProvisionamentoRequest, Cliente, CobrancaDetalhe, CobrancaLinha, Contratacao,
@@ -12,6 +13,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class CentralApiService {
   private readonly api = environment.apiUrl;
+  private produtosCache?: Observable<Produto[]>;
 
   constructor(private http: HttpClient) {}
 
@@ -26,9 +28,20 @@ export class CentralApiService {
   atualizarCliente(id: string, corpo: SalvarClienteRequest) { return this.http.put<Cliente>(`${this.api}/clientes/${id}`, corpo); }
 
   // ---- Catálogo
-  produtos() { return this.http.get<Produto[]>(`${this.api}/produtos`); }
-  criarProduto(corpo: SalvarProdutoRequest) { return this.http.post<Produto>(`${this.api}/produtos`, corpo); }
-  atualizarProduto(id: string, corpo: SalvarProdutoRequest) { return this.http.put<Produto>(`${this.api}/produtos/${id}`, corpo); }
+  /** Em cache durante a sessão (usado em várias telas); salvar no Catálogo invalida. Erro não fica em cache. */
+  produtos(): Observable<Produto[]> {
+    this.produtosCache ??= this.http.get<Produto[]>(`${this.api}/produtos`).pipe(
+      catchError(erro => { this.produtosCache = undefined; return throwError(() => erro); }),
+      shareReplay(1)
+    );
+    return this.produtosCache;
+  }
+  criarProduto(corpo: SalvarProdutoRequest) {
+    return this.http.post<Produto>(`${this.api}/produtos`, corpo).pipe(tap(() => this.produtosCache = undefined));
+  }
+  atualizarProduto(id: string, corpo: SalvarProdutoRequest) {
+    return this.http.put<Produto>(`${this.api}/produtos/${id}`, corpo).pipe(tap(() => this.produtosCache = undefined));
+  }
   /** Limites e funcionalidades que o aplicativo do produto entende (a Central pergunta ao app). */
   recursosDoApp(produtoId: string) { return this.http.get<RecursoDoApp[]>(`${this.api}/produtos/${produtoId}/recursos-do-app`); }
 

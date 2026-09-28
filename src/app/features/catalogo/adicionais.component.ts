@@ -1,3 +1,5 @@
+import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
+import { EstadoListaComponent } from '../comum/estado-lista.component';
 import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -9,16 +11,12 @@ import { montarAdicionalRequest } from './catalogo.form';
 
 @Component({
   selector: 'app-adicionais',
-  imports: [FormsModule, NumeroComponent],
+  imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent, EstadoListaComponent],
   template: `
     <div class="space-y-6">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 class="bo-title">Adicionais</h1>
-          <p class="bo-sub">Pacotes que somam a um limite sem trocar de plano (ex.: +50 voluntários).</p>
-        </div>
-        <button type="button" class="bo-btn" [disabled]="!produtoId || !recursosCarregados" (click)="novo()">Novo adicional</button>
-      </div>
+      <app-cabecalho-pagina titulo="Adicionais" subtitulo="Pacotes que somam a um limite sem trocar de plano (ex.: +50 voluntários).">
+        <button type="button" class="bo-btn" acoes [disabled]="!produtoId || !recursosCarregados" (click)="novo()">Novo adicional</button>
+      </app-cabecalho-pagina>
       <select class="bo-field max-w-xs" name="produto" [(ngModel)]="produtoId" (ngModelChange)="trocarProduto()">
         <option value="" disabled>Escolha o produto</option>
         @for (p of produtos; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
@@ -35,25 +33,28 @@ import { montarAdicionalRequest } from './catalogo.form';
           <label><span class="bo-label">Quantidade *</span><input class="bo-field" name="qtd" [(ngModel)]="form.quantidade"></label>
           <label><span class="bo-label">Preço *</span><input class="bo-field" name="preco" [(ngModel)]="form.preco" placeholder="15,00"></label>
           <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="ativo" [(ngModel)]="form.ativo"> Ativo</label>
-          <div class="flex gap-2 md:col-span-5 md:justify-end">
-            <button class="bo-btn" type="submit" [disabled]="salvando || !form.recursoId || !form.codigo.trim() || !form.nome.trim()">Salvar</button>
+          <div class="flex justify-between gap-2 md:col-span-5">
             <button class="bo-btn-ghost" type="button" (click)="editando = false">Cancelar</button>
+            <button class="bo-btn" type="submit" [disabled]="salvando || !form.recursoId || !form.codigo.trim() || !form.nome.trim()">Salvar</button>
           </div>
         </form>
       }
       <div class="bo-table-wrap">
+        <div class="bo-table-rolagem">
         <table class="bo-table">
           <thead><tr><th>Código</th><th>Nome</th><th>Soma</th><th>Preço</th><th>Situação</th><th></th></tr></thead>
           <tbody>
             @for (a of adicionais; track a.id) {
-              <tr>
+              <tr class="clicavel" tabindex="0" (click)="editar(a)" (keydown.enter)="editar(a)">
                 <td class="font-semibold">{{ a.codigo }}</td><td>{{ a.nome }}<app-numero [numero]="a.sequencial" /></td><td>+{{ a.quantidade }} {{ a.recursoCodigo }}</td>
                 <td>{{ dinheiro(a.preco) }}</td><td><span [class]="a.ativo ? 'bo-ok' : 'bo-mute'">{{ a.ativo ? 'Ativo' : 'Inativo' }}</span></td>
-                <td class="text-right"><button type="button" class="bo-link" (click)="editar(a)">Editar</button></td>
+                <td class="text-right"><button type="button" class="bo-link" (click)="$event.stopPropagation(); editar(a)">Editar</button></td>
               </tr>
-            } @empty { <tr><td colspan="6" class="text-center text-neutral-500">Nenhum adicional.</td></tr> }
+            }
           </tbody>
         </table>
+        </div>
+        <app-estado-lista [vazio]="!adicionais.length" mensagemVazio="Nenhum adicional." />
       </div>
     </div>
   `

@@ -1,3 +1,5 @@
+import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
+import { EstadoListaComponent } from '../comum/estado-lista.component';
 import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -13,16 +15,12 @@ import { montarRecursoRequest } from './catalogo.form';
  */
 @Component({
   selector: 'app-recursos',
-  imports: [FormsModule, NumeroComponent],
+  imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent, EstadoListaComponent],
   template: `
     <div class="space-y-6">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 class="bo-title">Recursos</h1>
-          <p class="bo-sub">O que um plano limita (voluntários, usuários, armazenamento) ou libera (funcionalidades).</p>
-        </div>
-        <button type="button" class="bo-btn" [disabled]="!produtos.length" (click)="novo()">Novo recurso</button>
-      </div>
+      <app-cabecalho-pagina titulo="Recursos" subtitulo="O que um plano limita (voluntários, usuários, armazenamento) ou libera (funcionalidades).">
+        <button type="button" class="bo-btn" acoes [disabled]="!produtos.length" (click)="novo()">Novo recurso</button>
+      </app-cabecalho-pagina>
       <select class="bo-field max-w-xs" name="filtro" [(ngModel)]="produtoId" (ngModelChange)="carregar()">
         <option value="">Todos os produtos</option>
         @for (p of produtos; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
@@ -63,25 +61,28 @@ import { montarRecursoRequest } from './catalogo.form';
           @if (escolhida && !escolhida.aplicado) {
             <p class="bo-sub md:col-span-3 xl:col-span-6">O aplicativo aceita este código, mas ainda não faz valer o limite ou a funcionalidade.</p>
           }
-          <div class="flex gap-2 md:col-span-3 md:justify-end xl:col-span-6">
-            <button class="bo-btn" type="submit" [disabled]="salvando || !form.produtoId || !form.codigo.trim() || !form.nome.trim()">Salvar</button>
+          <div class="flex justify-between gap-2 md:col-span-3  xl:col-span-6">
             <button class="bo-btn-ghost" type="button" (click)="editando = false">Cancelar</button>
+            <button class="bo-btn" type="submit" [disabled]="salvando || !form.produtoId || !form.codigo.trim() || !form.nome.trim()">Salvar</button>
           </div>
         </form>
       }
       <div class="bo-table-wrap">
+        <div class="bo-table-rolagem">
         <table class="bo-table">
           <thead><tr><th>Produto</th><th>Código</th><th>Nome</th><th>Tipo</th><th>Unidade</th><th>Valor padrão</th><th></th></tr></thead>
           <tbody>
             @for (r of recursos; track r.id) {
-              <tr>
+              <tr class="clicavel" tabindex="0" (click)="editar(r)" (keydown.enter)="editar(r)">
                 <td>{{ nomeProduto(r.produtoId) }}</td><td class="font-semibold">{{ r.codigo }}</td><td>{{ r.nome }}<app-numero [numero]="r.sequencial" /></td>
                 <td>{{ r.tipo === 'LIMITE' ? 'Limite' : 'Funcionalidade' }}</td><td>{{ r.unidade || '—' }}</td><td>{{ r.valorPadrao ?? '—' }}</td>
-                <td class="text-right"><button type="button" class="bo-link" (click)="editar(r)">Editar</button></td>
+                <td class="text-right"><button type="button" class="bo-link" (click)="$event.stopPropagation(); editar(r)">Editar</button></td>
               </tr>
-            } @empty { <tr><td colspan="7" class="text-center text-neutral-500">Nenhum recurso.</td></tr> }
+            }
           </tbody>
         </table>
+        </div>
+        <app-estado-lista [vazio]="!recursos.length" mensagemVazio="Nenhum recurso." />
       </div>
     </div>
   `

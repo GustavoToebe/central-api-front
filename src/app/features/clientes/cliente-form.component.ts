@@ -6,19 +6,20 @@ import { CentralApiService } from '../../core/api/central-api.service';
 import { CepService } from '../comum/cep.service';
 import { UFS, cepValido, cnpjValido, cpfValido, emailValido, telefoneValido } from '../comum/formatos';
 import { MascaraDirective } from '../comum/mascara.directive';
+import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
+import { RodapeFormComponent } from '../comum/rodape-form.component';
 import {
   ClienteForm, clienteFormDe, clienteFormVazio, formatarDocumento, montarClienteRequest, problemaNoCliente
 } from './cliente.form';
 
 @Component({
   selector: 'app-cliente-form',
-  imports: [FormsModule, RouterLink, MascaraDirective],
+  imports: [FormsModule, RouterLink, MascaraDirective, CabecalhoPaginaComponent, RodapeFormComponent],
   template: `
     <div class="mx-auto max-w-4xl space-y-6">
-      <div>
-        <a [routerLink]="id() ? ['/clientes', id()] : ['/clientes']" class="bo-link">← Voltar</a>
-        <h1 class="bo-title mt-2">{{ id() ? 'Editar cliente' : 'Novo cliente' }}</h1>
-      </div>
+      <app-cabecalho-pagina [titulo]="id() ? 'Editar cliente' : 'Novo cliente'">
+        <a [routerLink]="voltar()" class="bo-link" acoes>← Voltar</a>
+      </app-cabecalho-pagina>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (form) {
         <form class="space-y-6" (ngSubmit)="salvar()">
@@ -96,16 +97,19 @@ import {
             }
           </section>
 
-          <div class="flex justify-end gap-3">
-            <a [routerLink]="id() ? ['/clientes', id()] : ['/clientes']" class="bo-btn-ghost">Cancelar</a>
-            <button class="bo-btn" type="submit" [disabled]="salvando || !form.nome.trim() || !form.documento.trim()">Salvar cliente</button>
-          </div>
+          <app-rodape-form [voltarUrl]="voltar()" rotuloSalvar="Salvar cliente" [carregando]="salvando"
+            [desabilitado]="!form.nome.trim() || !form.documento.trim()" />
         </form>
       }
     </div>
   `
 })
 export class ClienteFormComponent implements OnInit {
+  voltar(): string[] {
+    const id = this.id();
+    return id ? ['/clientes', id] : ['/clientes'];
+  }
+
   private api = inject(CentralApiService);
   private router = inject(Router);
   private cepService = inject(CepService);
