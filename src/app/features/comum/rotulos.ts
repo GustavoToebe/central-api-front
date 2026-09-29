@@ -99,15 +99,11 @@ export function competencia(inicio: string, fim: string): string {
 }
 
 /**
- * Coluna da lista: o mês de referência (o início) e o vencimento.
- * O anual não aparece como intervalo de 12 meses. Paga, entra a data e a forma.
+ * Coluna da lista: só o mês de referência ("09/2026"). O anual não aparece como intervalo de 12 meses;
+ * vencimento e pagamento têm colunas próprias (29/09/2026).
  */
-export function competenciaNaLista(
-  inicio: string, vencimento: string, pagoEm: string | null, forma: FormaPagamento | null
-): string {
-  const mes = `${inicio.slice(5, 7)}/${inicio.slice(0, 4)}`;
-  const texto = `${mes} · vence ${data(vencimento)}`;
-  return pagoEm ? `${texto} · pago ${data(pagoEm)} · ${rotuloFormaPagamento(forma)}` : texto;
+export function competenciaNaLista(inicio: string): string {
+  return `${inicio.slice(5, 7)}/${inicio.slice(0, 4)}`;
 }
 
 /** `YYYY-MM` do mês seguinte ao de uma data ISO (sem data, ao mês de hoje). */

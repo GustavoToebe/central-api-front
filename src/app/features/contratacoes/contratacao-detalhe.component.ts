@@ -211,7 +211,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                   @for (cb of cobrancasOrdenadas(); track cb.id) {
                     <tr class="cursor-pointer" (click)="detalheId = cb.id">
                       <td (click)="$event.stopPropagation()">@if (cb.status === 'ABERTA') { <input type="checkbox" [checked]="selecionadas.has(cb.id)" (change)="alternar(cb.id)" [attr.aria-label]="'Selecionar cobrança de ' + data(cb.vencimento)"> }</td>
-                      <td>{{ competenciaNaLista(cb.competenciaInicio, cb.vencimento, cb.pagoEm, cb.formaPagamento) }}<app-numero [numero]="cb.sequencial" /></td>
+                      <td>{{ competenciaNaLista(cb.competenciaInicio) }}</td>
                       <td>{{ data(cb.vencimento) }}</td>
                       <td>{{ dinheiro(cb.valor) }}</td>
                       <td><span [class]="tomCobranca(cb.status, cb.vencida)">{{ rotuloStatusCobranca(cb.status, cb.vencida) }}</span></td>

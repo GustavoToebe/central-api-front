@@ -1,6 +1,5 @@
 import { CampoCompetenciaComponent } from '../comum/campo-competencia.component';
 import { competenciaAtual } from '../comum/datas';
-import { NumeroComponent } from '../comum/numero.component';
 import { PeriodoComponent } from '../comum/periodo.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +26,7 @@ import { Selecao } from '../comum/selecao';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule, PagamentoModalComponent, CobrancaDetalheModalComponent,
-    NumeroComponent, CampoCompetenciaComponent, PeriodoComponent,
+    CampoCompetenciaComponent, PeriodoComponent,
     CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent
   ],
   template: `
@@ -122,7 +121,7 @@ import { Selecao } from '../comum/selecao';
                   </td>
                   <td>{{ c.clienteNome }}<div class="text-xs text-neutral-500">{{ c.nomeInstancia }}</div></td>
                   <td>{{ c.produtoCodigo }}<div class="text-xs text-neutral-500">{{ c.planoNome }}</div></td>
-                  <td>{{ competenciaNaLista(c.competenciaInicio, c.vencimento, c.pagoEm, c.formaPagamento) }}<app-numero [numero]="c.sequencial" /></td>
+                  <td>{{ competenciaNaLista(c.competenciaInicio) }}</td>
                   <td>{{ data(c.vencimento) }}</td>
                   <td>{{ dinheiro(c.valor) }}</td>
                   <td><span [class]="tomCobranca(c.status, c.vencida)">{{ rotuloStatusCobranca(c.status, c.vencida) }}</span></td>

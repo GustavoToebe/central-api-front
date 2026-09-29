@@ -20,7 +20,7 @@ import {
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div class="text-xs font-extrabold uppercase tracking-wider text-neutral-500">{{ d.cobranca.produtoCodigo }} · {{ d.cobranca.nomeInstancia }}</div>
-              <h3 class="text-lg font-bold">{{ competenciaNaLista(d.cobranca.competenciaInicio, d.cobranca.vencimento, d.cobranca.pagoEm, d.cobranca.formaPagamento) }}<app-numero [numero]="d.cobranca.sequencial" /></h3>
+              <h3 class="text-lg font-bold">{{ competenciaNaLista(d.cobranca.competenciaInicio) }}<app-numero [numero]="d.cobranca.sequencial" /></h3>
               <p class="bo-sub">{{ d.cobranca.clienteNome }} · {{ d.cobranca.planoNome }} ({{ rotuloPeriodicidade(d.cobranca.periodicidade) }})</p>
             </div>
             <span [class]="tomCobranca(d.cobranca.status, d.cobranca.vencida)">{{ rotuloStatusCobranca(d.cobranca.status, d.cobranca.vencida) }}</span>

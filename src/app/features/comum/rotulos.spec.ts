@@ -112,10 +112,9 @@ describe('rotulos', () => {
     expect(competencia('2026-09-01', '2027-08-31')).toBe('09/2026 a 08/2027');
   });
 
-  it('na lista a competência é o mês de referência, o vencimento e o pagamento', () => {
-    expect(competenciaNaLista('2026-09-01', '2026-09-10', null, null)).toBe('09/2026 · vence 10/09/2026');
-    expect(competenciaNaLista('2026-09-01', '2027-08-10', '2026-09-12', 'PIX'))
-      .toBe('09/2026 · vence 10/08/2027 · pago 12/09/2026 · PIX');
+  it('na lista a competência é só o mês de referência', () => {
+    expect(competenciaNaLista('2026-09-01')).toBe('09/2026');
+    expect(competenciaNaLista('2026-12-01')).toBe('12/2026');
   });
 
   it('mês seguinte vira o ano em dezembro e usa hoje sem data', () => {
