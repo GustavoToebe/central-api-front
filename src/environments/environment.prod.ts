@@ -1,9 +1,9 @@
 /**
- * API da Central em produção. Com painel e API em subdomínios diferentes, a
- * API precisa de CENTRAL_CSRF_COOKIE_DOMAIN com o domínio pai, senão o painel
- * não lê o cookie XSRF-TOKEN e refresh/logout voltam 403.
+ * API no mesmo domínio do painel (`/api`), para o navegador não fazer
+ * preflight. O cookie XSRF continua com domínio pai se a VPS ainda
+ * definir CENTRAL_CSRF_COOKIE_DOMAIN.
  */
 export const environment = {
   production: true,
-  apiUrl: 'https://api-central.servirea.com.br'
+  apiUrl: 'https://central.servirea.com.br/api'
 };
