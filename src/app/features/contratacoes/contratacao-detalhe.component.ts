@@ -10,7 +10,7 @@ import {
   Adicional, Contratacao, Financeiro, Periodicidade, Plano, RegistrarPagamentoRequest, Suporte
 } from '../../core/api/central.models';
 import {
-  PERIODICIDADES, competencia, data, mesSeguinte, porVencimento, dinheiro, hojeIso, podeBloquear, podeCancelar, podeDesbloquear,
+  PERIODICIDADES, competencia, competenciaNaLista, data, mesSeguinte, porVencimento, dinheiro, hojeIso, podeBloquear, podeCancelar, podeDesbloquear,
   podeEditarProvisionamento, podeEntrarEmSuporte, podeTentarNovamente, rotuloAcaoHistorico, rotuloFormaPagamento,
   rotuloPeriodicidade, rotuloProvisionamento, rotuloSituacao, rotuloStatusCobranca, textoOuNulo, tomCobranca,
   tomProvisionamento, tomSituacao
@@ -211,7 +211,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                   @for (cb of cobrancasOrdenadas(); track cb.id) {
                     <tr class="cursor-pointer" (click)="detalheId = cb.id">
                       <td (click)="$event.stopPropagation()">@if (cb.status === 'ABERTA') { <input type="checkbox" [checked]="selecionadas.has(cb.id)" (change)="alternar(cb.id)" [attr.aria-label]="'Selecionar cobrança de ' + data(cb.vencimento)"> }</td>
-                      <td>{{ competencia(cb.competenciaInicio, cb.competenciaFim) }}<app-numero [numero]="cb.sequencial" /></td>
+                      <td>{{ competenciaNaLista(cb.competenciaInicio, cb.vencimento, cb.pagoEm, cb.formaPagamento) }}<app-numero [numero]="cb.sequencial" /></td>
                       <td>{{ data(cb.vencimento) }}</td>
                       <td>{{ dinheiro(cb.valor) }}</td>
                       <td><span [class]="tomCobranca(cb.status, cb.vencida)">{{ rotuloStatusCobranca(cb.status, cb.vencida) }}</span></td>
@@ -220,6 +220,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
                       <td class="whitespace-nowrap text-right" (click)="$event.stopPropagation()">
                         @if (cb.status === 'PAGA') { <button type="button" class="bo-link" (click)="estornar(cb.id)">Estornar</button> }
                         @if (cb.status === 'ABERTA') { <button type="button" class="bo-link" (click)="isentar(cb.id)">Isentar</button> }
+                        @if (cb.status !== 'CANCELADA') { <button type="button" class="bo-link" (click)="reemitir(cb.id)">Cancelar e emitir nova</button> }
                       </td>
                     </tr>
                   } @empty { <tr><td colspan="7" class="text-center text-neutral-500">Nenhuma cobrança.</td></tr> }
@@ -303,6 +304,7 @@ export class ContratacaoDetalheComponent implements OnInit {
   adiantarAte = '';
   readonly periodicidades = PERIODICIDADES;
   readonly competencia = competencia;
+  readonly competenciaNaLista = competenciaNaLista;
 
   readonly data = data;
   readonly dinheiro = dinheiro;
@@ -531,6 +533,10 @@ export class ContratacaoDetalheComponent implements OnInit {
 
   isentar(cobrancaId: string): void {
     this.executarFinanceiro(this.api.isentar(this.id(), cobrancaId, null), 'Cobrança isenta.');
+  }
+
+  reemitir(cobrancaId: string): void {
+    this.executarFinanceiro(this.api.reemitir(this.id(), cobrancaId), 'Cobrança cancelada. Uma nova foi emitida.');
   }
 
   gerarAdiantadas(): void {

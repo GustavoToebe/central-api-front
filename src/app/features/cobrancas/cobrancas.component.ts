@@ -8,7 +8,7 @@ import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { CobrancaLinha, FiltroCobrancas, Produto, RegistrarPagamentoRequest } from '../../core/api/central.models';
 import {
-  FORMAS_PAGAMENTO, competencia, data, dinheiro, rotuloFormaPagamento, rotuloStatusCobranca, tomCobranca
+  FORMAS_PAGAMENTO, competencia, competenciaNaLista, data, dinheiro, rotuloFormaPagamento, rotuloStatusCobranca, tomCobranca
 } from '../comum/rotulos';
 import { CobrancaDetalheModalComponent } from './cobranca-detalhe-modal.component';
 import { CobrancaAPagar, PagamentoModalComponent } from './pagamento-modal.component';
@@ -31,7 +31,7 @@ import { Selecao } from '../comum/selecao';
     CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent
   ],
   template: `
-    <div class="space-y-4">
+    <div class="space-y-8">
       <app-cabecalho-pagina titulo="Cobranças"
         subtitulo="Todas as contratações. Clique numa linha para ver o detalhamento.">
       </app-cabecalho-pagina>
@@ -92,7 +92,7 @@ import { Selecao } from '../comum/selecao';
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (aviso) { <div class="bo-aviso">{{ aviso }}</div> }
 
-      <div class="bo-table-wrap">
+      <div class="bo-table-wrap mt-4">
         <div class="bo-table-rolagem">
           <table class="bo-table">
             <thead>
@@ -113,7 +113,7 @@ import { Selecao } from '../comum/selecao';
                   (click)="detalheId = c.id; cdr.markForCheck()"
                   (keydown.enter)="detalheId = c.id; cdr.markForCheck()">
                   <td (click)="$event.stopPropagation()">
-                    @if (c.status === 'ABERTA') {
+                    @if (c.status === 'ABERTA' || c.status === 'PAGA') {
                       <input type="checkbox"
                         [checked]="selecao.marcado(c.id)"
                         (change)="selecao.alternar(c.id); cdr.markForCheck()"
@@ -122,7 +122,7 @@ import { Selecao } from '../comum/selecao';
                   </td>
                   <td>{{ c.clienteNome }}<div class="text-xs text-neutral-500">{{ c.nomeInstancia }}</div></td>
                   <td>{{ c.produtoCodigo }}<div class="text-xs text-neutral-500">{{ c.planoNome }}</div></td>
-                  <td>{{ competencia(c.competenciaInicio, c.competenciaFim) }}<app-numero [numero]="c.sequencial" /></td>
+                  <td>{{ competenciaNaLista(c.competenciaInicio, c.vencimento, c.pagoEm, c.formaPagamento) }}<app-numero [numero]="c.sequencial" /></td>
                   <td>{{ data(c.vencimento) }}</td>
                   <td>{{ dinheiro(c.valor) }}</td>
                   <td><span [class]="tomCobranca(c.status, c.vencida)">{{ rotuloStatusCobranca(c.status, c.vencida) }}</span></td>
@@ -144,7 +144,7 @@ import { Selecao } from '../comum/selecao';
         (pagar)="pagar($event)" (fechar)="pagando = false" />
     }
     @if (detalheId) {
-      <app-cobranca-detalhe-modal [cobrancaId]="detalheId" (fechar)="detalheId = null; cdr.markForCheck()" />
+      <app-cobranca-detalhe-modal [cobrancaId]="detalheId" (alterado)="carregar()" (fechar)="detalheId = null; cdr.markForCheck()" />
     }
   `
 })
@@ -166,6 +166,7 @@ export class CobrancasComponent implements OnInit {
 
   readonly formas = FORMAS_PAGAMENTO;
   readonly competencia = competencia;
+  readonly competenciaNaLista = competenciaNaLista;
   readonly data = data;
   readonly dinheiro = dinheiro;
   readonly rotuloFormaPagamento = rotuloFormaPagamento;
@@ -215,9 +216,23 @@ export class CobrancasComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  selecionaveis(): string[] {
+    return this.linhas.filter(c => c.status === 'ABERTA' || c.status === 'PAGA').map(c => c.id);
+  }
+
   menuOpcoes(): OpcaoMenu[] {
     const n = this.selecao.quantidade(this.abertas());
-    return [{ id: 'pagar', rotulo: `Registrar pagamento (${n})`, desabilitada: n === 0, dica: n === 0 ? 'Selecione cobranças abertas' : '' }];
+    const uma = this.unicaSelecionada();
+    return [
+      { id: 'pagar', rotulo: `Registrar pagamento (${n})`, desabilitada: n === 0, dica: n === 0 ? 'Selecione cobranças abertas' : '' },
+      { id: 'estornar', rotulo: 'Estornar pagamento', desabilitada: uma?.status !== 'PAGA', dica: 'Selecione uma cobrança paga' },
+      { id: 'reemitir', rotulo: 'Cancelar e emitir nova', desabilitada: !uma, dica: 'Selecione uma cobrança' }
+    ];
+  }
+
+  private unicaSelecionada(): CobrancaLinha | null {
+    const escolhidas = this.selecao.marcadosEm(this.linhas, this.selecionaveis());
+    return escolhidas.length === 1 ? escolhidas[0] : null;
   }
 
   filtrosAtivosLista(): FiltroAtivo[] {
@@ -246,6 +261,32 @@ export class CobrancasComponent implements OnInit {
 
   aoOpcao(id: string): void {
     if (id === 'pagar') this.abrirPagamento();
+    if (id === 'estornar') this.estornar();
+    if (id === 'reemitir') this.reemitir();
+  }
+
+  estornar(): void {
+    const c = this.unicaSelecionada();
+    if (!c || c.status !== 'PAGA') return;
+    this.ocupado = true;
+    this.erro = '';
+    this.aviso = '';
+    this.api.estornar(c.contratacaoId, c.id).subscribe({
+      next: () => { this.ocupado = false; this.aviso = 'Pagamento estornado.'; this.selecao.limpar(); this.carregar(); },
+      error: e => { this.ocupado = false; this.erro = mensagemApi(e, 'Não foi possível estornar.'); this.cdr.markForCheck(); }
+    });
+  }
+
+  reemitir(): void {
+    const c = this.unicaSelecionada();
+    if (!c) return;
+    this.ocupado = true;
+    this.erro = '';
+    this.aviso = '';
+    this.api.reemitir(c.contratacaoId, c.id).subscribe({
+      next: () => { this.ocupado = false; this.aviso = 'Cobrança cancelada. Uma nova foi emitida.'; this.selecao.limpar(); this.carregar(); },
+      error: e => { this.ocupado = false; this.erro = mensagemApi(e, 'Não foi possível emitir a nova cobrança.'); this.cdr.markForCheck(); }
+    });
   }
 
   aPagar(): CobrancaAPagar[] {

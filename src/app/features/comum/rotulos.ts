@@ -98,6 +98,18 @@ export function competencia(inicio: string, fim: string): string {
   return inicio.slice(0, 7) === fim.slice(0, 7) ? mes(inicio) : `${mes(inicio)} a ${mes(fim)}`;
 }
 
+/**
+ * Coluna da lista: o mês de referência (o início) e o vencimento.
+ * O anual não aparece como intervalo de 12 meses. Paga, entra a data e a forma.
+ */
+export function competenciaNaLista(
+  inicio: string, vencimento: string, pagoEm: string | null, forma: FormaPagamento | null
+): string {
+  const mes = `${inicio.slice(5, 7)}/${inicio.slice(0, 4)}`;
+  const texto = `${mes} · vence ${data(vencimento)}`;
+  return pagoEm ? `${texto} · pago ${data(pagoEm)} · ${rotuloFormaPagamento(forma)}` : texto;
+}
+
 /** `YYYY-MM` do mês seguinte ao de uma data ISO (sem data, ao mês de hoje). */
 export function mesSeguinte(iso: string | null | undefined, hoje: string = hojeIso()): string {
   const base = iso ?? hoje;

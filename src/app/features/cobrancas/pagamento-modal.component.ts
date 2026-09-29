@@ -37,10 +37,12 @@ export interface CobrancaAPagar {
             </select>
           </label>
           @if (cobrancas().length === 1) {
-            <label><span class="bo-label">Valor pago (vazio = valor da cobrança)</span><input class="bo-field" name="pgValor" [(ngModel)]="form.valorPago"></label>
+            <label class="sm:col-span-2"><span class="bo-label">Valor pago (vazio = valor da cobrança)</span><input class="bo-field" name="pgValor" [(ngModel)]="form.valorPago"></label>
           }
-          <label [class.sm:col-span-2]="cobrancas().length !== 1"><span class="bo-label">Observação</span><input class="bo-field" name="pgObs" [(ngModel)]="form.observacao"></label>
         </div>
+        <label class="block"><span class="bo-label">Observação</span>
+          <textarea class="bo-field min-h-24" name="pgObs" rows="3" [(ngModel)]="form.observacao"></textarea>
+        </label>
         @if (erro()) { <div class="bo-erro">{{ erro() }}</div> }
       </form>
       <div rodape class="flex justify-between gap-2">

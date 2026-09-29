@@ -67,6 +67,7 @@ describe('CentralApiService', () => {
     ['registrarPagamento', s => s.registrarPagamento('k1', pagamento), 'POST', '/contratacoes/k1/pagamentos', pagamento],
     ['estornar', s => s.estornar('k1', 'cb1'), 'POST', '/contratacoes/k1/cobrancas/cb1/estornar', {}],
     ['isentar', s => s.isentar('k1', 'cb1', 'cortesia'), 'POST', '/contratacoes/k1/cobrancas/cb1/isentar', { motivo: 'cortesia' }],
+    ['reemitir', s => s.reemitir('k1', 'cb1'), 'POST', '/contratacoes/k1/cobrancas/cb1/reemitir', {}],
     ['cobrancas sem filtro', s => s.cobrancas({ produtoId: '', situacao: '', busca: '  ' }), 'GET', '/cobrancas', null],
     ['cobrancas com filtros', s => s.cobrancas({ situacao: 'VENCIDA', competencia: '2026-10', busca: ' Ana ' }), 'GET',
       '/cobrancas?situacao=VENCIDA&competencia=2026-10&busca=Ana', null],

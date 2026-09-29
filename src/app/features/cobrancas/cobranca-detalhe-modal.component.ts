@@ -6,7 +6,7 @@ import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { CobrancaDetalhe } from '../../core/api/central.models';
 import {
-  competencia, data, dinheiro, rotuloFormaPagamento, rotuloPeriodicidade, rotuloStatusCobranca, tomCobranca
+  competencia, competenciaNaLista, data, dinheiro, rotuloFormaPagamento, rotuloPeriodicidade, rotuloStatusCobranca, tomCobranca
 } from '../comum/rotulos';
 
 /** Detalhe de uma cobrança: de onde vem o valor (plano e adicionais) e o pagamento. */
@@ -20,7 +20,7 @@ import {
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div class="text-xs font-extrabold uppercase tracking-wider text-neutral-500">{{ d.cobranca.produtoCodigo }} · {{ d.cobranca.nomeInstancia }}</div>
-              <h3 class="text-lg font-bold">Competência {{ competencia(d.cobranca.competenciaInicio, d.cobranca.competenciaFim) }}<app-numero [numero]="d.cobranca.sequencial" /></h3>
+              <h3 class="text-lg font-bold">{{ competenciaNaLista(d.cobranca.competenciaInicio, d.cobranca.vencimento, d.cobranca.pagoEm, d.cobranca.formaPagamento) }}<app-numero [numero]="d.cobranca.sequencial" /></h3>
               <p class="bo-sub">{{ d.cobranca.clienteNome }} · {{ d.cobranca.planoNome }} ({{ rotuloPeriodicidade(d.cobranca.periodicidade) }})</p>
             </div>
             <span [class]="tomCobranca(d.cobranca.status, d.cobranca.vencida)">{{ rotuloStatusCobranca(d.cobranca.status, d.cobranca.vencida) }}</span>
@@ -49,16 +49,25 @@ import {
             </table>
           </div>
           @if (d.observacao) { <p class="text-sm text-neutral-400">Observação: {{ d.observacao }}</p> }
+          @if (erroAcao) { <div class="bo-erro">{{ erroAcao }}</div> }
         } @else if (erro) {
           <div class="bo-erro">{{ erro }}</div>
         } @else {
           <p class="bo-sub">Carregando...</p>
         }
       </div>
-      <div rodape class="flex justify-between gap-2">
+      <div rodape class="flex flex-wrap items-center justify-between gap-2">
         <button class="bo-btn-ghost" type="button" (click)="fechar.emit()">Fechar</button>
         @if (d) {
-          <a class="bo-link self-center" [routerLink]="['/contratacoes', d.cobranca.contratacaoId]" (click)="fechar.emit()">Abrir contratação</a>
+          <div class="flex flex-wrap items-center gap-3">
+            @if (d.cobranca.status === 'PAGA') {
+              <button type="button" class="bo-link" [disabled]="ocupado" (click)="estornar()">Estornar</button>
+            }
+            @if (d.cobranca.status !== 'CANCELADA') {
+              <button type="button" class="bo-link" [disabled]="ocupado" (click)="reemitir()">Cancelar e emitir nova</button>
+            }
+            <a class="bo-link" [routerLink]="['/contratacoes', d.cobranca.contratacaoId]" (click)="fechar.emit()">Abrir contratação</a>
+          </div>
         }
       </div>
     </app-modal>
@@ -69,11 +78,15 @@ export class CobrancaDetalheModalComponent implements OnInit {
 
   readonly cobrancaId = input.required<string>();
   readonly fechar = output<void>();
+  readonly alterado = output<void>();
 
   d: CobrancaDetalhe | null = null;
   erro = '';
+  erroAcao = '';
+  ocupado = false;
 
   readonly competencia = competencia;
+  readonly competenciaNaLista = competenciaNaLista;
   readonly data = data;
   readonly dinheiro = dinheiro;
   readonly rotuloFormaPagamento = rotuloFormaPagamento;
@@ -82,6 +95,29 @@ export class CobrancaDetalheModalComponent implements OnInit {
   readonly tomCobranca = tomCobranca;
 
   ngOnInit(): void {
+    this.recarregar();
+  }
+
+  estornar(): void {
+    if (!this.d) return;
+    this.agir(this.api.estornar(this.d.cobranca.contratacaoId, this.d.cobranca.id));
+  }
+
+  reemitir(): void {
+    if (!this.d) return;
+    this.agir(this.api.reemitir(this.d.cobranca.contratacaoId, this.d.cobranca.id));
+  }
+
+  private agir(chamada: import('rxjs').Observable<unknown>): void {
+    this.ocupado = true;
+    this.erroAcao = '';
+    chamada.subscribe({
+      next: () => { this.ocupado = false; this.alterado.emit(); this.fechar.emit(); },
+      error: e => { this.ocupado = false; this.erroAcao = mensagemApi(e, 'Não foi possível concluir.'); }
+    });
+  }
+
+  private recarregar(): void {
     this.api.cobranca(this.cobrancaId()).subscribe({
       next: d => this.d = d,
       error: e => this.erro = mensagemApi(e, 'Não foi possível carregar a cobrança.')

@@ -96,6 +96,10 @@ export class CentralApiService {
   isentar(id: string, cobrancaId: string, motivo: string | null) {
     return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/${cobrancaId}/isentar`, { motivo });
   }
+  /** Cancela a cobrança e emite outra, em aberto, para a mesma competência. */
+  reemitir(id: string, cobrancaId: string) {
+    return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/${cobrancaId}/reemitir`, {});
+  }
 
   // ---- Cobranças (todas as contratações)
   cobrancas(filtro: FiltroCobrancas) { return this.http.get<CobrancaLinha[]>(`${this.api}/cobrancas`, { params: parametros(filtro) }); }

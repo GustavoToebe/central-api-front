@@ -47,11 +47,11 @@ export interface FiltroAtivo {
             </button>
             @if (menuAberto()) {
               <div #painelOpcoes
-                class="absolute right-0 top-full z-50 mt-1 min-w-[220px] space-y-1 rounded-xl border border-[#333] bg-[#161616] p-2 shadow-2xl"
+                class="absolute right-0 top-full z-50 mt-1 min-w-[220px] space-y-1 rounded-xl border border-[#333] bg-black p-2 shadow-2xl"
                 role="menu">
                 @for (op of opcoes(); track op.id) {
                   <button type="button" role="menuitem"
-                    class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-white/5"
+                    class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-[#1a1a1a]"
                     [class.opacity-40]="op.desabilitada"
                     [class.cursor-not-allowed]="op.desabilitada"
                     [title]="op.dica ?? ''"
