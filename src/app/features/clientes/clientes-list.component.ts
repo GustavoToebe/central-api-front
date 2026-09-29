@@ -1,4 +1,3 @@
-import { NumeroComponent } from '../comum/numero.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
@@ -13,7 +12,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-clientes-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, NumeroComponent, CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent],
+  imports: [RouterLink, CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent],
   template: `
     <div class="space-y-4">
       <app-cabecalho-pagina titulo="Clientes"
@@ -43,7 +42,7 @@ import { RouterLink } from '@angular/router';
                   <td>
                     <span class="flex items-center gap-3 font-semibold">
                       <span class="bo-avatar h-8 w-8 text-[11px]">{{ iniciais(c.nome) }}</span>
-                      {{ c.nome }}<app-numero [numero]="c.sequencial" />
+                      {{ c.nome }}
                     </span>
                   </td>
                   <td>{{ c.tipo }}</td>

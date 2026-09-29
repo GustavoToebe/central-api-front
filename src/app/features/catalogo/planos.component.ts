@@ -28,6 +28,7 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
         <form class="bo-card space-y-5 p-5" (ngSubmit)="salvar()">
+          @if (editandoId) { <p class="text-sm font-semibold">Plano <app-numero [numero]="numeroEdicao" /></p> }
           <div class="grid gap-3 md:grid-cols-4">
             <label><span class="bo-label">Código *</span><input class="bo-field" name="codigo" [(ngModel)]="form.codigo" placeholder="PROFISSIONAL" [disabled]="!!editandoId"></label>
             <label class="md:col-span-2"><span class="bo-label">Nome *</span><input class="bo-field" name="nome" [(ngModel)]="form.nome"></label>
@@ -80,7 +81,7 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
         <section class="bo-card space-y-3 p-5">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 class="text-lg font-bold">{{ p.nome }}<app-numero [numero]="p.sequencial" /> <span class="text-sm text-neutral-500">{{ p.codigo }}</span></h2>
+              <h2 class="text-lg font-bold">{{ p.nome }} <span class="text-sm text-neutral-500">{{ p.codigo }}</span></h2>
               <p class="bo-sub">
                 @for (v of p.precosVigentes; track v.periodicidade) { {{ rotuloPeriodicidade(v.periodicidade) }} {{ dinheiro(v.valor) }} · }
                 @if (!p.precosVigentes.length) { Sem preço · }
@@ -115,6 +116,7 @@ export class PlanosComponent implements OnInit {
   recursosCarregados = false;
   editando = false;
   editandoId: string | null = null;
+  numeroEdicao: number | null = null;
   salvando = false;
   erro = '';
   form: {
@@ -170,12 +172,14 @@ export class PlanosComponent implements OnInit {
 
   novo(): void {
     this.editandoId = null;
+    this.numeroEdicao = null;
     this.form = { codigo: '', nome: '', ativo: true, recursos: [], precos: {} };
     this.editando = true;
   }
 
   editar(p: Plano): void {
     this.editandoId = p.id;
+    this.numeroEdicao = p.sequencial;
     const precos: Partial<Record<Periodicidade, string>> = {};
     for (const v of p.precosVigentes) precos[v.periodicidade] = String(v.valor);
     this.form = {

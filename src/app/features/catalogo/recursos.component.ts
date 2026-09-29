@@ -28,6 +28,7 @@ import { montarRecursoRequest } from './catalogo.form';
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
         <form class="bo-card grid gap-3 p-5 md:grid-cols-3 xl:grid-cols-6" (ngSubmit)="salvar()">
+          @if (editandoId) { <p class="text-sm font-semibold md:col-span-3 xl:col-span-6">Recurso <app-numero [numero]="numeroEdicao" /></p> }
           <label><span class="bo-label">Produto *</span>
             <select class="bo-field" name="produto" [(ngModel)]="form.produtoId" (ngModelChange)="carregarSugestoes()" [disabled]="!!editandoId">
               @for (p of produtos; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
@@ -74,7 +75,7 @@ import { montarRecursoRequest } from './catalogo.form';
           <tbody>
             @for (r of recursos; track r.id) {
               <tr class="clicavel" tabindex="0" (click)="editar(r)" (keydown.enter)="editar(r)">
-                <td>{{ nomeProduto(r.produtoId) }}</td><td class="font-semibold">{{ r.codigo }}</td><td>{{ r.nome }}<app-numero [numero]="r.sequencial" /></td>
+                <td>{{ nomeProduto(r.produtoId) }}</td><td class="font-semibold">{{ r.codigo }}</td><td>{{ r.nome }}</td>
                 <td>{{ r.tipo === 'LIMITE' ? 'Limite' : 'Funcionalidade' }}</td><td>{{ r.unidade || '—' }}</td><td>{{ r.valorPadrao ?? '—' }}</td>
                 <td class="text-right"><button type="button" class="bo-link" (click)="$event.stopPropagation(); editar(r)">Editar</button></td>
               </tr>
@@ -95,6 +96,7 @@ export class RecursosComponent implements OnInit {
   produtoId = '';
   editando = false;
   editandoId: string | null = null;
+  numeroEdicao: number | null = null;
   salvando = false;
   erro = '';
   sugestoes: RecursoDoApp[] = [];
@@ -142,6 +144,7 @@ export class RecursosComponent implements OnInit {
 
   novo(): void {
     this.editandoId = null;
+    this.numeroEdicao = null;
     this.form = { produtoId: this.produtoId || this.produtos[0]?.id || '', codigo: '', nome: '', tipo: 'LIMITE', unidade: '', valorPadrao: '' };
     this.editando = true;
     this.carregarSugestoes();
@@ -149,6 +152,7 @@ export class RecursosComponent implements OnInit {
 
   editar(r: Recurso): void {
     this.editandoId = r.id;
+    this.numeroEdicao = r.sequencial;
     this.escolhida = null;
     this.form = { produtoId: r.produtoId, codigo: r.codigo, nome: r.nome, tipo: r.tipo, unidade: r.unidade ?? '', valorPadrao: r.valorPadrao != null ? String(r.valorPadrao) : '' };
     this.editando = true;

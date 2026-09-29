@@ -1,4 +1,3 @@
-import { NumeroComponent } from '../comum/numero.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
@@ -18,7 +17,7 @@ import {
 @Component({
   selector: 'app-grade-contratacoes',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, NumeroComponent, EstadoListaComponent],
+  imports: [RouterLink, EstadoListaComponent],
   template: `
     @if (erro) { <div class="bo-erro mb-3">{{ erro }}</div> }
     <div class="bo-table-wrap">
@@ -43,7 +42,7 @@ import {
                 }
                 <td class="font-semibold">{{ c.produtoCodigo }}</td>
                 <td>
-                  <span class="font-semibold">{{ c.nomeInstancia }}</span><app-numero [numero]="c.sequencial" />
+                  <span class="font-semibold">{{ c.nomeInstancia }}</span>
                   <div class="text-xs text-neutral-500">{{ c.slugInstancia }}</div>
                 </td>
                 <td>{{ c.planoCodigo }}<div class="text-xs text-neutral-500">{{ rotuloPeriodicidade(c.periodicidade) }} · {{ dinheiro(c.valor) }}</div></td>

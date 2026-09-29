@@ -24,6 +24,7 @@ import { montarAdicionalRequest } from './catalogo.form';
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
         <form class="bo-card grid gap-3 p-5 md:grid-cols-6" (ngSubmit)="salvar()">
+          @if (editandoId) { <p class="text-sm font-semibold md:col-span-6">Adicional <app-numero [numero]="numeroEdicao" /></p> }
           <label><span class="bo-label">Código *</span><input class="bo-field" name="codigo" [(ngModel)]="form.codigo"></label>
           <label class="md:col-span-2"><span class="bo-label">Nome *</span><input class="bo-field" name="nome" [(ngModel)]="form.nome"></label>
           <label><span class="bo-label">Recurso *</span>
@@ -46,7 +47,7 @@ import { montarAdicionalRequest } from './catalogo.form';
           <tbody>
             @for (a of adicionais; track a.id) {
               <tr class="clicavel" tabindex="0" (click)="editar(a)" (keydown.enter)="editar(a)">
-                <td class="font-semibold">{{ a.codigo }}</td><td>{{ a.nome }}<app-numero [numero]="a.sequencial" /></td><td>+{{ a.quantidade }} {{ a.recursoCodigo }}</td>
+                <td class="font-semibold">{{ a.codigo }}</td><td>{{ a.nome }}</td><td>+{{ a.quantidade }} {{ a.recursoCodigo }}</td>
                 <td>{{ dinheiro(a.preco) }}</td><td><span [class]="a.ativo ? 'bo-ok' : 'bo-mute'">{{ a.ativo ? 'Ativo' : 'Inativo' }}</span></td>
                 <td class="text-right"><button type="button" class="bo-link" (click)="$event.stopPropagation(); editar(a)">Editar</button></td>
               </tr>
@@ -70,6 +71,7 @@ export class AdicionaisComponent implements OnInit {
   recursosCarregados = false;
   editando = false;
   editandoId: string | null = null;
+  numeroEdicao: number | null = null;
   salvando = false;
   erro = '';
   form = { recursoId: '', codigo: '', nome: '', quantidade: '', preco: '', ativo: true };
@@ -102,12 +104,14 @@ export class AdicionaisComponent implements OnInit {
 
   novo(): void {
     this.editandoId = null;
+    this.numeroEdicao = null;
     this.form = { recursoId: this.limites()[0]?.id ?? '', codigo: '', nome: '', quantidade: '', preco: '', ativo: true };
     this.editando = true;
   }
 
   editar(a: Adicional): void {
     this.editandoId = a.id;
+    this.numeroEdicao = a.sequencial;
     this.form = { recursoId: a.recursoId, codigo: a.codigo, nome: a.nome, quantidade: String(a.quantidade), preco: String(a.preco), ativo: a.ativo };
     this.editando = true;
   }

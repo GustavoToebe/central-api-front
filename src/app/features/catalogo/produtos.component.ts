@@ -19,6 +19,7 @@ import { montarProdutoRequest } from './catalogo.form';
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
         <form class="bo-card grid gap-3 p-5 md:grid-cols-4" (ngSubmit)="salvar()">
+          @if (editandoId) { <p class="text-sm font-semibold md:col-span-4">Produto <app-numero [numero]="numeroEdicao" /></p> }
           <label><span class="bo-label">Código *</span><input class="bo-field" name="codigo" [(ngModel)]="form.codigo"></label>
           <label><span class="bo-label">Nome *</span><input class="bo-field" name="nome" [(ngModel)]="form.nome"></label>
           <label class="md:col-span-2"><span class="bo-label">URL base da integração</span>
@@ -37,7 +38,7 @@ import { montarProdutoRequest } from './catalogo.form';
           <tbody>
             @for (p of produtos; track p.id) {
               <tr class="clicavel" tabindex="0" (click)="editar(p)" (keydown.enter)="editar(p)">
-                <td class="font-semibold">{{ p.codigo }}</td><td>{{ p.nome }}<app-numero [numero]="p.sequencial" /></td>
+                <td class="font-semibold">{{ p.codigo }}</td><td>{{ p.nome }}</td>
                 <td class="break-all text-neutral-400">{{ p.urlBaseIntegracao || '—' }}</td>
                 <td><span [class]="p.ativo ? 'bo-ok' : 'bo-mute'">{{ p.ativo ? 'Ativo' : 'Inativo' }}</span></td>
                 <td class="text-right"><button type="button" class="bo-link" (click)="$event.stopPropagation(); editar(p)">Editar</button></td>
@@ -57,6 +58,7 @@ export class ProdutosComponent implements OnInit {
   produtos: Produto[] = [];
   editando = false;
   editandoId: string | null = null;
+  numeroEdicao: number | null = null;
   salvando = false;
   erro = '';
   form = { codigo: '', nome: '', urlBaseIntegracao: '', ativo: true };
@@ -69,12 +71,14 @@ export class ProdutosComponent implements OnInit {
 
   novo(): void {
     this.editandoId = null;
+    this.numeroEdicao = null;
     this.form = { codigo: '', nome: '', urlBaseIntegracao: '', ativo: true };
     this.editando = true;
   }
 
   editar(p: Produto): void {
     this.editandoId = p.id;
+    this.numeroEdicao = p.sequencial;
     this.form = { codigo: p.codigo, nome: p.nome, urlBaseIntegracao: p.urlBaseIntegracao ?? '', ativo: p.ativo };
     this.editando = true;
   }

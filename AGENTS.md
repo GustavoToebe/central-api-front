@@ -27,7 +27,7 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - `features/*/*.form.ts` — montagem das requisições (funções puras, com spec).
 - `features/perfil/` — "Meu perfil" (link no nome, no topo): troca da própria senha.
 - `features/comum/numero.component.ts` — `<app-numero [numero]="x.sequencial" />`: número curto "(2108)" que copia ao
-  clicar; use ao lado do nome de todo cadastro que tem `sequencial`.
+  clicar. Só no detalhe (ou no título do formulário de edição, quando a edição é na mesma página). A lista mostra só o nome.
 - Datas: nunca `type="date"`/`type="month"` nativo. `app-campo-data` (ngModel ISO, tela `DD/MM/AAAA`),
   `app-campo-competencia` (ngModel `AAAA-MM`, tela `MM/AAAA`, sem nome de mês) e, em filtro, `app-periodo`
   (`[(de)]`/`[(ate)]` + `(aplicado)`, com períodos prontos). Painéis abrem no `body` (`painel-flutuante.ts`).
