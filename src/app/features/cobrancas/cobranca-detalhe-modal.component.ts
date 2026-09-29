@@ -1,6 +1,6 @@
 import { NumeroComponent } from '../comum/numero.component';
 import { ModalComponent } from '../comum/modal.component';
-import { Component, OnInit, inject, input, output } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
@@ -75,6 +75,11 @@ import {
 })
 export class CobrancaDetalheModalComponent implements OnInit {
   private api = inject(CentralApiService);
+  /**
+   * A lista de Cobranças é OnPush: sem avisar, a resposta chegava e o modal só aparecia no próximo
+   * evento da tela (29/09/2026, "muito lento ao abrir o detalhamento").
+   */
+  private cdr = inject(ChangeDetectorRef);
 
   readonly cobrancaId = input.required<string>();
   readonly fechar = output<void>();
@@ -112,15 +117,15 @@ export class CobrancaDetalheModalComponent implements OnInit {
     this.ocupado = true;
     this.erroAcao = '';
     chamada.subscribe({
-      next: () => { this.ocupado = false; this.alterado.emit(); this.fechar.emit(); },
-      error: e => { this.ocupado = false; this.erroAcao = mensagemApi(e, 'Não foi possível concluir.'); }
+      next: () => { this.ocupado = false; this.alterado.emit(); this.fechar.emit(); this.cdr.markForCheck(); },
+      error: e => { this.ocupado = false; this.erroAcao = mensagemApi(e, 'Não foi possível concluir.'); this.cdr.markForCheck(); }
     });
   }
 
   private recarregar(): void {
     this.api.cobranca(this.cobrancaId()).subscribe({
-      next: d => this.d = d,
-      error: e => this.erro = mensagemApi(e, 'Não foi possível carregar a cobrança.')
+      next: d => { this.d = d; this.cdr.markForCheck(); },
+      error: e => { this.erro = mensagemApi(e, 'Não foi possível carregar a cobrança.'); this.cdr.markForCheck(); }
     });
   }
 }

@@ -72,9 +72,6 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
               @for (a of c.adicionais; track a.adicionalId) {
                 <p class="text-sm">{{ a.codigo }} × {{ a.quantidade }} <span class="text-neutral-500">(+{{ a.quantidadeUnitaria }} {{ a.recursoCodigo }} cada)</span></p>
               } @empty { <p class="bo-sub">Nenhum.</p> }
-              @if (c.situacaoComercial !== 'CANCELADA') {
-                <button type="button" class="bo-link" (click)="abrirAdicionais()">Alterar adicionais</button>
-              }
             </section>
           </div>
 
@@ -113,27 +110,6 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
             }
           </section>
 
-          @if (editandoAdicionais) {
-            <section class="bo-card space-y-3 p-5">
-              <h2 class="text-sm font-extrabold uppercase tracking-wider text-neutral-400">Alterar adicionais</h2>
-              @for (a of adicionaisForm; track $index; let i = $index) {
-                <div class="grid items-end gap-3 md:grid-cols-[1fr_8rem_auto]">
-                  <select class="bo-field" [name]="'ea' + i" [(ngModel)]="a.adicionalId">
-                    <option value="" disabled>Escolha</option>
-                    @for (ad of catalogoAdicionais; track ad.id) { <option [value]="ad.id">{{ ad.nome }} (+{{ ad.quantidade }} {{ ad.recursoCodigo }})</option> }
-                  </select>
-                  <input class="bo-field" type="number" min="1" [name]="'eq' + i" [(ngModel)]="a.quantidade">
-                  <button type="button" class="bo-link pb-3" (click)="adicionaisForm.splice(i, 1)">Excluir</button>
-                </div>
-              }
-              <div class="flex flex-wrap items-end gap-3">
-                <button type="button" class="bo-btn-line" (click)="adicionaisForm.push({ adicionalId: '', quantidade: 1 })">+ Adicional</button>
-                <input class="bo-field max-w-sm" placeholder="Motivo (opcional)" name="motivoAd" [(ngModel)]="motivoAdicionais">
-                <button type="button" class="bo-btn" [disabled]="ocupado" (click)="salvarAdicionais()">Salvar adicionais</button>
-                <button type="button" class="bo-btn-ghost" (click)="editandoAdicionais = false">Cancelar</button>
-              </div>
-            </section>
-          }
 
           @if (c.situacaoComercial !== 'CANCELADA') {
             <section class="bo-card space-y-3 p-5">
@@ -228,6 +204,52 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
               </table>
             </div>
             @if (c.situacaoComercial !== 'CANCELADA') {
+              <!-- Adicionais mexem no que é cobrado: a edição fica no Financeiro; o Resumo só lista (29/09/2026). -->
+              <section class="bo-card space-y-3 p-5" data-adicionais-financeiro>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h2 class="text-sm font-extrabold uppercase tracking-wider text-neutral-400">Adicionais</h2>
+                  @if (!editandoAdicionais) { <button type="button" class="bo-link" (click)="abrirAdicionais()">Alterar adicionais</button> }
+                </div>
+                @if (editandoAdicionais) {
+                  @for (a of adicionaisForm; track $index; let i = $index) {
+                    <div class="grid items-end gap-3 md:grid-cols-[1fr_8rem_auto]">
+                      <select class="bo-field" [name]="'ea' + i" [(ngModel)]="a.adicionalId">
+                        <option value="" disabled>Escolha</option>
+                        @for (ad of catalogoAdicionais; track ad.id) { <option [value]="ad.id">{{ ad.nome }} (+{{ ad.quantidade }} {{ ad.recursoCodigo }})</option> }
+                      </select>
+                      <input class="bo-field" type="number" min="1" [name]="'eq' + i" [(ngModel)]="a.quantidade">
+                      <button type="button" class="bo-link pb-3" (click)="adicionaisForm.splice(i, 1)">Excluir</button>
+                    </div>
+                  }
+                  <div class="flex flex-wrap items-end gap-3">
+                    <button type="button" class="bo-btn-line" (click)="adicionaisForm.push({ adicionalId: '', quantidade: 1 })">+ Adicional</button>
+                    <input class="bo-field max-w-sm" placeholder="Motivo (opcional)" name="motivoAd" [(ngModel)]="motivoAdicionais">
+                    <button type="button" class="bo-btn" [disabled]="ocupado" (click)="salvarAdicionais()">Salvar adicionais</button>
+                    <button type="button" class="bo-btn-ghost" (click)="editandoAdicionais = false">Cancelar</button>
+                  </div>
+                } @else {
+                  @for (a of c.adicionais; track a.adicionalId) {
+                    <p class="text-sm">{{ a.codigo }} × {{ a.quantidade }} <span class="text-neutral-500">(+{{ a.quantidadeUnitaria }} {{ a.recursoCodigo }} cada)</span></p>
+                  } @empty { <p class="bo-sub">Nenhum adicional contratado.</p> }
+                }
+                <p class="bo-sub">Cada adicional entra em toda cobrança: preço mensal × quantidade × meses do período. Alterar refaz as cobranças em aberto que ainda não venceram.</p>
+              </section>
+              <section class="bo-card space-y-3 p-5" data-isencao>
+                <h2 class="text-sm font-extrabold uppercase tracking-wider text-neutral-400">Isenção de cobrança</h2>
+                @if (c.isenta) {
+                  <p class="text-sm"><span class="font-bold">Isenta {{ c.isentaAte ? 'até ' + competenciaNaLista(c.isentaAte) : 'sem data para acabar' }}</span> · {{ c.isencaoMotivo }}</p>
+                  <p class="bo-sub">As cobranças desse período nascem isentas: não vencem e não contam como recebido.</p>
+                  <button type="button" class="bo-btn-ghost" [disabled]="ocupado" (click)="encerrarIsencao()" data-encerrar-isencao>Encerrar isenção</button>
+                } @else {
+                  <div class="flex flex-wrap items-end gap-3">
+                    <label class="min-w-64 flex-1"><span class="bo-label">Motivo</span>
+                      <input class="bo-field" name="isencaoMotivo" [(ngModel)]="isencaoMotivo" placeholder="Ex.: paróquia parceira, piloto, cortesia"></label>
+                    <label><span class="bo-label">Até (opcional)</span><app-campo-competencia name="isencaoAte" [(ngModel)]="isencaoAte" /></label>
+                    <button type="button" class="bo-btn" [disabled]="ocupado || !isencaoMotivo.trim()" (click)="isentarContratacao()" data-isentar-contratacao>Isentar contratação</button>
+                  </div>
+                  <p class="bo-sub">Sem data, vale até você encerrar. As cobranças em aberto do período ficam isentas na hora. Cobrança de R$ 0,00 já nasce isenta sozinha.</p>
+                }
+              </section>
               <section class="bo-card flex flex-wrap items-end gap-3 p-5">
                 <h2 class="w-full text-sm font-extrabold uppercase tracking-wider text-neutral-400">Gerar cobranças adiantadas</h2>
                 <label><span class="bo-label">Competência de</span><app-campo-competencia name="de" [(ngModel)]="adiantarDe" [limpavel]="false" /></label>
@@ -302,6 +324,9 @@ export class ContratacaoDetalheComponent implements OnInit {
   detalheId: string | null = null;
   adiantarDe = '';
   adiantarAte = '';
+  isencaoMotivo = '';
+  /** `AAAA-MM`; vazio = sem data para acabar. */
+  isencaoAte = '';
   readonly periodicidades = PERIODICIDADES;
   readonly competencia = competencia;
   readonly competenciaNaLista = competenciaNaLista;
@@ -537,6 +562,18 @@ export class ContratacaoDetalheComponent implements OnInit {
 
   reemitir(cobrancaId: string): void {
     this.executarFinanceiro(this.api.reemitir(this.id(), cobrancaId), 'Cobrança cancelada. Uma nova foi emitida.');
+  }
+
+  isentarContratacao(): void {
+    const motivo = this.isencaoMotivo.trim();
+    if (!motivo) return;
+    this.executarFinanceiro(this.api.isentarContratacao(this.id(), motivo, this.isencaoAte || null), 'Contratação isenta de cobrança.');
+    this.isencaoMotivo = '';
+    this.isencaoAte = '';
+  }
+
+  encerrarIsencao(): void {
+    this.executarFinanceiro(this.api.encerrarIsencao(this.id()), 'Isenção encerrada. As próximas cobranças voltam ao normal.');
   }
 
   gerarAdiantadas(): void {

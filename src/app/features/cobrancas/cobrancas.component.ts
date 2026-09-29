@@ -60,6 +60,7 @@ import { Selecao } from '../comum/selecao';
               <option value="ABERTA">Aberta</option>
               <option value="VENCIDA">Vencida</option>
               <option value="PAGA">Paga</option>
+              <option value="ISENTA">Isenta</option>
               <option value="CANCELADA">Cancelada</option>
             </select>
           </label>
@@ -318,7 +319,7 @@ export class CobrancasComponent implements OnInit {
   }
 }
 
-const SITUACOES: Record<string, string> = { ABERTA: 'Aberta', VENCIDA: 'Vencida', PAGA: 'Paga', CANCELADA: 'Cancelada' };
+const SITUACOES: Record<string, string> = { ABERTA: 'Aberta', VENCIDA: 'Vencida', PAGA: 'Paga', ISENTA: 'Isenta', CANCELADA: 'Cancelada' };
 
 /** A competência do mês já vem aplicada (teste de telas de 27/09/2026); o "✕" do campo tira. */
 function filtroVazio(): FiltroCobrancas {

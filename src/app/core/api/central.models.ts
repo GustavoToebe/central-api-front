@@ -5,7 +5,7 @@ export type TipoRecurso = 'LIMITE' | 'FUNCIONALIDADE';
 export type Periodicidade = 'MENSAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
 export type SituacaoComercial = 'TRIAL' | 'ATIVA' | 'INADIMPLENTE' | 'BLOQUEADA' | 'CANCELADA';
 export type SituacaoProvisionamento = 'PENDENTE' | 'PROCESSANDO' | 'ATIVA' | 'ERRO';
-export type StatusCobranca = 'ABERTA' | 'PAGA' | 'CANCELADA';
+export type StatusCobranca = 'ABERTA' | 'PAGA' | 'CANCELADA' | 'ISENTA';
 export type FormaPagamento = 'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO' | 'DINHEIRO' | 'TRANSFERENCIA' | 'BOLETO' | 'OUTRO';
 
 // ---- Clientes
@@ -272,6 +272,10 @@ export interface Contratacao {
   adminEmail: string;
   versaoDireitos: number;
   direitos: Direitos;
+  /** Isenta de cobrança: as cobranças até `isentaAte` (vazio = sem fim) nascem isentas. */
+  isenta: boolean;
+  isencaoMotivo: string | null;
+  isentaAte: string | null;
   adicionais: AdicionalContratadoResponse[];
   historico: Historico[];
 }

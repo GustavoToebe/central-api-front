@@ -33,6 +33,8 @@ describe('rotulos', () => {
     expect(tomCobranca('ABERTA', true)).toBe('bo-bad');
     expect(rotuloStatusCobranca('ABERTA', false)).toBe('Aberta');
     expect(tomCobranca('PAGA', false)).toBe('bo-ok');
+    expect(rotuloStatusCobranca('ISENTA', false)).toBe('Isenta');
+    expect(tomCobranca('ISENTA', false)).toBe('bo-mute');
     expect(rotuloFormaPagamento('CARTAO_CREDITO')).toBe('Cartão de crédito');
     expect(rotuloFormaPagamento(null)).toBe('—');
   });

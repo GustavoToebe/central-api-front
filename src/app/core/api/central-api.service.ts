@@ -96,6 +96,13 @@ export class CentralApiService {
   isentar(id: string, cobrancaId: string, motivo: string | null) {
     return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/${cobrancaId}/isentar`, { motivo });
   }
+  /** Isenta a contratação; `ate` em `AAAA-MM` é a última competência isenta (vazio = sem data para acabar). */
+  isentarContratacao(id: string, motivo: string, ate: string | null) {
+    return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/isencao`, { motivo, ate });
+  }
+  encerrarIsencao(id: string) {
+    return this.http.delete<Financeiro>(`${this.api}/contratacoes/${id}/isencao`);
+  }
   /** Cancela a cobrança e emite outra, em aberto, para a mesma competência. */
   reemitir(id: string, cobrancaId: string) {
     return this.http.post<Financeiro>(`${this.api}/contratacoes/${id}/cobrancas/${cobrancaId}/reemitir`, {});

@@ -23,7 +23,8 @@ const PROVISIONAMENTO: Record<SituacaoProvisionamento, { rotulo: string; tom: To
 const STATUS_COBRANCA: Record<StatusCobranca, string> = {
   ABERTA: 'Aberta',
   PAGA: 'Paga',
-  CANCELADA: 'Cancelada'
+  CANCELADA: 'Cancelada',
+  ISENTA: 'Isenta'
 };
 
 const FORMA_PAGAMENTO: Record<FormaPagamento, string> = {
@@ -71,7 +72,7 @@ export function rotuloStatusCobranca(s: StatusCobranca, vencida: boolean): strin
 
 export function tomCobranca(s: StatusCobranca, vencida: boolean): Tom {
   if (s === 'PAGA') return 'bo-ok';
-  if (s === 'CANCELADA') return 'bo-mute';
+  if (s === 'CANCELADA' || s === 'ISENTA') return 'bo-mute';
   return vencida ? 'bo-bad' : 'bo-warn';
 }
 
@@ -208,6 +209,9 @@ const ACOES_HISTORICO: Record<string, string> = {
   INADIMPLENTE: 'Marcada inadimplente',
   PAGAMENTO: 'Pagamento registrado',
   ISENCAO: 'Cobrança isenta',
+  ISENCAO_CONTRATACAO: 'Contratação isenta de cobrança',
+  FIM_ISENCAO: 'Isenção encerrada',
+  REGULARIZADA: 'Voltou a ativa (sem cobrança vencida)',
   DADOS_PROVISIONAMENTO: 'Nome, slug ou administrador alterados',
   PROVISIONADA: 'Instância criada no aplicativo',
   PROVISIONAMENTO_ERRO: 'Erro no provisionamento',
