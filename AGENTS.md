@@ -54,6 +54,13 @@ Angular 21 (standalone, control flow `@if/@for`, `input()` com
 - Desempenho: `OnPush` + `markForCheck()` depois de cada carga, `track` por id, nada que crie array no template,
   debounce de 300 ms em busca que vai à API.
 
+## Design: os 3 pilares (todos os apps)
+Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em tela. A cor da marca muda por app; o resto não.
+- **Cor com significado:** verde = positivo (ativo, PAGA, criada no app); âmbar = atenção (TRIAL, pendente, ABERTA); vermelho = problema ou destrutivo (BLOQUEADA, VENCIDA, erro, excluir); cinza = encerrado (cancelada, inativo, isenta). Marca (`var(--brand)`) nunca diz status. Status sempre em micro-badge **com texto**.
+- **Blocos:** tudo em cartão (16px, borda fina, `blur(12px)`); a ficha é feita de blocos pequenos, cada um com seus botões.
+- **SaaS limpo:** micro-badge 11px caixa-alta com fundo translúcido e borda fina; tabela com cabeçalho de 45px, linha de 55px ou mais e hover realçado.
+- Marca só por variável (`--brand`...), nunca hex. Ação destrutiva: botão de perigo + diálogo do sistema.
+
 ## Regras
 - O painel nunca exibe dado de negócio dos apps (nomes de pessoas etc.), só contagens.
 - Nada de segredo de integração no front.

@@ -7,3 +7,4 @@
 | [../AGENTS.md](../AGENTS.md) | Regras atuais do front |
 | [../CLAUDE.md](../CLAUDE.md) | Atalho que importa o AGENTS.md |
 | [../README.md](../README.md) | Como rodar |
+| [design-system.md](design-system.md) | Os 3 pilares do design e as classes de cada app |
