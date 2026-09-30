@@ -10,11 +10,11 @@ import { AuthService } from '../../core/auth/auth.service';
   imports: [ReactiveFormsModule, OlhoSenhaComponent],
   template: `
     <div class="bo relative grid min-h-screen place-items-center overflow-hidden p-4">
-      <div class="pointer-events-none absolute left-1/2 top-0 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-[#e10600]/20 blur-3xl"></div>
-      <div class="relative w-full max-w-md rounded-2xl border border-[#2a2a2a] border-t-[3px] border-t-[#e10600] bg-[#111] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+      <div class="pointer-events-none absolute left-1/2 top-0 h-64 w-[36rem] -translate-x-1/2 rounded-full blur-3xl" [style.background]="'var(--brand-glow)'"></div>
+      <div class="relative w-full max-w-md rounded-2xl border border-[#2a2a2a] bg-[#111] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-md" [style.border-top]="'3px solid var(--brand)'">
         <div class="mb-8">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#e10600] text-lg font-black">C</div>
-          <h1 class="text-2xl font-extrabold tracking-tight">Central</h1>
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl text-lg font-black text-white shadow-md" [style.background]="'var(--brand)'">C</div>
+          <h1 class="text-2xl font-extrabold tracking-tight text-white">Central</h1>
           <p class="mt-2 text-sm text-neutral-400">Acesso do operador. Clientes dos aplicativos entram pelo próprio aplicativo.</p>
         </div>
         <form [formGroup]="form" (ngSubmit)="entrar()" class="space-y-4">
