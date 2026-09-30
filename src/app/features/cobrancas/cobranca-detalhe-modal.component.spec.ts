@@ -28,8 +28,8 @@ describe('CobrancaDetalheModalComponent', () => {
       observacao: 'Paróquia parceira',
       itens: [],
       cobranca: {
-        sequencial: 1, id: 'c1', contratacaoId: 'k1', clienteId: 'cl1', clienteNome: 'Maria Toebe', produtoCodigo: 'SERVIREA',
-        nomeInstancia: 'Paróquia São José Operário', planoNome: 'Servirea Free', periodicidade: 'MENSAL',
+        sequencial: 1, id: 'c1', contratacaoId: 'k1', clienteId: 'cl1', clienteNome: 'Maria Toebe', produtoCodigo: 'SERVIRE',
+        nomeInstancia: 'Paróquia São José Operário', planoNome: 'Servire Free', periodicidade: 'MENSAL',
         competenciaInicio: '2026-09-01', competenciaFim: '2026-09-30', vencimento: '2026-09-27', valor: 0,
         status: 'ISENTA', vencida: false, pagoEm: null, valorPago: null, formaPagamento: null
       }
