@@ -16,7 +16,7 @@ import { EstadoListaComponent } from '../comum/estado-lista.component';
   template: `
     <div class="space-y-4">
       <app-cabecalho-pagina titulo="Contratações"
-        subtitulo="Cada contratação é uma instância de um aplicativo (no Servire, uma paróquia).">
+        subtitulo="Cada contratação é uma instância de um aplicativo (no Servirea, uma paróquia).">
         <a routerLink="/contratacoes/nova" class="bo-btn" acoes>Nova contratação</a>
       </app-cabecalho-pagina>
 

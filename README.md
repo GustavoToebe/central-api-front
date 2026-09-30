@@ -1,7 +1,7 @@
 # Central — painel do operador
 
 Front Angular da **Central**: o painel onde o operador do SaaS cadastra
-clientes, contrata aplicativos (Servire, academia, ...), gerencia planos,
+clientes, contrata aplicativos (Servirea, academia, ...), gerencia planos,
 adicionais e cobranças, acompanha o provisionamento e entra em suporte.
 
 API: [`central-api-back`](https://github.com/GustavoToebe/central-api-back).
@@ -11,9 +11,9 @@ O desenho completo e o contrato com os aplicativos estão em
 ## Estado atual
 
 **Etapa 4 pronta (26/09/2026).** Todas as telas do painel sobre a API da
-Central, com testes. Validado de ponta a ponta com Central + Servire rodando
-juntos: contratação criada no painel vira paróquia no Servire, bloqueio chega
-ao Servire pelo webhook, suporte abre a paróquia com código de uso único,
+Central, com testes. Validado de ponta a ponta com Central + Servirea rodando
+juntos: contratação criada no painel vira paróquia no Servirea, bloqueio chega
+ao Servirea pelo webhook, suporte abre a paróquia com código de uso único,
 sessão renova pelo cookie com CSRF.
 
 | Tela | Rota | O que faz |
@@ -24,7 +24,7 @@ sessão renova pelo cookie com CSRF.
 | Detalhe da contratação | abas Resumo, Financeiro, Histórico | direitos enviados, edição de nome/slug/admin (só se `provisionamentoEditavel`), troca de plano, adicionais, bloquear/desbloquear/cancelar, entrar em suporte; cobranças com competência `10/2026`, botão "Pagar" (modal), detalhe da cobrança ao clicar, estorno, isenção, cobranças adiantadas com competência inicial e final; histórico |
 | Logs | `/logs` e aba "Erros" da contratação | erros de servidor que os aplicativos relataram (90 dias), com filtro por data, produto e pesquisa; usuário só pelo id |
 | Cobranças | `/cobrancas` | todas as cobranças com filtros (cliente/instância, produto, situação, forma, competência, vencimento); pagar várias de clientes diferentes no mesmo modal; detalhe com plano e adicionais |
-| Catálogo | `/catalogo/produtos`, `/recursos`, `/planos`, `/adicionais` | produtos (código `SERVIRE` + URL de integração), recursos (sugestões do aplicativo com o código exato, limite com valor padrão), planos com preço por periodicidade no próprio cadastro e recursos adicionados um a um, adicionais |
+| Catálogo | `/catalogo/produtos`, `/recursos`, `/planos`, `/adicionais` | produtos (código `SERVIREA` + URL de integração), recursos (sugestões do aplicativo com o código exato, limite com valor padrão), planos com preço por periodicidade no próprio cadastro e recursos adicionados um a um, adicionais |
 
 Cadastro de cliente com máscara e validação (CPF para PF, CNPJ para PJ, inclusive alfanumérico;
 CEP, UF, telefone e e-mail dos contatos) e endereço preenchido pelo CEP (ViaCEP). Mesmas regras de
@@ -37,7 +37,7 @@ segredo de integração no front.
 
 ```bash
 npm ci
-npm start -- --port 4201   # http://localhost:4201 (a 4200 fica com o front do Servire); API em http://localhost:8081
+npm start -- --port 4201   # http://localhost:4201 (a 4200 fica com o front do Servirea); API em http://localhost:8081
 npm test                # Karma + Chrome headless
 npm run build:prod
 ```

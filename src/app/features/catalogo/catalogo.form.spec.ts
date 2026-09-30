@@ -4,13 +4,13 @@ import {
 
 describe('catalogo.form', () => {
   it('código em maiúsculas e sem espaço', () => {
-    expect(codigo(' servire ')).toBe('SERVIRE');
+    expect(codigo(' servirea ')).toBe('SERVIREA');
     expect(codigo('plano basico')).toBe('PLANO_BASICO');
   });
 
   it('produto: URL sem barra final e vazia vira nula', () => {
-    expect(montarProdutoRequest({ codigo: 'servire', nome: ' Servire ', urlBaseIntegracao: 'https://api.servirea.com.br/', ativo: true }))
-      .toEqual({ codigo: 'SERVIRE', nome: 'Servire', urlBaseIntegracao: 'https://api.servirea.com.br', ativo: true });
+    expect(montarProdutoRequest({ codigo: 'servirea', nome: ' Servirea ', urlBaseIntegracao: 'https://api.servirea.com.br/', ativo: true }))
+      .toEqual({ codigo: 'SERVIREA', nome: 'Servirea', urlBaseIntegracao: 'https://api.servirea.com.br', ativo: true });
     expect(montarProdutoRequest({ codigo: 'x', nome: 'x', urlBaseIntegracao: ' ', ativo: false }).urlBaseIntegracao).toBeNull();
   });
 

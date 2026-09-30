@@ -7,7 +7,7 @@ import { CobrancasComponent } from './cobrancas.component';
 
 const ABERTA = {
   id: 'cb1', sequencial: 7, status: 'ABERTA', vencida: false, clienteNome: 'Paróquia A', nomeInstancia: 'A',
-  produtoCodigo: 'SERVIRE', planoNome: 'Pro', competenciaInicio: '2026-09-01', competenciaFim: '2026-09-30',
+  produtoCodigo: 'SERVIREA', planoNome: 'Pro', competenciaInicio: '2026-09-01', competenciaFim: '2026-09-30',
   vencimento: '2026-09-10', valor: 100, pagoEm: null, formaPagamento: null
 } as unknown as CobrancaLinha;
 

@@ -2,7 +2,7 @@ import { Periodicidade, Preco, SalvarAdicionalRequest, SalvarPlanoRequest, Salva
 import { valorOuNulo } from '../contratacoes/contratacao.form';
 import { hojeIso, textoOuNulo } from '../comum/rotulos';
 
-/** Códigos em maiúsculas, sem espaço (o app pede exatamente `SERVIRE`). */
+/** Códigos em maiúsculas, sem espaço (o app pede exatamente `SERVIREA`). */
 export function codigo(texto: string): string {
   return texto.trim().toUpperCase().replace(/\s+/g, '_');
 }

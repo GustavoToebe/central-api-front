@@ -23,7 +23,7 @@ function gravarRecolhido(v: boolean): void {
   try { if (v) localStorage.setItem(CHAVE_RECOLHIDO, 'true'); else localStorage.removeItem(CHAVE_RECOLHIDO); } catch { /* noop */ }
 }
 
-/** Moldura do painel: barra preta com filete vermelho e menu lateral (backoffice antigo do Servire). */
+/** Moldura do painel: barra preta com filete vermelho e menu lateral (backoffice antigo do Servirea). */
 @Component({
   selector: 'app-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],

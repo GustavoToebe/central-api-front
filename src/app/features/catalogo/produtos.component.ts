@@ -13,7 +13,7 @@ import { montarProdutoRequest } from './catalogo.form';
   imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent, EstadoListaComponent],
   template: `
     <div class="space-y-6">
-      <app-cabecalho-pagina titulo="Produtos" subtitulo="Os aplicativos do ecossistema. O código precisa ser o que o app pede (o Servire usa SERVIRE).">
+      <app-cabecalho-pagina titulo="Produtos" subtitulo="Os aplicativos do ecossistema. O código precisa ser o que o app pede (o Servirea usa SERVIREA).">
         <button type="button" class="bo-btn" acoes (click)="novo()">Novo produto</button>
       </app-cabecalho-pagina>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }

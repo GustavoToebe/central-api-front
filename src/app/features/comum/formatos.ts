@@ -1,6 +1,6 @@
 /**
  * Máscaras e validações de documentos e contatos (26/09/2026). São as mesmas
- * regras de `web/Formatos.java` da API da Central (e do Servire), que é quem decide: aqui elas só
+ * regras de `web/Formatos.java` da API da Central (e do Servirea), que é quem decide: aqui elas só
  * avisam antes de enviar e deixam o campo no formato em que vai ser gravado.
  * As funções `formatar*` aceitam texto pela metade (máscara enquanto digita).
  */

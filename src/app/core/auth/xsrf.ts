@@ -3,7 +3,7 @@ import { HttpRequest } from '@angular/common/http';
 const METODOS_SEGUROS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /**
- * Header CSRF lido do cookie `CENTRAL-XSRF-TOKEN` que a API grava. Nome próprio: o Servire grava
+ * Header CSRF lido do cookie `CENTRAL-XSRF-TOKEN` que a API grava. Nome próprio: o Servirea grava
  * `XSRF-TOKEN` no mesmo domínio pai e um derrubava a sessão do outro (27/09/2026).
  *
  * O `withXsrfConfiguration` do Angular não serve aqui: ele ignora URL

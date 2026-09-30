@@ -14,7 +14,7 @@ Commits vão direto na `main` (decisão de 25/09/2026).
 ## Stack
 Angular 21 (standalone, control flow `@if/@for`, `input()` com
 `withComponentInputBinding`), Tailwind 3, Karma + Jasmine. Mesma base do
-`servire-api-front`. Visual preto e vermelho do backoffice antigo do Servire
+`servire-api-front`. Visual preto e vermelho do backoffice antigo do Servirea
 (classes `bo-*` em `src/styles.scss`).
 
 ## Estrutura
