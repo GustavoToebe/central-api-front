@@ -29,36 +29,51 @@ function gravarRecolhido(v: boolean): void {
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
     <div class="bo min-h-screen">
-      <header class="bo-top fixed inset-x-0 top-0 z-40 flex items-center gap-3 px-4 backdrop-blur-md">
-        <button class="rounded-lg p-2 text-neutral-300 hover:bg-white/5 lg:hidden" (click)="menuAberto = !menuAberto" aria-label="Abrir menu">
-          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        </button>
-        <a routerLink="/clientes" class="flex items-center gap-2 font-extrabold tracking-tight">
-          <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm text-white shadow-xs" [style.background]="'var(--brand)'">C</span>
-          <span class="text-white tracking-wider">CENTRAL</span>
-        </a>
-        <span class="hidden text-xs font-medium text-neutral-400 sm:block">Gestão comercial dos aplicativos</span>
-        
-        <div class="ml-auto flex items-center gap-2">
-          <a routerLink="/ajustes" class="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold text-neutral-400 hover:bg-white/5 hover:text-white transition" title="Ajustes visuais">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>
-            <span class="hidden sm:inline">Ajustes</span>
+      <header class="bo-top fixed inset-x-0 top-0 z-40 flex h-16 md:h-20 items-center justify-between gap-3 px-4 md:px-8 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+          <button class="rounded-lg p-2 text-neutral-300 hover:bg-white/5 lg:hidden" (click)="menuAberto = !menuAberto" aria-label="Abrir menu">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <a routerLink="/clientes" class="flex items-center gap-2.5 font-extrabold tracking-tight">
+            <span class="flex h-9 w-9 items-center justify-center rounded-xl text-sm text-white shadow-xs" [style.background]="'var(--brand)'">C</span>
+            <span class="text-white tracking-wider text-base">CENTRAL</span>
           </a>
-          <a routerLink="/meu-perfil" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-white/5 transition" title="Meu perfil">
+          <span class="hidden text-xs font-medium text-neutral-400 sm:block">Gestão comercial dos aplicativos</span>
+        </div>
+        
+        <div class="relative">
+          <button type="button" id="perfil-menu" class="text-right flex items-center gap-3 cursor-pointer p-1.5 rounded-xl hover:bg-white/5 transition"
+            aria-haspopup="menu" [attr.aria-expanded]="usuarioAberto" (click)="usuarioAberto = !usuarioAberto">
             <div class="hidden text-right leading-tight sm:block">
               <div class="text-sm font-semibold text-white">{{ operadorNome }}</div>
-              <div class="text-[11px] text-neutral-400">{{ operadorEmail }}</div>
+              <div class="text-xs text-neutral-400">Suporte</div>
             </div>
             <div class="bo-avatar h-9 w-9 text-xs ring-2" [style.ring-color]="'var(--brand)'">{{ marca }}</div>
-          </a>
+            <svg class="h-4 w-4 text-neutral-400 transition-transform duration-200" [class.rotate-180]="usuarioAberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          @if (usuarioAberto) {
+            <div id="perfil-dropdown" role="menu" aria-labelledby="perfil-menu" class="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-[#141417] p-2 shadow-2xl border border-[#26262c] z-50">
+              <a routerLink="/meu-perfil" role="menuitem" (click)="usuarioAberto = false" class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-neutral-300 hover:bg-white/5 hover:text-white transition">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Meus dados
+              </a>
+              <a routerLink="/ajustes" role="menuitem" (click)="usuarioAberto = false" class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-neutral-300 hover:bg-white/5 hover:text-white transition">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Ajustes
+              </a>
+              <div class="my-1 border-t border-[#26262c]"></div>
+              <button type="button" role="menuitem" (click)="sair()" class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold text-neutral-400 hover:bg-red-500/10 hover:text-red-400 transition cursor-pointer">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sair
+              </button>
+            </div>
+          }
         </div>
       </header>
 
       <aside
         [class.recolhido]="compacto()"
-        class="bo-rail fixed bottom-0 left-0 top-14 z-30 flex flex-col gap-1 overflow-hidden lg:translate-x-0"
+        class="bo-rail fixed bottom-0 left-0 top-16 md:top-20 z-30 flex flex-col gap-1 overflow-hidden lg:translate-x-0"
         [class.-translate-x-full]="!menuAberto" [class.translate-x-0]="menuAberto">
         @for (grupo of grupos; track grupo.titulo) {
           @if (!compacto()) {
@@ -88,36 +103,18 @@ function gravarRecolhido(v: boolean): void {
           }
         }
 
-        <div class="mt-auto space-y-1">
-          <a routerLink="/ajustes" routerLinkActive="active" (click)="menuAberto = false"
-            class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition"
-            [title]="compacto() ? 'Ajustes visuais' : ''">
-            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>
-            </svg>
-            @if (!compacto()) { <span>Ajustes visuais</span> }
-          </a>
-          <a routerLink="/meu-perfil" routerLinkActive="active" (click)="menuAberto = false"
-            class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition"
-            [title]="compacto() ? 'Meu perfil' : ''">
-            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
-            @if (!compacto()) { <span>Meu perfil</span> }
-          </a>
-          <button class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-neutral-400 hover:bg-[#161616] hover:text-white transition cursor-pointer"
-            [title]="compacto() ? 'Sair' : ''" (click)="sair()">
-            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/><path d="M13 16l4-4-4-4"/><path d="M17 12H9"/></svg>
-            @if (!compacto()) { <span>Sair</span> }
+        <!-- Botão recolher/expandir (só desktop) -->
+        <div class="mt-auto w-full shrink-0 border-t border-[#26262c] p-3" [class.px-2]="compacto()" [class.px-4]="!compacto()">
+          <button type="button"
+            class="hidden lg:flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-neutral-400 hover:bg-white/10 hover:text-white cursor-pointer transition"
+            [class.justify-center]="compacto()"
+            [class.px-0]="compacto()"
+            [attr.aria-label]="recolhido() ? 'Expandir menu' : 'Recolher menu'"
+            data-menu="recolher"
+            (click)="alternarRecolhido()">
+            <span class="text-xl font-bold">{{ recolhido() ? '»' : '«' }}</span>
           </button>
         </div>
-
-        <!-- Botão recolher/expandir (só desktop) -->
-        <button type="button"
-          class="hidden lg:flex items-center justify-center rounded-xl px-3 py-2 text-xs text-neutral-500 hover:text-neutral-300 cursor-pointer"
-          [attr.aria-label]="recolhido() ? 'Expandir menu' : 'Recolher menu'"
-          data-menu="recolher"
-          (click)="alternarRecolhido()">
-          {{ recolhido() ? '»' : '«' }}
-        </button>
       </aside>
 
       @if (menuAberto) {
@@ -133,6 +130,20 @@ export class LayoutComponent {
   private router = inject(Router);
 
   menuAberto = false;
+  usuarioAberto = false;
+
+  @HostListener('document:keydown.escape')
+  aoPressionarEsc(): void {
+    this.usuarioAberto = false;
+  }
+
+  // O header tem backdrop-filter, que prende elementos fixed dentro dele: por isso o clique fora é tratado no documento.
+  @HostListener('document:click', ['$event'])
+  aoClicarNoDocumento(e: Event): void {
+    if (this.usuarioAberto && !(e.target as HTMLElement | null)?.closest('#perfil-menu, #perfil-dropdown')) {
+      this.usuarioAberto = false;
+    }
+  }
 
   @HostListener('window:resize')
   aoRedimensionar(): void {
@@ -179,6 +190,7 @@ export class LayoutComponent {
   }
 
   async sair(): Promise<void> {
+    this.usuarioAberto = false;
     await this.auth.logout();
     await this.router.navigate(['/login']);
   }

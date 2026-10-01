@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FONTES_CENTRAL, PALETAS_CENTRAL, ThemeService } from '../../core/theme/theme.service';
+import { CONTRASTES_CENTRAL, FONTES_CENTRAL, PALETAS_CENTRAL, ThemeService } from '../../core/theme/theme.service';
 
 @Component({
   selector: 'app-ajustes',
@@ -45,6 +45,27 @@ import { FONTES_CENTRAL, PALETAS_CENTRAL, ThemeService } from '../../core/theme/
               }
             </button>
           }
+        </div>
+      </section>
+
+      <!-- Contraste das bordas: Padrão ou Forte -->
+      <section class="bo-card p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-black text-white">Contraste das bordas</h2>
+            <p class="text-xs text-neutral-400">Deixa as bordas de cartões, campos e divisões mais nítidas.</p>
+          </div>
+          <div class="inline-flex rounded-xl border border-[#2e2e2e] bg-[#181818] p-1" role="group" aria-label="Contraste das bordas" data-contraste>
+            @for (c of contrastes; track c.id) {
+              <button type="button"
+                class="cursor-pointer rounded-lg px-4 py-1.5 text-sm font-bold transition-colors"
+                [class.bg-[var(--brand)]]="tema.contraste() === c.id"
+                [class.text-white]="tema.contraste() === c.id"
+                [class.text-neutral-300]="tema.contraste() !== c.id"
+                [attr.aria-pressed]="tema.contraste() === c.id"
+                (click)="tema.definirContraste(c.id)">{{ c.rotulo }}</button>
+            }
+          </div>
         </div>
       </section>
 
@@ -126,4 +147,5 @@ export class AjustesComponent {
   tema = inject(ThemeService);
   paletas = PALETAS_CENTRAL;
   fontes = FONTES_CENTRAL;
+  contrastes = CONTRASTES_CENTRAL;
 }

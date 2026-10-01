@@ -74,17 +74,31 @@ export const FONTES_CENTRAL: FonteCentral[] = [
   { id: 'extra', rotulo: '20 px', detalhe: 'Extra acessível', tamanhoPx: 20 }
 ];
 
+export type ContrasteCentralId = 'padrao' | 'forte';
+
+export interface ContrasteCentral {
+  id: ContrasteCentralId;
+  rotulo: string;
+}
+
+export const CONTRASTES_CENTRAL: ContrasteCentral[] = [
+  { id: 'padrao', rotulo: 'Padrão' },
+  { id: 'forte', rotulo: 'Forte' }
+];
+
 const CHAVE_STORAGE = 'central.tema';
 
 interface TemaConfig {
   paletaId: string;
   fonteId: 'normal' | 'medio' | 'grande' | 'extra';
+  contrasteId: ContrasteCentralId;
   vibrar: boolean;
 }
 
 const PADRAO: TemaConfig = {
   paletaId: 'vermelho-carmim',
   fonteId: 'normal',
+  contrasteId: 'padrao',
   vibrar: true
 };
 
@@ -92,6 +106,7 @@ const PADRAO: TemaConfig = {
 export class ThemeService {
   readonly paleta = signal<string>(PADRAO.paletaId);
   readonly fonte = signal<'normal' | 'medio' | 'grande' | 'extra'>(PADRAO.fonteId);
+  readonly contraste = signal<ContrasteCentralId>(PADRAO.contrasteId);
   readonly vibrar = signal<boolean>(PADRAO.vibrar);
 
   constructor() {
@@ -114,6 +129,13 @@ export class ThemeService {
     this.notificarToque();
   }
 
+  definirContraste(id: ContrasteCentralId): void {
+    this.contraste.set(id);
+    this.aplicarCss();
+    this.salvar();
+    this.notificarToque();
+  }
+
   definirVibrar(ativo: boolean): void {
     this.vibrar.set(ativo);
     this.salvar();
@@ -123,6 +145,7 @@ export class ThemeService {
   restaurar(): void {
     this.paleta.set(PADRAO.paletaId);
     this.fonte.set(PADRAO.fonteId);
+    this.contraste.set(PADRAO.contrasteId);
     this.vibrar.set(PADRAO.vibrar);
     this.aplicarCss();
     this.salvar();
@@ -141,6 +164,9 @@ export class ThemeService {
         if (parsed.fonteId && FONTES_CENTRAL.some(f => f.id === parsed.fonteId)) {
           this.fonte.set(parsed.fonteId);
         }
+        if (parsed.contrasteId && CONTRASTES_CENTRAL.some(c => c.id === parsed.contrasteId)) {
+          this.contraste.set(parsed.contrasteId);
+        }
         if (typeof parsed.vibrar === 'boolean') {
           this.vibrar.set(parsed.vibrar);
         }
@@ -157,6 +183,7 @@ export class ThemeService {
       const dados: TemaConfig = {
         paletaId: this.paleta(),
         fonteId: this.fonte(),
+        contrasteId: this.contraste(),
         vibrar: this.vibrar()
       };
       localStorage.setItem(CHAVE_STORAGE, JSON.stringify(dados));
@@ -170,11 +197,17 @@ export class ThemeService {
     const raiz = document.documentElement;
     const paleta = PALETAS_CENTRAL.find(p => p.id === this.paleta()) ?? PALETAS_CENTRAL[0];
     const fonte = FONTES_CENTRAL.find(f => f.id === this.fonte()) ?? FONTES_CENTRAL[0];
+    const contraste = this.contraste();
 
     raiz.style.setProperty('--brand', paleta.brand);
     raiz.style.setProperty('--brand-hover', paleta.brandHover);
     raiz.style.setProperty('--brand-glow', paleta.brandGlow);
     raiz.style.setProperty('--fonte-base', `${fonte.tamanhoPx}px`);
+
+    raiz.style.setProperty('--border-line', contraste === 'forte' ? '#4a4a58' : '#26262c');
+    raiz.style.setProperty('--field-border', contraste === 'forte' ? '#5c5c70' : '#33333d');
+
+    raiz.setAttribute('data-contrast', contraste);
 
     raiz.classList.remove('fonte-normal', 'fonte-medio', 'fonte-grande', 'fonte-extra');
     raiz.classList.add(`fonte-${fonte.id}`);
