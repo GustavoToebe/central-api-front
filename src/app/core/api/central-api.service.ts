@@ -110,6 +110,13 @@ export class CentralApiService {
 
   // ---- Cobranças (todas as contratações)
   cobrancas(filtro: FiltroCobrancas) { return this.http.get<CobrancaLinha[]>(`${this.api}/cobrancas`, { params: parametros(filtro) }); }
+  pagamentosOnline(id: string) {
+    return this.http.get<{ pagamentoId: string; situacao: string; statusProvedor: string; aplicado: boolean }[]>(`${this.api}/cobrancas/${id}/pagamentos-online`);
+  }
+  reconciliarPagamento(id: string) { return this.http.post<void>(`${this.api}/cobrancas/pagamentos-online/${id}/reconciliar`, {}); }
+  checkoutCobranca(id: string, tentativa: string) {
+    return this.http.post<{ tentativaId: string; url: string; situacao: string }>(`${this.api}/cobrancas/${id}/checkout`, {}, { headers: { 'Idempotency-Key': tentativa } });
+  }
   cobranca(id: string) { return this.http.get<CobrancaDetalhe>(`${this.api}/cobrancas/${id}`); }
   pagarCobrancas(corpo: RegistrarPagamentoRequest) { return this.http.post<void>(`${this.api}/cobrancas/pagamentos`, corpo); }
 
