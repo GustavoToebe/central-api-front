@@ -5,6 +5,7 @@ import { Observable, catchError, finalize, map, shareReplay, switchMap, throwErr
 import { environment } from '../../../environments/environment';
 import { LoginResponse, guardarSessao, limparSessao, tokenAtual } from './sessao';
 import { cabecalhoXsrf, comXsrf } from './xsrf';
+import { caminhoDaApi } from './destino-api';
 
 /**
  * Refresh em andamento, compartilhado: vários 401 ao mesmo tempo esperam o
@@ -22,13 +23,14 @@ let refreshEmAndamento: Observable<string> | null = null;
  */
 export const centralAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const api = environment.apiUrl;
-  if (!req.url.startsWith(api)) return next(req);
+  const caminho = caminhoDaApi(req.url, api);
+  if (caminho === null) return next(req);
 
   // inject() só na parte síncrona: dentro do catchError lança NG0203.
   const backend = inject(HttpBackend);
   const router = inject(Router);
 
-  const rotaDeAuth = req.url.startsWith(`${api}/auth/`);
+  const rotaDeAuth = caminho.startsWith('/auth/');
   const token = tokenAtual();
   let autenticada = comXsrf(req.clone({ withCredentials: true }));
   if (!rotaDeAuth && token) {

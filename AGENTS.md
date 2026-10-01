@@ -70,3 +70,8 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - `[name]` com `ngModel` não vira atributo HTML; em teste de navegador, ache o campo pelo rótulo.
 - Confirmação é painel na própria tela, nunca `confirm()`/`alert()` do navegador.
 - Antes de commitar: `npm test` e `npm run build:prod` verdes.
+
+## Segurança e CI na branch de melhorias
+
+- `core/auth/destino-api.ts` compara origem e fronteira do caminho antes de anexar Bearer, cookies e XSRF. Não substituir por `startsWith` na URL completa.
+- Pull requests executam testes e build; publicação apenas na main. Testes Angular são obrigatórios antes do build de produção.

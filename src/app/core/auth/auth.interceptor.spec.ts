@@ -148,4 +148,17 @@ describe('centralAuthInterceptor', () => {
     await expectAsync(p).toBeRejected();
     httpMock.expectNone(`${api}/auth/refresh`);
   });
+
+  it('não envia credenciais para um host parecido com o da API', () => {
+    sessionStorage.setItem('central_access', 'segredo');
+    const externa = new URL(api);
+    externa.hostname += '.externo.test';
+    externa.pathname += '/pessoas';
+    http.post(externa.href, {}).subscribe();
+    const req = httpMock.expectOne(externa.href);
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    expect(req.request.headers.has('X-XSRF-TOKEN')).toBeFalse();
+    expect(req.request.withCredentials).toBeFalse();
+    req.flush({});
+  });
 });
