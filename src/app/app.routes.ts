@@ -19,6 +19,7 @@ export const routes: Routes = [
       { path: 'meu-perfil', loadComponent: () => import('./features/perfil/meu-perfil.component').then(m => m.MeuPerfilComponent) },
       { path: 'ajustes', loadComponent: () => import('./features/ajustes/ajustes.component').then(m => m.AjustesComponent) },
       { path: 'logs', loadComponent: () => import('./features/logs/logs.component').then(m => m.LogsComponent) },
+      { path: 'financeiro', loadComponent: () => import('./features/financeiro/financeiro.component').then(m => m.FinanceiroComponent) },
       { path: 'cobrancas', loadComponent: () => import('./features/cobrancas/cobrancas.component').then(m => m.CobrancasComponent) },
       { path: 'catalogo/produtos', loadComponent: () => import('./features/catalogo/produtos.component').then(m => m.ProdutosComponent) },
       { path: 'catalogo/recursos', loadComponent: () => import('./features/catalogo/recursos.component').then(m => m.RecursosComponent) },

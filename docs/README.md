@@ -15,3 +15,5 @@
 - Histórico explica decisões antigas; contrato e código atuais definem o comportamento vigente.
 
 - [MFA](mfa.md): configuração no perfil, segundo passo de login e dados transitórios.
+
+- [Financeiro operacional](financeiro.md): comportamento, contratos e limitações.

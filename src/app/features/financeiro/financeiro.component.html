@@ -1,0 +1,118 @@
+<div class="space-y-5">
+  <app-cabecalho-pagina titulo="Financeiro" subtitulo="Despesas do SaaS, outras receitas e provisões.">
+    <div acoes>
+      <a routerLink="/cobrancas" class="bo-btn-ghost">Cobranças de assinaturas</a>
+      @if (aba === 'movimentos') { <button class="bo-btn" (click)="abrirMovimento()" [disabled]="carregando || !contasAtivas.length || !categoriasAtivas.length">Novo lançamento</button> }
+      @if (aba === 'contas') { <button class="bo-btn" (click)="abrirConta()">Nova conta</button> }
+      @if (aba === 'categorias') { <button class="bo-btn" (click)="abrirCategoria()">Nova categoria</button> }
+    </div>
+  </app-cabecalho-pagina>
+  @if (erro) { <div class="bo-card p-4 text-rose-400" role="alert">{{ erro }} <button class="bo-btn-ghost ml-3" (click)="carregar()">Tentar novamente</button></div> }
+  @if (resumo) {
+    <p class="text-sm text-neutral-400">Período: {{ resumo.de | date:'dd/MM/yyyy':'UTC' }} a {{ resumo.ate | date:'dd/MM/yyyy':'UTC' }}</p>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section class="bo-card p-4"><p>Recebido no período</p><strong class="text-xl text-emerald-400">{{ resumo.receitas | currency:'BRL' }}</strong></section>
+      <section class="bo-card p-4"><p>Pago no período</p><strong class="text-xl text-rose-400">{{ resumo.despesas | currency:'BRL' }}</strong></section>
+      <section class="bo-card p-4"><p>Resultado do período</p><strong class="text-xl">{{ resumo.resultado | currency:'BRL' }}</strong></section>
+      <section class="bo-card p-4"><p>Saldo manual até {{ resumo.ate | date:'dd/MM/yyyy':'UTC' }}</p><strong class="text-xl">{{ resumo.saldoTotal | currency:'BRL' }}</strong></section>
+    </div>
+    <section class="bo-card p-4"><h2 class="secao-titulo">Saldo por conta</h2><div class="flex flex-wrap gap-5">@for (c of resumo.contas; track c.id) { <p>{{ c.nome }}: <strong>{{ c.saldo | currency:'BRL' }}</strong></p> }</div><p class="text-xs text-neutral-400 mt-2">Saldo inicial + outras receitas recebidas − saídas pagas. Pendentes e cobranças de assinaturas não entram no saldo por conta; as cobranças ainda não têm conta bancária vinculada.</p></section>
+  }
+  @if (resumo) {
+    <section class="bo-card p-4 space-y-3">
+      <h2 class="font-semibold">Provisões do período</h2>
+      <div class="grid gap-3 sm:grid-cols-3">
+        <p>A receber <strong class="block text-amber-300">{{ resumo.receberPrevisto | currency:'BRL' }}</strong></p>
+        <p>A pagar <strong class="block text-amber-300">{{ resumo.pagarPrevisto | currency:'BRL' }}</strong></p>
+        <p>Resultado previsto <strong class="block">{{ resumo.resultadoPrevisto | currency:'BRL' }}</strong></p>
+      </div>
+      <p class="text-sm text-neutral-400">Recebido: {{ resumo.receitasCobrancas | currency:'BRL' }} de assinaturas e {{ resumo.receitasManuais | currency:'BRL' }} de outras receitas. As cobranças pagas entram automaticamente; não as cadastre novamente.</p>
+      <p class="text-xs text-neutral-400">Previsto = resultado realizado + pendentes a receber − pendentes a pagar, com vencimento no período. É uma previsão, não dinheiro disponível. Todos os valores são em reais.</p>
+    </section>
+  }
+  <nav class="flex gap-2 flex-wrap" aria-label="Seções do financeiro">
+    <button class="bo-btn-ghost" [class.selecionada]="aba === 'movimentos'" [attr.aria-pressed]="aba === 'movimentos'" (click)="aba = 'movimentos'">Lançamentos</button>
+    <button class="bo-btn-ghost" [class.selecionada]="aba === 'contas'" [attr.aria-pressed]="aba === 'contas'" (click)="aba = 'contas'">Contas / bancos</button>
+    <button class="bo-btn-ghost" [class.selecionada]="aba === 'categorias'" [attr.aria-pressed]="aba === 'categorias'" (click)="aba = 'categorias'">Categorias</button>
+  </nav>
+  <section class="bo-card p-4 space-y-4">
+    @if (aba === 'movimentos') {
+      <app-barra-filtros placeholder="Buscar descrição" [(termo)]="filtro.nome" (termoChange)="buscarTexto()" (buscar)="buscar()" [temFiltros]="true">
+        <div><label class="bo-label" for="de">Vencimento a partir de</label><app-campo-data idCampo="de" [(ngModel)]="filtro.de" /></div>
+        <div><label class="bo-label" for="ate">Vencimento até</label><app-campo-data idCampo="ate" [(ngModel)]="filtro.ate" /></div>
+        <div><label class="bo-label" for="situacao">Situação</label><select id="situacao" class="bo-field" [(ngModel)]="filtro.situacao"><option value="">Todas</option><option value="PENDENTE">Pendente</option><option value="PAGO">Pago / recebido</option><option value="CANCELADO">Cancelado</option></select></div>
+        <div><label class="bo-label" for="tipo">Tipo</label><select id="tipo" class="bo-field" [(ngModel)]="filtro.tipo"><option value="">Todos</option><option value="RECEITA">Outras receitas</option><option value="DESPESA">Despesa</option></select></div>
+        <div><label class="bo-label" for="contaFiltro">Conta</label><select id="contaFiltro" class="bo-field" [(ngModel)]="filtro.contaId"><option value="">Todas</option>@for (c of contas; track c.id) { <option [value]="c.id">{{ c.nome }}</option> }</select></div>
+        <div><label class="bo-label" for="categoriaFiltro">Categoria</label><select id="categoriaFiltro" class="bo-field" [(ngModel)]="filtro.categoriaId"><option value="">Todas</option>@for (c of categorias; track c.id) { <option [value]="c.id">{{ c.nome }}</option> }</select></div>
+      </app-barra-filtros>
+      <p class="text-xs text-neutral-400">A lista usa o vencimento; o resumo considera a data da baixa no mesmo período.</p>
+      @if (!carregando && (!contasAtivas.length || !categoriasAtivas.length)) { <p class="text-amber-300">Cadastre uma conta e uma categoria ativas antes do primeiro lançamento.</p> }
+      <div class="bo-table-rolagem"><table class="bo-table"><thead><tr><th>Vencimento</th><th>Descrição</th><th>Conta / categoria</th><th>Valor</th><th>Situação</th><th>Ações</th></tr></thead><tbody>
+        @if (!carregando) { @for (m of movimentos; track m.id) {
+          <tr><td>{{ m.vencimento | date:'dd/MM/yyyy':'UTC' }}</td><td>{{ m.descricao }}<small class="block text-neutral-400">{{ m.tipo === 'RECEITA' ? 'Outras receitas' : 'Despesa' }}</small></td><td>{{ m.conta }}<small class="block text-neutral-400">{{ m.categoria }}</small></td><td>{{ m.valor | currency:'BRL' }}</td>
+          <td><span class="situacao" [class.pago]="m.situacao === 'PAGO'" [class.pendente]="m.situacao === 'PENDENTE'">{{ m.situacao === 'PAGO' ? (m.tipo === 'RECEITA' ? 'Recebido' : 'Pago') : (m.situacao === 'PENDENTE' ? 'Pendente' : 'Cancelado') }}</span>@if (m.dataPagamento) { <small class="block">{{ m.dataPagamento | date:'dd/MM/yyyy':'UTC' }}</small> }</td>
+          <td><div class="flex gap-2 flex-wrap">
+            @if (m.situacao === 'PENDENTE') { <button class="bo-btn-ghost" (click)="abrirMovimento(m)" [disabled]="salvando">Editar</button><button class="bo-btn-danger" (click)="acao(m, 'cancelar')" [disabled]="salvando">Cancelar</button> }
+            @if (m.situacao === 'PENDENTE') { <button class="bo-btn-ghost" (click)="abrirBaixa(m)" [disabled]="salvando">Dar baixa</button> }
+            @if (m.situacao === 'PAGO') { <button class="bo-btn-danger" (click)="acao(m, 'estornar')" [disabled]="salvando">Estornar</button> }
+          </div></td></tr>
+        } }
+      </tbody></table></div>
+      <app-estado-lista [carregando]="carregando" [vazio]="!movimentos.length" />
+      <div class="flex items-center justify-between gap-3"><span>{{ total }} lançamento(s) · página {{ filtro.pagina + 1 }}</span><div class="flex gap-2"><button class="bo-btn-ghost" (click)="paginar(-1)" [disabled]="carregando || filtro.pagina === 0">Anterior</button><button class="bo-btn-ghost" (click)="paginar(1)" [disabled]="carregando || (filtro.pagina + 1) * filtro.tamanho >= total">Próxima</button></div></div>
+    } @else if (aba === 'contas') {
+      <app-barra-filtros [semBusca]="true" [temFiltros]="false" (buscar)="carregar()" />
+      <div class="bo-table-rolagem"><table class="bo-table"><thead><tr><th>Conta / banco</th><th>Saldo inicial</th><th>Data inicial</th><th>Situação</th><th>Ações</th></tr></thead><tbody>@for (c of contas; track c.id) { <tr><td>{{ c.nome }}</td><td>{{ c.saldoInicial | currency:'BRL' }}</td><td>{{ c.dataSaldoInicial | date:'dd/MM/yyyy':'UTC' }}</td><td>{{ c.ativo ? 'Ativa' : 'Inativa' }}</td><td><button class="bo-btn-ghost" (click)="abrirConta(c)">Editar</button></td></tr> }</tbody></table></div>
+      <app-estado-lista [carregando]="carregando" [vazio]="!contas.length" />
+    } @else {
+      <app-barra-filtros [semBusca]="true" [temFiltros]="false" (buscar)="carregar()" />
+      <div class="bo-table-rolagem"><table class="bo-table"><thead><tr><th>Categoria</th><th>Situação</th><th>Ações</th></tr></thead><tbody>@for (c of categorias; track c.id) { <tr><td>{{ c.nome }}</td><td>{{ c.ativo ? 'Ativa' : 'Inativa' }}</td><td><button class="bo-btn-ghost" (click)="abrirCategoria(c)">Editar</button></td></tr> }</tbody></table></div>
+      <app-estado-lista [carregando]="carregando" [vazio]="!categorias.length" />
+    }
+  </section>
+</div>
+@if (modal) {
+<app-modal [aberto]="true" [titulo]="modal === 'baixa' ? 'Dar baixa' : (modal === 'movimento' ? 'Lançamento' : (modal === 'conta' ? 'Conta / banco' : 'Categoria'))" (fechar)="fechar()">
+  <form #formulario="ngForm" (ngSubmit)="salvar(formulario)">
+    <section class="secao-form space-y-3">
+      <p class="text-sm text-neutral-400">Cadastre VPS, Supabase, Resend e outros custos como despesas pendentes, inclusive futuros. Dê baixa quando pagar. Para serviços em dólar, registre sua previsão ou o valor efetivo em reais.</p>
+      @if (modal === 'movimento') {
+        <div><label class="bo-label" for="descricao">Descrição</label><input id="descricao" name="descricao" class="bo-field" [(ngModel)]="movimentoForm.descricao" required maxlength="200" /></div>
+        <div class="grade-form"><div><label class="bo-label" for="tipoForm">Tipo</label><select id="tipoForm" name="tipo" class="bo-field" [(ngModel)]="movimentoForm.tipo"><option value="RECEITA">Outras receitas</option><option value="DESPESA">Despesa</option></select></div><div><label class="bo-label" for="valor">Valor (R$)</label><input id="valor" name="valor" class="bo-field" type="number" inputmode="decimal" min="0.01" max="999999999999.99" step="0.01" [(ngModel)]="movimentoForm.valor" required /></div></div>
+        <div><label class="bo-label" for="vencimento">Vencimento</label><app-campo-data idCampo="vencimento" name="vencimento" [(ngModel)]="movimentoForm.vencimento" required /></div>
+        <div class="grade-form"><div><label class="bo-label" for="conta">Conta</label><select id="conta" name="conta" class="bo-field" [(ngModel)]="movimentoForm.contaId" required><option value="">Selecione</option>@for (c of contasAtivas; track c.id) { <option [value]="c.id">{{ c.nome }}</option> }</select></div><div><label class="bo-label" for="categoria">Categoria</label><select id="categoria" name="categoria" class="bo-field" [(ngModel)]="movimentoForm.categoriaId" required><option value="">Selecione</option>@for (c of categoriasAtivas; track c.id) { <option [value]="c.id">{{ c.nome }}</option> }</select></div></div>
+        <div><label class="bo-label" for="observacoes">Observações (opcional)</label><textarea id="observacoes" name="observacoes" class="bo-field" [(ngModel)]="movimentoForm.observacoes" maxlength="1000"></textarea></div>
+      } @else if (modal === 'conta') {
+        <div><label class="bo-label" for="nomeConta">Nome da conta / banco</label><input id="nomeConta" name="nome" class="bo-field" [(ngModel)]="contaForm.nome" required maxlength="120" /></div>
+        <div><label class="bo-label" for="saldoInicial">Saldo inicial (R$)</label><input id="saldoInicial" name="saldoInicial" class="bo-field" type="number" inputmode="decimal" step="0.01" min="-999999999999.99" max="999999999999.99" [(ngModel)]="contaForm.saldoInicial" required /></div>
+        <div><label class="bo-label" for="dataSaldo">Data do saldo inicial</label><app-campo-data idCampo="dataSaldo" name="dataSaldo" [(ngModel)]="contaForm.dataSaldoInicial" [max]="hoje" required /></div>
+        <p class="text-xs text-neutral-400">Informe o saldo antes das primeiras baixas. Saldo e data inicial ficam protegidos depois do primeiro lançamento.</p>
+        <label class="flex gap-2"><input type="checkbox" name="ativo" [(ngModel)]="contaForm.ativo" /> Conta ativa</label>
+      } @else if (modal === 'categoria') {
+        <div><label class="bo-label" for="nomeCategoria">Nome da categoria</label><input id="nomeCategoria" name="nome" class="bo-field" [(ngModel)]="categoriaForm.nome" required maxlength="120" /></div>
+        <label class="flex gap-2"><input type="checkbox" name="ativo" [(ngModel)]="categoriaForm.ativo" /> Categoria ativa</label>
+      } @else {
+        <p>{{ baixando?.descricao }} · {{ baixando?.valor | currency:'BRL' }}</p>
+        <div><label class="bo-label" for="dataPagamento">Data do pagamento / recebimento</label><app-campo-data idCampo="dataPagamento" name="dataPagamento" [(ngModel)]="dataPagamento" [max]="hoje" required /></div>
+        <p class="text-xs text-neutral-400">Confirme apenas quando o dinheiro tiver sido pago ou recebido.</p>
+      }
+    </section>
+    <app-rodape-form [carregando]="salvando" [rotuloSalvar]="modal === 'baixa' ? 'Confirmar baixa' : 'Salvar'" (cancelar)="fechar()" />
+  </form>
+</app-modal>
+}
+
+@if (confirmacao) {
+  <app-modal [aberto]="true" titulo="Confirmar ação" tamanho="sm" [fecharNoFundo]="false" (fechar)="responderConfirmacao(false)">
+    <p>{{ confirmacao.mensagem }}</p>
+    <div rodape class="flex justify-between gap-3">
+      <button type="button" class="bo-btn-ghost" (click)="responderConfirmacao(false)">Voltar</button>
+      <button type="button" [class]="confirmacao.perigo ? 'bo-btn-danger' : 'bo-btn'" (click)="responderConfirmacao(true)">{{ confirmacao.confirmar }}</button>
+    </div>
+  </app-modal>
+}
+@if (aviso) {
+  <app-modal [aberto]="true" titulo="Não foi possível concluir" tamanho="sm" (fechar)="aviso = ''">
+    <p role="alert">{{ aviso }}</p><button rodape type="button" class="bo-btn" (click)="aviso = ''">Entendi</button>
+  </app-modal>
+}

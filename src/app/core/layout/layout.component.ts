@@ -165,6 +165,7 @@ export class LayoutComponent {
         { rotulo: 'Clientes', url: '/clientes', icone: 'clientes' },
         { rotulo: 'Contratações', url: '/contratacoes', icone: 'contratos' },
         { rotulo: 'Cobranças', url: '/cobrancas', icone: 'cobrancas' },
+        { rotulo: 'Financeiro', url: '/financeiro', icone: 'cobrancas' },
         { rotulo: 'Logs', url: '/logs', icone: 'logs' }
       ]
     },

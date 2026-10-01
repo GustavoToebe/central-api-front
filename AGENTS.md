@@ -83,3 +83,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - [Estado local](docs/estado-projeto.json) e [índice](docs/README.md). Histórico/plano não define a versão implantada.
 - Executar `python scripts/verificar-docs.py` ao mudar docs, schema ou migrations; atualizar o estado junto.
 - Nesta tarefa, usar `melhoria/ecossistema-sem-ia`, conforme pedido do usuário. Publicação depende do fluxo e autorização vigentes.
+
+- Financeiro operacional: docs/financeiro.md e rota /financeiro. Provisões por vencimento, realizado por baixa; assinaturas automáticas no resumo, saldo por conta apenas manual.

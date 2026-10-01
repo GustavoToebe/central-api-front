@@ -1,3 +1,4 @@
+import { Categoria, Conta, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, shareReplay, tap, throwError } from 'rxjs';
@@ -16,6 +17,22 @@ export class CentralApiService {
   private produtosCache?: Observable<Produto[]>;
 
   constructor(private http: HttpClient) {}
+
+
+  // ---- Financeiro operacional do SaaS
+  contasFinanceiras() { return this.http.get<Conta[]>(`${this.api}/financeiro/contas`); }
+  categoriasFinanceiras() { return this.http.get<Categoria[]>(`${this.api}/financeiro/categorias`); }
+  movimentosFinanceiros(filtro: Filtros) {
+    let params = new HttpParams();
+    for (const [chave, valor] of Object.entries(filtro)) if (valor !== '') params = params.set(chave, String(valor));
+    return this.http.get<Pagina>(`${this.api}/financeiro/movimentos`, { params });
+  }
+  resumoOperacional(de: string, ate: string) { return this.http.get<Resumo>(`${this.api}/financeiro/resumo`, { params: { de, ate } }); }
+  salvarContaFinanceira(id: string | null, dados: Omit<Conta, 'id'>) { return id ? this.http.put<Conta>(`${this.api}/financeiro/contas/${id}`, dados) : this.http.post<Conta>(`${this.api}/financeiro/contas`, dados); }
+  salvarCategoriaFinanceira(id: string | null, dados: Omit<Categoria, 'id'>) { return id ? this.http.put<Categoria>(`${this.api}/financeiro/categorias/${id}`, dados) : this.http.post<Categoria>(`${this.api}/financeiro/categorias`, dados); }
+  salvarMovimentoFinanceiro(id: string | null, dados: MovimentoRequest) { return id ? this.http.put<Movimento>(`${this.api}/financeiro/movimentos/${id}`, dados) : this.http.post<Movimento>(`${this.api}/financeiro/movimentos`, dados); }
+  baixarMovimentoFinanceiro(m: Movimento, dataPagamento: string) { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/baixar`, { versao: m.versao, dataPagamento }); }
+  acaoMovimentoFinanceiro(m: Movimento, acao: 'estornar' | 'cancelar') { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/${acao}`, { versao: m.versao }); }
 
   // ---- Operador
   mfaStatus() { return this.http.get<MfaStatus>(`${this.api}/operadores/eu/mfa`); }
