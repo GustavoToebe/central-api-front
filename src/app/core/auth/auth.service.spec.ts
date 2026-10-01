@@ -54,6 +54,16 @@ describe('AuthService', () => {
     expect(auth.operador()).toBeNull();
   });
 
+  it('envia segundo fator aparado e não cria sessão quando o código é recusado', async () => {
+    const p = auth.login('ana@central.test', 'senha', ' 123456 ');
+    const rejeicao = expectAsync(p).toBeRejected();
+    const req = httpMock.expectOne(`${api}/auth/login`);
+    expect(req.request.body).toEqual({email: 'ana@central.test', senha: 'senha', codigoMfa: '123456'});
+    req.flush({codigo: 'MFA_INVALIDO'}, {status: 401, statusText: 'Unauthorized'});
+    await rejeicao; expect(auth.isLoggedIn()).toBeFalse();
+    expect(sessionStorage.getItem('codigoMfa')).toBeNull();
+  });
+
   it('renovarSilencioso sem cookie CENTRAL-XSRF-TOKEN nem chama a API', async () => {
     cookieComo('outro=1');
     expect(await firstValueFrom(auth.renovarSilencioso())).toBeFalse();

@@ -39,7 +39,9 @@ export const centralAuthInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(autenticada).pipe(
     catchError((erro: HttpErrorResponse) => {
-      if (erro.status !== 401 || rotaDeAuth) return throwError(() => erro);
+      const codigo = erro.error?.codigo;
+      // Recusa de confirmação de credenciais não significa expiração da sessão.
+      if (erro.status !== 401 || rotaDeAuth || codigo === 'MFA_INVALIDO' || codigo === 'MFA_SENHA_INVALIDA') return throwError(() => erro);
       return renovar(backend, api).pipe(
         catchError(erroRefresh => {
           limparSessao();

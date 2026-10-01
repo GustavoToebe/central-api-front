@@ -6,7 +6,7 @@ import {
   Adicional, AlterarPlanoRequest, AtualizarProvisionamentoRequest, Cliente, CobrancaDetalhe, CobrancaLinha, Contratacao,
   ContratacaoResumo, CriarContratacaoRequest, ErroAplicativo, Financeiro, FiltroCobrancas, FiltroErros, NovoPrecoRequest, Plano, Produto, AdicionalContratado, Recurso,
   RecursoDoApp, RegistrarPagamentoRequest, SalvarAdicionalRequest, SalvarClienteRequest, SalvarPlanoRequest,
-  SalvarProdutoRequest, SalvarRecursoRequest, Suporte
+  SalvarProdutoRequest, SalvarRecursoRequest, Suporte, MfaStatus, MfaPreparacao, MfaRecuperacao
 } from './central.models';
 
 /** Todas as rotas do painel na API da Central. Bearer, cookie e XSRF ficam no interceptor. */
@@ -18,6 +18,10 @@ export class CentralApiService {
   constructor(private http: HttpClient) {}
 
   // ---- Operador
+  mfaStatus() { return this.http.get<MfaStatus>(`${this.api}/operadores/eu/mfa`); }
+  mfaPreparar(senha: string) { return this.http.post<MfaPreparacao>(`${this.api}/operadores/eu/mfa/preparar`, { senha }); }
+  mfaAtivar(senha: string, codigo: string) { return this.http.post<MfaRecuperacao>(`${this.api}/operadores/eu/mfa/ativar`, { senha, codigo }); }
+  mfaDesativar(senha: string, codigo: string) { return this.http.post<void>(`${this.api}/operadores/eu/mfa/desativar`, { senha, codigo }); }
   /** Troca a própria senha; a API derruba as outras sessões e devolve o cookie de refresh novo. */
   trocarSenha(corpo: { senhaAtual: string; novaSenha: string }) { return this.http.put<void>(`${this.api}/operadores/eu/senha`, corpo); }
 

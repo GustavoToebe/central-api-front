@@ -416,3 +416,7 @@ export interface ErroAplicativo {
   mensagem: string | null;
   requestId: string | null;
 }
+/** Segredo e códigos existem somente na resposta transitória da configuração do MFA. */
+export interface MfaStatus { ativo: boolean; configurado: boolean; codigosRestantes: number; }
+export interface MfaPreparacao { segredo: string; expiraEm: string; }
+export interface MfaRecuperacao { codigos: string[]; }

@@ -87,6 +87,18 @@ describe('centralAuthInterceptor', () => {
     req.flush([]);
   });
 
+  for (const codigo of ['MFA_INVALIDO', 'MFA_SENHA_INVALIDA']) {
+    it(`preserva a sessão e não repete confirmação recusada: ${codigo}`, async () => {
+      sessionStorage.setItem('central_access', 'jwt');
+      const p = firstValueFrom(http.post(`${api}/operadores/eu/mfa/desativar`, {senha: 'senha', codigo: 'incorreto'}));
+      const rejeicao = expectAsync(p).toBeRejected();
+      httpMock.expectOne(`${api}/operadores/eu/mfa/desativar`).flush({codigo}, {status: 401, statusText: 'Unauthorized'});
+      await rejeicao;
+      httpMock.expectNone(`${api}/auth/refresh`);
+      expect(sessionStorage.getItem('central_access')).toBe('jwt'); expect(router.navigate).not.toHaveBeenCalled();
+    });
+  }
+
   it('renova uma vez só para vários 401 simultâneos, com X-XSRF-TOKEN, e repete com o token novo', async () => {
     cookieComo('CENTRAL-XSRF-TOKEN=tok');
     sessionStorage.setItem('central_access', 'velho');

@@ -19,9 +19,9 @@ export class AuthService {
     return operadorAtual();
   }
 
-  async login(email: string, senha: string): Promise<void> {
+  async login(email: string, senha: string, codigoMfa?: string): Promise<void> {
     const resposta = await firstValueFrom(this.http.post<LoginResponse>(
-      `${this.api}/auth/login`, { email: email.trim(), senha }, { withCredentials: true }));
+      `${this.api}/auth/login`, { email: email.trim(), senha, ...(codigoMfa ? { codigoMfa: codigoMfa.trim() } : {}) }, { withCredentials: true }));
     guardarSessao(resposta);
   }
 

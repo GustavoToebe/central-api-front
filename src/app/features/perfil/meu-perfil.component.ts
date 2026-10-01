@@ -6,6 +6,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { OlhoSenhaComponent } from '../comum/olho-senha.component';
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { RodapeFormComponent } from '../comum/rodape-form.component';
+import { MfaConfigComponent } from './mfa-config.component';
 
 /**
  * Meu perfil (27/09/2026): dados do operador e troca da própria senha. A API confere a senha atual,
@@ -13,7 +14,7 @@ import { RodapeFormComponent } from '../comum/rodape-form.component';
  */
 @Component({
   selector: 'app-meu-perfil',
-  imports: [FormsModule, OlhoSenhaComponent, CabecalhoPaginaComponent, RodapeFormComponent],
+  imports: [FormsModule, OlhoSenhaComponent, CabecalhoPaginaComponent, RodapeFormComponent, MfaConfigComponent],
   template: `
     <div class="max-w-xl space-y-6">
       <app-cabecalho-pagina titulo="Meu perfil" [subtitulo]="nome + ' · ' + email" />
@@ -33,6 +34,7 @@ import { RodapeFormComponent } from '../comum/rodape-form.component';
         @if (ok) { <div class="rounded-lg border border-emerald-700/50 bg-emerald-900/20 px-3 py-2 text-sm text-emerald-300">{{ ok }}</div> }
         <app-rodape-form voltarUrl="/" rotuloSalvar="Trocar senha" [carregando]="salvando" />
       </form>
+      <app-mfa-config />
     </div>
   `
 })

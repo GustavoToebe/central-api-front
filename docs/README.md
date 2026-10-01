@@ -13,3 +13,5 @@
 
 - [estado-projeto.json](estado-projeto.json): componente, comandos e migration local quando houver. Não confirma publicação.
 - Histórico explica decisões antigas; contrato e código atuais definem o comportamento vigente.
+
+- [MFA](mfa.md): configuração no perfil, segundo passo de login e dados transitórios.

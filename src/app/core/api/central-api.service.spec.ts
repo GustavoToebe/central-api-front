@@ -30,6 +30,10 @@ describe('CentralApiService', () => {
   const pagamento: RegistrarPagamentoRequest = { cobrancaIds: ['cb1'], pagoEm: '2026-09-25', formaPagamento: 'PIX', valorPago: null, observacao: null };
 
   const casos: [string, (s: CentralApiService) => Observable<unknown>, string, string, unknown][] = [
+    ['mfaStatus', s => s.mfaStatus(), 'GET', '/operadores/eu/mfa', null],
+    ['mfaPreparar', s => s.mfaPreparar('senha'), 'POST', '/operadores/eu/mfa/preparar', { senha: 'senha' }],
+    ['mfaAtivar', s => s.mfaAtivar('senha', '123456'), 'POST', '/operadores/eu/mfa/ativar', { senha: 'senha', codigo: '123456' }],
+    ['mfaDesativar', s => s.mfaDesativar('senha', 'codigo'), 'POST', '/operadores/eu/mfa/desativar', { senha: 'senha', codigo: 'codigo' }],
     ['clientes', s => s.clientes(), 'GET', '/clientes', null],
     ['cliente', s => s.cliente('c1'), 'GET', '/clientes/c1', null],
     ['criarCliente', s => s.criarCliente(cliente), 'POST', '/clientes', cliente],
