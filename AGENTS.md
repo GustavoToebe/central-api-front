@@ -75,3 +75,9 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 
 - `core/auth/destino-api.ts` compara origem e fronteira do caminho antes de anexar Bearer, cookies e XSRF. Não substituir por `startsWith` na URL completa.
 - Pull requests executam testes e build; publicação apenas na main. Testes Angular são obrigatórios antes do build de produção.
+
+## Fontes e estado verificável
+
+- [Estado local](docs/estado-projeto.json) e [índice](docs/README.md). Histórico/plano não define a versão implantada.
+- Executar `python scripts/verificar-docs.py` ao mudar docs, schema ou migrations; atualizar o estado junto.
+- Nesta tarefa, usar `melhoria/ecossistema-sem-ia`, conforme pedido do usuário. Publicação depende do fluxo e autorização vigentes.

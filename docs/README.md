@@ -8,3 +8,8 @@
 | [../CLAUDE.md](../CLAUDE.md) | Atalho que importa o AGENTS.md |
 | [../README.md](../README.md) | Como rodar |
 | [design-system.md](design-system.md) | Os 3 pilares do design e as classes de cada app |
+
+## Entrada rápida
+
+- [estado-projeto.json](estado-projeto.json): componente, comandos e migration local quando houver. Não confirma publicação.
+- Histórico explica decisões antigas; contrato e código atuais definem o comportamento vigente.
