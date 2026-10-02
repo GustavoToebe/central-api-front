@@ -9,7 +9,7 @@ e dos commits: **português**.
 Arquivo de instruções compartilhado entre ferramentas de IA; o `CLAUDE.md`
 só importa este (`@AGENTS.md`). Edite **só aqui**. Manter curto.
 
-Commits vão direto na `main` (decisão de 25/09/2026).
+Nesta tarefa, commits usam `melhoria/ecossistema-sem-ia`, conforme solicitação do usuário.
 
 ## Stack
 Angular 21 (standalone, control flow `@if/@for`, `input()` com
@@ -89,3 +89,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - Nova rodada de produto: docs/consumo-instancias.md: consulta de contratação sob demanda, HTTP fora da transação, sem dados pessoais/zero fictício.
 
 - Ajuda: docs/ajuda.md, features/ajuda/ajuda-temas.ts. Conteúdo estático de uso, busca local, sem dados de negócio/HTML dinâmico. Revisar orientações ao mudar fluxos. Parâmetro tema usa apenas IDs do catálogo; Servirea filtra por permissões.
+
+- [Fontes e retomada](docs/desenvolvimento/fontes-e-retomada.md): precedência, histórico e registro de evidências.

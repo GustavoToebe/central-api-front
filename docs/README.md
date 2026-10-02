@@ -1,5 +1,7 @@
 # Documentos do central-api-front
 
+- [Fontes e retomada](desenvolvimento/fontes-e-retomada.md): precedência, estado atual e histórico.
+
 Índice do painel do operador. O desenho comercial e o contrato com os aplicativos estão no repositório `central-api-back`, pasta `docs/`.
 
 | Arquivo | Para quê |
