@@ -19,6 +19,7 @@ export const routes: Routes = [
       { path: 'contratacoes/:id', loadComponent: () => import('./features/contratacoes/contratacao-detalhe.component').then(m => m.ContratacaoDetalheComponent) },
       { path: 'meu-perfil', loadComponent: () => import('./features/perfil/meu-perfil.component').then(m => m.MeuPerfilComponent) },
       { path: 'ajustes', loadComponent: () => import('./features/ajustes/ajustes.component').then(m => m.AjustesComponent) },
+      { path: 'ajuda', loadComponent: () => import('./features/ajuda/ajuda.component').then(m => m.AjudaComponent) },
       { path: 'logs', loadComponent: () => import('./features/logs/logs.component').then(m => m.LogsComponent) },
       { path: 'financeiro', loadComponent: () => import('./features/financeiro/financeiro.component').then(m => m.FinanceiroComponent) },
       { path: 'cobrancas', loadComponent: () => import('./features/cobrancas/cobrancas.component').then(m => m.CobrancasComponent) },

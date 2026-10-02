@@ -21,3 +21,5 @@
 ## Quatro entregas de produto — 01/10/2026
 
 - [Consumo de instâncias](consumo-instancias.md).
+
+- [Ajuda e orientações de uso](ajuda.md).

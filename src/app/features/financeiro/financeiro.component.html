@@ -6,7 +6,7 @@
       @if (aba === 'contas') { <button class="bo-btn" (click)="abrirConta()">Nova conta</button> }
       @if (aba === 'categorias') { <button class="bo-btn" (click)="abrirCategoria()">Nova categoria</button> }
     </div>
-  </app-cabecalho-pagina>
+  <a acoes class="bo-btn-ghost" routerLink="/ajuda" [queryParams]="{tema: 'financeiro'}">Ajuda do financeiro</a></app-cabecalho-pagina>
   @if (erro) { <div class="bo-card p-4 text-rose-400" role="alert">{{ erro }} <button class="bo-btn-ghost ml-3" (click)="carregar()">Tentar novamente</button></div> }
   @if (resumo) {
     <p class="text-sm text-neutral-400">Período: {{ resumo.de | date:'dd/MM/yyyy':'UTC' }} a {{ resumo.ate | date:'dd/MM/yyyy':'UTC' }}</p>

@@ -6,7 +6,7 @@ import { iniciais } from '../../features/comum/rotulos';
 interface ItemMenu {
   rotulo: string;
   url: string;
-  icone: 'clientes' | 'contratos' | 'cobrancas' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional' | 'ajustes';
+  icone: 'clientes' | 'contratos' | 'cobrancas' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional' | 'ajustes' | 'ajuda';
 }
 
 const CHAVE_RECOLHIDO = 'central.menuRecolhido';
@@ -87,6 +87,7 @@ function gravarRecolhido(v: boolean): void {
               [title]="compacto() ? item.rotulo : ''">
               <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 @switch (item.icone) {
+                  @case ('ajuda') { <circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/> }
                   @case ('clientes') { <path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"/><circle cx="9.5" cy="8" r="3"/><path d="M20 19v-1a3.5 3.5 0 0 0-2.5-3.35"/><path d="M16.5 5.1a3 3 0 0 1 0 5.8"/> }
                   @case ('contratos') { <path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/> }
                   @case ('cobrancas') { <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M15 15h3"/> }
@@ -169,6 +170,7 @@ export class LayoutComponent {
         { rotulo: 'Logs', url: '/logs', icone: 'logs' }
       ]
     },
+    {titulo: 'Orientações',itens: [{rotulo: 'Ajuda',url: '/ajuda',icone: 'ajuda'}]},
     {
       titulo: 'Catálogo',
       itens: [
