@@ -97,3 +97,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - Rodada 11–17: docs/testes-navegacao.md.
 
 - F06/F26: docs/painel-instancias.md. /instancias com filtro por nível e atualização manual; nunca exibir dado de pessoas.
+
+- T17: docs/contrato-api.md. Depois de mexer em serviços de API rode `python scripts/verificar-contrato-api.py` (lê o contrato do back vizinho).
