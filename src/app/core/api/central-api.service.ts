@@ -1,4 +1,5 @@
 import { ConsumoInstancia } from '../../features/consumo/consumo.models';
+import { NivelInstancia, PaginaInstancias, ResultadoAtualizacao } from '../../features/instancias/instancias.models';
 import { Categoria, Conta, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -36,6 +37,8 @@ export class CentralApiService {
   acaoMovimentoFinanceiro(m: Movimento, acao: 'estornar' | 'cancelar') { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/${acao}`, { versao: m.versao }); }
 
   historicoConsumo(id:string){return this.http.get<{dia:string;consumo:ConsumoInstancia['consumo']}[]>(`${this.api}/contratacoes/${id}/consumo/historico`);}
+  instancias(nivel: NivelInstancia | null, pagina: number) {return this.http.get<PaginaInstancias>(`${this.api}/instancias`,{params:{pagina,...(nivel?{nivel}:{})}});}
+  atualizarInstancias() {return this.http.post<ResultadoAtualizacao>(`${this.api}/instancias/atualizacao`,{});}
   consumoInstancia(id: string) {return this.http.get<ConsumoInstancia>(`${this.api}/contratacoes/${id}/consumo`);}
 
   // ---- Operador

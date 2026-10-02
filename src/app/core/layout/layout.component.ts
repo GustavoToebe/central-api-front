@@ -165,6 +165,7 @@ export class LayoutComponent {
       itens: [
         { rotulo: 'Clientes', url: '/clientes', icone: 'clientes' },
         { rotulo: 'Contratações', url: '/contratacoes', icone: 'contratos' },
+        { rotulo: 'Instâncias', url: '/instancias', icone: 'logs' },
         { rotulo: 'Cobranças', url: '/cobrancas', icone: 'cobrancas' },
         { rotulo: 'Financeiro', url: '/financeiro', icone: 'cobrancas' },
         { rotulo: 'Logs', url: '/logs', icone: 'logs' }

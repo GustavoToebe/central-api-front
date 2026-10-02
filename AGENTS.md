@@ -95,3 +95,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - Rodada 6–10: Histórico de consumo sob demanda: docs/historico-consumo.md; não gerar zeros para consultas ausentes nem gravar dados pessoais.
 
 - Rodada 11–17: docs/testes-navegacao.md.
+
+- F06/F26: docs/painel-instancias.md. /instancias com filtro por nível e atualização manual; nunca exibir dado de pessoas.

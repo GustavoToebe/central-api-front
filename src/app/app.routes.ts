@@ -13,6 +13,7 @@ export const routes: Routes = [
       { path: 'clientes/novo', loadComponent: () => import('./features/clientes/cliente-form.component').then(m => m.ClienteFormComponent) },
       { path: 'clientes/:id/editar', loadComponent: () => import('./features/clientes/cliente-form.component').then(m => m.ClienteFormComponent) },
       { path: 'clientes/:id', loadComponent: () => import('./features/clientes/cliente-detalhe.component').then(m => m.ClienteDetalheComponent) },
+      { path: 'instancias', loadComponent: () => import('./features/instancias/instancias.component').then(m => m.InstanciasComponent) },
       { path: 'contratacoes', loadComponent: () => import('./features/contratacoes/contratacoes-list.component').then(m => m.ContratacoesListComponent) },
       { path: 'contratacoes/nova', loadComponent: () => import('./features/contratacoes/contratacao-form.component').then(m => m.ContratacaoFormComponent) },
       { path: 'contratacoes/:id/consumo', loadComponent: () => import('./features/consumo/consumo.component').then(m => m.ConsumoComponent) },
