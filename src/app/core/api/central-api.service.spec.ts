@@ -35,6 +35,7 @@ describe('CentralApiService', () => {
   const movimentoFinanceiro: MovimentoRequest = {descricao:'VPS',tipo:'DESPESA',valor:89.9,vencimento:'2026-10-01',contaId:'c',categoriaId:'g',observacoes:null,versao:2};
   const movimento = {id:'m',versao:2} as Movimento;
   const casos: [string, (s: CentralApiService) => Observable<unknown>, string, string, unknown][] = [
+    ['consumoInstancia', s => s.consumoInstancia('c1'), 'GET', '/contratacoes/c1/consumo', null],
     ['contasFinanceiras', s => s.contasFinanceiras(), 'GET', '/financeiro/contas', null],
     ['categoriasFinanceiras', s => s.categoriasFinanceiras(), 'GET', '/financeiro/categorias', null],
     ['resumoOperacional', s => s.resumoOperacional('2026-10-01','2026-10-31'), 'GET', '/financeiro/resumo?de=2026-10-01&ate=2026-10-31', null],

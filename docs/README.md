@@ -17,3 +17,7 @@
 - [MFA](mfa.md): configuração no perfil, segundo passo de login e dados transitórios.
 
 - [Financeiro operacional](financeiro.md): comportamento, contratos e limitações.
+
+## Quatro entregas de produto — 01/10/2026
+
+- [Consumo de instâncias](consumo-instancias.md).

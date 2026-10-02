@@ -45,6 +45,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
           </div>
         </div>
 
+        @if(c.idExterno){<a class="bo-btn-line inline-block" [routerLink]="['/contratacoes',c.id,'consumo']">Ver consumo da instância</a>}
         <nav class="bo-tabs">
           <button type="button" class="bo-tab" [class.active]="aba === 'resumo'" (click)="aba = 'resumo'">Resumo</button>
           <button type="button" class="bo-tab" [class.active]="aba === 'financeiro'" (click)="abrirFinanceiro()">Financeiro</button>

@@ -1,3 +1,4 @@
+import { ConsumoInstancia } from '../../features/consumo/consumo.models';
 import { Categoria, Conta, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -33,6 +34,8 @@ export class CentralApiService {
   salvarMovimentoFinanceiro(id: string | null, dados: MovimentoRequest) { return id ? this.http.put<Movimento>(`${this.api}/financeiro/movimentos/${id}`, dados) : this.http.post<Movimento>(`${this.api}/financeiro/movimentos`, dados); }
   baixarMovimentoFinanceiro(m: Movimento, dataPagamento: string) { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/baixar`, { versao: m.versao, dataPagamento }); }
   acaoMovimentoFinanceiro(m: Movimento, acao: 'estornar' | 'cancelar') { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/${acao}`, { versao: m.versao }); }
+
+  consumoInstancia(id: string) {return this.http.get<ConsumoInstancia>(`${this.api}/contratacoes/${id}/consumo`);}
 
   // ---- Operador
   mfaStatus() { return this.http.get<MfaStatus>(`${this.api}/operadores/eu/mfa`); }

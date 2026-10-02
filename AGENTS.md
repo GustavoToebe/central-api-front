@@ -85,3 +85,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - Nesta tarefa, usar `melhoria/ecossistema-sem-ia`, conforme pedido do usuário. Publicação depende do fluxo e autorização vigentes.
 
 - Financeiro operacional: docs/financeiro.md e rota /financeiro. Provisões por vencimento, realizado por baixa; assinaturas automáticas no resumo, saldo por conta apenas manual.
+
+- Nova rodada de produto: docs/consumo-instancias.md: consulta de contratação sob demanda, HTTP fora da transação, sem dados pessoais/zero fictício.
