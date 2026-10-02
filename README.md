@@ -60,3 +60,5 @@ README do `central-api-back`, seção "Ponta a ponta local (Windows, tudo no PC)
   `CENTRAL_CSRF_COOKIE_DOMAIN` com o domínio pai, senão o painel não lê o
   `CENTRAL-XSRF-TOKEN` e refresh/logout voltam 403. A URL da API de produção fica em
   `src/environments/environment.prod.ts`.
+
+- [Ambiente local atual](docs/ambiente-local-atual.md): bases novas e portas 8070/8071/4210/4211.

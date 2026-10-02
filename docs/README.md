@@ -33,3 +33,5 @@
 ## Rodada 11–17 — 02/10/2026
 
 - [testes-navegacao ](testes-navegacao.md).
+
+- [Ambiente local atual](ambiente-local-atual.md): bases novas e portas 8070/8071/4210/4211.

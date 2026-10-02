@@ -17,5 +17,9 @@
     "rota": "/ajuda",
     "temas": 11,
     "conteudo": "Estático, versionado com os fluxos da aplicação."
+  },
+  "ambiente_local_atual": {
+    "manual": "docs/ambiente-local-atual.md",
+    "bases_novas": true
   }
 }
