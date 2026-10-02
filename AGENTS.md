@@ -93,3 +93,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - [Fontes e retomada](docs/desenvolvimento/fontes-e-retomada.md): precedência, histórico e registro de evidências.
 
 - Rodada 6–10: Histórico de consumo sob demanda: docs/historico-consumo.md; não gerar zeros para consultas ausentes nem gravar dados pessoais.
+
+- Rodada 11–17: docs/testes-navegacao.md.

@@ -29,3 +29,7 @@
 ## Rodada 6–10 — 02/10/2026
 
 - [historico consumo ](historico-consumo.md): contrato, limites e homologação.
+
+## Rodada 11–17 — 02/10/2026
+
+- [testes-navegacao ](testes-navegacao.md).
