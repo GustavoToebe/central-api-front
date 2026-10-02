@@ -91,3 +91,5 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - Ajuda: docs/ajuda.md, features/ajuda/ajuda-temas.ts. Conteúdo estático de uso, busca local, sem dados de negócio/HTML dinâmico. Revisar orientações ao mudar fluxos. Parâmetro tema usa apenas IDs do catálogo; Servirea filtra por permissões.
 
 - [Fontes e retomada](docs/desenvolvimento/fontes-e-retomada.md): precedência, histórico e registro de evidências.
+
+- Rodada 6–10: Histórico de consumo sob demanda: docs/historico-consumo.md; não gerar zeros para consultas ausentes nem gravar dados pessoais.

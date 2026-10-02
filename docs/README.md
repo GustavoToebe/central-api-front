@@ -25,3 +25,7 @@
 - [Consumo de instâncias](consumo-instancias.md).
 
 - [Ajuda e orientações de uso](ajuda.md).
+
+## Rodada 6–10 — 02/10/2026
+
+- [historico consumo ](historico-consumo.md): contrato, limites e homologação.

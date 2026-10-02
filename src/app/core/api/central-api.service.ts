@@ -35,6 +35,7 @@ export class CentralApiService {
   baixarMovimentoFinanceiro(m: Movimento, dataPagamento: string) { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/baixar`, { versao: m.versao, dataPagamento }); }
   acaoMovimentoFinanceiro(m: Movimento, acao: 'estornar' | 'cancelar') { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/${acao}`, { versao: m.versao }); }
 
+  historicoConsumo(id:string){return this.http.get<{dia:string;consumo:ConsumoInstancia['consumo']}[]>(`${this.api}/contratacoes/${id}/consumo/historico`);}
   consumoInstancia(id: string) {return this.http.get<ConsumoInstancia>(`${this.api}/contratacoes/${id}/consumo`);}
 
   // ---- Operador
