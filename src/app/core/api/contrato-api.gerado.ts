@@ -116,6 +116,14 @@ export interface CatalogoDtos_SalvarRecursoRequest {
   valorPadrao?: number | null;
 }
 
+export interface ChavePixDto {
+  chave?: string | null;
+  principal: boolean;
+  tipo?: ChavePixDto_TipoChavePix | null;
+}
+
+export type ChavePixDto_TipoChavePix = 'CPF' | 'CNPJ' | 'EMAIL' | 'TELEFONE' | 'ALEATORIA';
+
 export interface CheckoutMercadoPagoService_Link {
   situacao?: string | null;
   tentativaId?: string | null;
@@ -201,6 +209,8 @@ export interface ConsumoHistoricoService_Ponto {
   consumo?: ConsumoCentralService_Consumo | null;
   dia?: string | null;
 }
+
+export type ContaFinanceira_TipoConta = 'CORRENTE' | 'POUPANCA' | 'CAIXA' | 'OUTRA';
 
 export interface ContratacaoDtos_AdicionalContratadoRequest {
   adicionalId?: string | null;
@@ -414,18 +424,34 @@ export interface FinanceiroDtos_CobrancaResponse {
 }
 
 export interface FinanceiroDtos_ContaRequest {
+  agencia?: string | null;
   ativo: boolean;
+  banco?: string | null;
+  chavesPix?: ChavePixDto[] | null;
+  dataAbertura?: string | null;
+  dataEncerramento?: string | null;
   dataSaldoInicial?: string | null;
   nome?: string | null;
+  numeroConta?: string | null;
   saldoInicial?: number | null;
+  tipoConta?: ContaFinanceira_TipoConta | null;
+  titular?: string | null;
 }
 
 export interface FinanceiroDtos_ContaResponse {
+  agencia?: string | null;
   ativo: boolean;
+  banco?: string | null;
+  chavesPix?: ChavePixDto[] | null;
+  dataAbertura?: string | null;
+  dataEncerramento?: string | null;
   dataSaldoInicial?: string | null;
   id?: string | null;
   nome?: string | null;
+  numeroConta?: string | null;
   saldoInicial?: number | null;
+  tipoConta?: ContaFinanceira_TipoConta | null;
+  titular?: string | null;
 }
 
 export interface FinanceiroDtos_FinanceiroResponse {

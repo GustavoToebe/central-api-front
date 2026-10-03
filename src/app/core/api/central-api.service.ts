@@ -1,7 +1,7 @@
 import { ConsumoInstancia } from '../../features/consumo/consumo.models';
 import { NivelInstancia, PaginaInstancias, ResultadoAtualizacao } from '../../features/instancias/instancias.models';
 import { BancoCaixa, Demonstrativo, PorTipo, Visao } from '../../features/relatorios/relatorios.models';
-import { Categoria, CategoriaRequest, Conta, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
+import { Categoria, CategoriaRequest, Conta, ContaRequest, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, shareReplay, tap, throwError } from 'rxjs';
@@ -41,7 +41,7 @@ export class CentralApiService {
     return this.http.get<Demonstrativo>(`${this.api}/financeiro/relatorios/demonstrativo`, { params: { de, ate } });
   }
   resumoOperacional(de: string, ate: string) { return this.http.get<Resumo>(`${this.api}/financeiro/resumo`, { params: { de, ate } }); }
-  salvarContaFinanceira(id: string | null, dados: Omit<Conta, 'id'>) { return id ? this.http.put<Conta>(`${this.api}/financeiro/contas/${id}`, dados) : this.http.post<Conta>(`${this.api}/financeiro/contas`, dados); }
+  salvarContaFinanceira(id: string | null, dados: ContaRequest) { return id ? this.http.put<Conta>(`${this.api}/financeiro/contas/${id}`, dados) : this.http.post<Conta>(`${this.api}/financeiro/contas`, dados); }
   salvarCategoriaFinanceira(id: string | null, dados: CategoriaRequest) { return id ? this.http.put<Categoria>(`${this.api}/financeiro/categorias/${id}`, dados) : this.http.post<Categoria>(`${this.api}/financeiro/categorias`, dados); }
   salvarMovimentoFinanceiro(id: string | null, dados: MovimentoRequest) { return id ? this.http.put<Movimento>(`${this.api}/financeiro/movimentos/${id}`, dados) : this.http.post<Movimento>(`${this.api}/financeiro/movimentos`, dados); }
   baixarMovimentoFinanceiro(m: Movimento, dataPagamento: string) { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/baixar`, { versao: m.versao, dataPagamento }); }

@@ -92,7 +92,7 @@ export const TEMAS: readonly TemaAjuda[] = [
     id: 'financeiro', titulo: 'Financeiro: plano de contas, lançamentos e saldos', secao: 'financeiro', url: '/financeiro',
     resumo: 'Controla o dinheiro da Central: despesas (VPS, e-mail, serviços), receitas manuais, contas ou bancos e plano de contas.',
     passos: [
-      'Em Financeiro › Contas bancárias, cadastre o Caixa e as contas bancárias com o saldo inicial e a data dele.',
+      'Em Financeiro › Contas bancárias, use Nova conta para cadastrar o Caixa e cada conta do banco: tipo, banco, agência, conta, titular, chaves PIX, saldo inicial e a data dele. Em conta corrente ou poupança, banco, agência, conta e titular são obrigatórios.',
       'Em Plano de contas, crie os grupos (por exemplo Infraestrutura, Serviços) e, dentro de cada grupo, as contas contábeis (VPS, E-mail). Só a conta contábil recebe lançamento e ela herda o tipo do grupo (entrada ou saída).',
       'Em Lançamentos, registre a despesa ou receita com valor em reais, vencimento, a conta/banco e a conta contábil. Pendente é previsão, não dinheiro movimentado.',
       'Depois de pagar ou receber, use Dar baixa informando a data correta. Para corrigir uma baixa manual, estorne primeiro.',
