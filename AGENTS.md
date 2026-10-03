@@ -75,7 +75,7 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 
 - `core/auth/destino-api.ts` compara origem e fronteira do caminho antes de anexar Bearer, cookies e XSRF. Não substituir por `startsWith` na URL completa.
 - Pull requests executam testes e build; publicação só na `main`. Testes Angular antes do build de produção.
-- Depois de mexer em `CentralApiService`, rode `python scripts/verificar-contrato-api.py` ([contrato da API](docs/contrato-api.md)).
+- Depois de mexer em `CentralApiService`, rode `python scripts/verificar-contrato-api.py` e, se o contrato do back mudou, `python scripts/gerar-tipos-api.py` (tipos em `core/api/contrato-api.gerado.ts`, nunca editar à mão) ([contrato da API](docs/contrato-api.md)).
 
 ## Fontes e estado verificável
 
