@@ -163,6 +163,13 @@ html[data-contrast="forte"] .bo-rail {
   cursor: pointer;
 }
 
+/* Elementos customizados são inline por padrão: sem isso o espaçamento (space-y) entre eles e o resto da página é ignorado. */
+app-barra-filtros, app-estado-lista, app-grade-contratacoes { display: block; }
+
+/* Botão dividido (Buscar ▾): o raio 999px dos botões vence os utilitários do Tailwind, então a junção tem classe própria. */
+.bo-juncao-esq { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.bo-juncao-dir { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+
 .bo-btn {
   background: var(--brand);
   color: #fff;

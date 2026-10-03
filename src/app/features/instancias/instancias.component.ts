@@ -42,7 +42,7 @@ import { NivelInstancia, PaginaInstancias } from './instancias.models';
                 <tr>
                   <td>{{ i.cliente }}</td><td>{{ i.instancia }}</td><td>{{ i.plano }}</td><td>{{ i.situacaoComercial }}</td>
                   <td><span class="bo-chip" [ngClass]="tom(i.nivel)">{{ rotuloNivel(i.nivel) }}</span>
-                    @for (a of i.alertas; track a.codigo) { <div class="bo-sub">{{ a.nome }}: {{ a.estado }}</div> }</td>
+                    @for (a of i.alertas; track a.codigo) { <div class="bo-sub">{{ a.nome }}: {{ rotuloEstado(a.estado) }}</div> }</td>
                   <td>@if (i.consultadoEm) { {{ i.consultadoEm | date: 'dd/MM/yyyy HH:mm' }}
                     @if (i.defasado) { <span class="bo-chip bo-warn">defasado</span> } } @else { <span class="bo-sub">sem consulta</span> }</td>
                   <td><a class="bo-link" [routerLink]="['/contratacoes', i.contratacaoId, 'consumo']">Ver consumo</a></td>
@@ -66,6 +66,12 @@ export class InstanciasComponent implements OnInit, OnDestroy {
   private readonly api = inject(CentralApiService);
 
   readonly niveis: NivelInstancia[] = ['CRITICO', 'ATENCAO', 'OK', 'SEM_DADOS'];
+  private readonly estados: Record<string, string> = {
+    DISPONIVEL: 'disponível', ATINGIDO: 'atingido', ATENCAO: 'atenção', EXCEDIDO: 'excedido',
+    INVENTARIO_PENDENTE: 'inventário pendente', SEM_LIMITE_CONFIGURADO: 'sem limite configurado'
+  };
+  /** Estado do recurso em português; código desconhecido aparece como veio, nunca em branco. */
+  rotuloEstado(estado: string): string { return this.estados[estado] ?? estado; }
   readonly dados = signal<PaginaInstancias | null>(null);
   readonly carregando = signal(false);
   readonly atualizando = signal(false);

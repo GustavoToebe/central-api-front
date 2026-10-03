@@ -67,12 +67,12 @@ export interface FiltroAtivo {
 
         <div class="flex">
           @if (painelAberto()) {
-            <button type="button" class="bo-btn-ghost" [class.rounded-r-none]="temFiltros()" (click)="painelAberto.set(false)" data-buscar>Cancelar</button>
+            <button type="button" class="bo-btn-ghost" [class.bo-juncao-esq]="temFiltros()" (click)="painelAberto.set(false)" data-buscar>Cancelar</button>
           } @else {
-            <button type="button" class="bo-btn" [class.rounded-r-none]="temFiltros()" (click)="emitirBuscar()" data-buscar>Buscar</button>
+            <button type="button" class="bo-btn" [class.bo-juncao-esq]="temFiltros()" (click)="emitirBuscar()" data-buscar>Buscar</button>
           }
           @if (temFiltros()) {
-            <button type="button" class="border-l border-black/30 !px-3" [class]="painelAberto() ? 'bo-btn-ghost rounded-l-none' : 'bo-btn rounded-l-none'"
+            <button type="button" class="border-l border-black/30 !px-3" [class]="painelAberto() ? 'bo-btn-ghost bo-juncao-dir' : 'bo-btn bo-juncao-dir'"
               (click)="alternarPainel()" data-alternar-filtros [attr.aria-expanded]="painelAberto()" aria-label="Filtros avançados">
               {{ painelAberto() ? '▴' : '▾' }}
             </button>

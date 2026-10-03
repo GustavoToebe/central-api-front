@@ -29,7 +29,7 @@ describe('Painel de instâncias', () => {
     f.detectChanges();
     const texto = f.nativeElement.textContent as string;
     expect(texto).toContain('Crítico');
-    expect(texto).toContain('Pessoas: EXCEDIDO');
+    expect(texto).toContain('Pessoas: excedido');
     expect(texto).toContain('sem consulta');
     expect(texto).toContain('defasado');
   });
