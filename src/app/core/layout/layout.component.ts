@@ -1,5 +1,5 @@
 import { Component, HostListener, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { iniciais } from '../../features/comum/rotulos';
 import { BuscaGlobalComponent } from './busca-global.component';
@@ -8,10 +8,14 @@ import { MegaMenuComponent } from './mega-menu.component';
 import { NavegacaoContextualComponent } from './navegacao-contextual.component';
 import { SecaoId, TODAS_AS_TELAS } from './navegacao';
 
+interface FilhoMenu { id: string; rotulo: string; consulta: Record<string, string>; icone: ItemMenu['icone']; }
+
 interface ItemMenu {
   rotulo: string;
   url: string;
-  icone: 'clientes' | 'contratos' | 'cobrancas' | 'instancias' | 'financeiro' | 'relatorios' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional' | 'ajustes' | 'ajuda';
+  /** Módulo com abas: o menu mostra o título do grupo e estes subitens como links (`?aba=`). */
+  filhos?: readonly FilhoMenu[];
+  icone: 'clientes' | 'contratos' | 'cobrancas' | 'instancias' | 'financeiro' | 'relatorios' | 'banco' | 'arvore' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional' | 'ajustes' | 'ajuda';
 }
 
 const CHAVE_RECOLHIDO = 'central.menuRecolhido';
@@ -31,7 +35,7 @@ function gravarRecolhido(v: boolean): void {
 /** Moldura do painel: barra preta com filete da marca e menu lateral. */
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, BuscaGlobalComponent, MegaMenuComponent, NavegacaoContextualComponent],
+  imports: [RouterOutlet, RouterLink, BuscaGlobalComponent, MegaMenuComponent, NavegacaoContextualComponent],
   template: `
     <div class="bo min-h-screen">
       <header class="bo-top fixed inset-x-0 top-0 z-40 flex h-16 md:h-20 items-center justify-between gap-3 px-4 md:px-8 backdrop-blur-md">
@@ -97,8 +101,8 @@ function gravarRecolhido(v: boolean): void {
         }
         @for (grupo of grupos; track grupo.id) {
           @if (!compacto()) {
-            @if (grupo.itens.length > 1) {
-              <button type="button" class="flex w-full items-center justify-between px-3 pb-1 pt-3 text-left text-[10px] font-extrabold uppercase tracking-widest text-neutral-500 hover:text-white"
+            @if (linhas(grupo).length > 1) {
+              <button type="button" class="mt-3 flex w-full items-center justify-between rounded-xl border-l-4 border-[var(--brand)] bg-white/10 px-3 py-2.5 text-left text-xs font-black uppercase tracking-widest text-white hover:bg-white/15"
                 [attr.aria-expanded]="secaoAberta(grupo.id)" (click)="alternarSecao(grupo.id)" data-secao-menu>
                 <span>{{ grupo.titulo }}</span><span aria-hidden="true">{{ secaoAberta(grupo.id) ? '▾' : '▸' }}</span>
               </button>
@@ -108,9 +112,9 @@ function gravarRecolhido(v: boolean): void {
           } @else {
             <div class="pt-3"></div>
           }
-          @if (compacto() || grupo.itens.length === 1 || secaoAberta(grupo.id)) {
-          @for (item of grupo.itens; track item.url) {
-            <a [routerLink]="item.url" routerLinkActive="active" (click)="menuAberto = false"
+          @if (compacto() || linhas(grupo).length === 1 || secaoAberta(grupo.id)) {
+          @for (item of linhas(grupo); track item.chave) {
+            <a [routerLink]="item.url" [queryParams]="item.consulta" [class.active]="linhaAtiva(item)" (click)="menuAberto = false"
               class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition"
               [title]="compacto() ? item.rotulo : ''">
               <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -122,6 +126,8 @@ function gravarRecolhido(v: boolean): void {
                   @case ('instancias') { <rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/> }
                   @case ('relatorios') { <path d="M5 19V9M10 19V5M15 19v-7M20 19V8"/> }
                   @case ('financeiro') { <path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/> }
+                  @case ('banco') { <path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/> }
+                  @case ('arvore') { <path d="M5 4h6v4H5zM13 10h6v4h-6zM13 16h6v4h-6zM8 8v10h5M8 12h5"/> }
                   @case ('logs') { <path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/> }
                   @case ('produto') { <rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/> }
                   @case ('recurso') { <path d="M4 7h16M4 12h10M4 17h6"/> }
@@ -198,6 +204,19 @@ export class LayoutComponent {
   operadorEmail = this.auth.operador()?.email ?? '';
   marca = iniciais(this.operadorNome);
 
+  /** Linhas do menu: módulo com subitens vira uma linha por subitem; os demais itens, uma linha só. */
+  linhas(grupo: { itens: ItemMenu[] }) {
+    return grupo.itens.flatMap(i => i.filhos
+      ? i.filhos.map(f => ({ chave: f.id, rotulo: f.rotulo, url: i.url, consulta: f.consulta as Record<string, string> | undefined, icone: f.icone }))
+      : [{ chave: i.url, rotulo: i.rotulo, url: i.url, consulta: undefined as Record<string, string> | undefined, icone: i.icone }]);
+  }
+
+  linhaAtiva(l: { url: string; consulta?: Record<string, string> }): boolean {
+    const [caminho, resto = ''] = this.router.url.split('#')[0].split('?');
+    if (!(caminho === l.url || caminho.startsWith(l.url + '/'))) return false;
+    return !l.consulta || (new URLSearchParams(resto).get('aba') ?? 'lancamentos') === l.consulta['aba'];
+  }
+
   secaoAberta(id: SecaoId) { return this.secoesManuais[id] ?? true; }
   alternarSecao(id: SecaoId) { this.secoesManuais = { ...this.secoesManuais, [id]: !this.secaoAberta(id) }; }
   favoritosDoMenu() { const ids = this.favoritos.ids(); return this.telas.filter(t => ids.includes(t.id)); }
@@ -215,7 +234,11 @@ export class LayoutComponent {
     {
       id: 'financeiro', titulo: 'Financeiro',
       itens: [
-        { rotulo: 'Financeiro', url: '/financeiro', icone: 'financeiro' },
+        { rotulo: 'Financeiro', url: '/financeiro', icone: 'financeiro', filhos: [
+          { id: 'financeiro?lancamentos', rotulo: 'Lançamentos', consulta: { aba: 'lancamentos' }, icone: 'financeiro' },
+          { id: 'financeiro?contas', rotulo: 'Banco/caixa', consulta: { aba: 'contas' }, icone: 'banco' },
+          { id: 'financeiro?plano', rotulo: 'Plano de contas', consulta: { aba: 'plano-de-contas' }, icone: 'arvore' }
+        ] },
         { rotulo: 'Relatórios', url: '/relatorios', icone: 'relatorios' }
       ]
     },

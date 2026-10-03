@@ -1,5 +1,6 @@
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
@@ -26,6 +27,7 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly rota = inject(ActivatedRoute);
   private readonly roteador = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   confirmacao: { mensagem: string; confirmar: string; perigo?: boolean } | null = null;
   aviso = '';
   private responder?: (valor: boolean) => void;
@@ -55,7 +57,14 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
   tipoTravado = false;
   movimentoForm: MovimentoRequest = this.novoMovimento();
   private geracao = 0; private destruido = false; private debounce?: ReturnType<typeof setTimeout>;
-  ngOnInit() { void this.carregar(); }
+  ngOnInit() {
+    // O menu lateral troca a aba pelo endereço (?aba=): a tela acompanha sem ser recriada.
+    this.rota.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(p => {
+      const nova = FinanceiroComponent.ABAS[p.get('aba') ?? ''] ?? 'movimentos';
+      if (nova !== this.aba) { this.aba = nova; this.cd.markForCheck(); }
+    });
+    void this.carregar();
+  }
   ngOnDestroy() { this.destruido = true; this.responderConfirmacao(false); ++this.geracao; clearTimeout(this.debounce); }
   hasPendingChanges() { return this.salvando || (!!this.modal && !!this.formulario?.dirty); }
   private novoMovimento(): MovimentoRequest { return { descricao: '', tipo: 'DESPESA', valor: 0, vencimento: this.hoje, contaId: '', categoriaId: '', observacoes: '', versao: 0 }; }

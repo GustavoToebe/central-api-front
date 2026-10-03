@@ -125,7 +125,7 @@ describe('Navegação contextual (Central)', () => {
     expect(f.nativeElement.querySelector('[data-tela-atual]').textContent).toContain('Plano de contas');
     const chips = Array.from(f.nativeElement.querySelectorAll('[data-irma]') as NodeListOf<HTMLElement>).map(e => e.textContent!.trim());
     expect(chips).toContain('Lançamentos financeiros');
-    expect(chips).toContain('Contas / bancos');
+    expect(chips).toContain('Banco/caixa');
     expect(chips).not.toContain('Financeiro');
     expect(chips).toContain('Relatórios');
   });
