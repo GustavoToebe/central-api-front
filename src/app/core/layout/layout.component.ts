@@ -2,6 +2,11 @@ import { Component, HostListener, computed, inject, signal } from '@angular/core
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { iniciais } from '../../features/comum/rotulos';
+import { BuscaGlobalComponent } from './busca-global.component';
+import { FavoritosService } from './favoritos.service';
+import { MegaMenuComponent } from './mega-menu.component';
+import { NavegacaoContextualComponent } from './navegacao-contextual.component';
+import { SecaoId, TODAS_AS_TELAS } from './navegacao';
 
 interface ItemMenu {
   rotulo: string;
@@ -26,7 +31,7 @@ function gravarRecolhido(v: boolean): void {
 /** Moldura do painel: barra preta com filete da marca e menu lateral. */
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, BuscaGlobalComponent, MegaMenuComponent, NavegacaoContextualComponent],
   template: `
     <div class="bo min-h-screen">
       <header class="bo-top fixed inset-x-0 top-0 z-40 flex h-16 md:h-20 items-center justify-between gap-3 px-4 md:px-8 backdrop-blur-md">
@@ -41,6 +46,12 @@ function gravarRecolhido(v: boolean): void {
           <span class="hidden text-xs font-medium text-neutral-400 sm:block">Gestão comercial dos aplicativos</span>
         </div>
         
+        <div class="mx-4 hidden max-w-md flex-1 md:block nao-imprimir"><app-busca-global [telas]="telas" /></div>
+        <div class="flex items-center gap-2">
+        <button type="button" class="flex items-center gap-2 rounded-xl border border-[#26262c] px-3 py-2 text-sm font-semibold text-neutral-300 hover:border-[var(--brand)] hover:text-white" aria-label="Abrir todas as telas" (click)="megaAberto = true" data-menu="completo">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span class="hidden xl:inline">Todas as telas</span>
+        </button>
         <div class="relative">
           <button type="button" id="perfil-menu" class="text-right flex items-center gap-3 cursor-pointer p-1.5 rounded-xl hover:bg-white/5 transition"
             aria-haspopup="menu" [attr.aria-expanded]="usuarioAberto" (click)="usuarioAberto = !usuarioAberto">
@@ -69,18 +80,35 @@ function gravarRecolhido(v: boolean): void {
             </div>
           }
         </div>
+        </div>
       </header>
 
       <aside
         [class.recolhido]="compacto()"
         class="bo-rail fixed bottom-0 left-0 top-16 md:top-20 z-30 flex flex-col gap-1 overflow-hidden lg:translate-x-0"
         [class.-translate-x-full]="!menuAberto" [class.translate-x-0]="menuAberto">
-        @for (grupo of grupos; track grupo.titulo) {
+        @if (!compacto() && favoritosDoMenu().length) {
+          <div class="px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-widest text-neutral-500">Favoritos</div>
+          @for (f of favoritosDoMenu(); track f.id) {
+            <a [routerLink]="[f.url]" [queryParams]="f.consulta" (click)="menuAberto = false" class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-neutral-300 hover:bg-white/5" data-favorito>
+              <span class="text-amber-300" aria-hidden="true">★</span><span class="truncate">{{ f.rotulo }}</span>
+            </a>
+          }
+        }
+        @for (grupo of grupos; track grupo.id) {
           @if (!compacto()) {
-            <div class="px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-widest text-neutral-500">{{ grupo.titulo }}</div>
+            @if (grupo.itens.length > 1) {
+              <button type="button" class="flex w-full items-center justify-between px-3 pb-1 pt-3 text-left text-[10px] font-extrabold uppercase tracking-widest text-neutral-500 hover:text-white"
+                [attr.aria-expanded]="secaoAberta(grupo.id)" (click)="alternarSecao(grupo.id)" data-secao-menu>
+                <span>{{ grupo.titulo }}</span><span aria-hidden="true">{{ secaoAberta(grupo.id) ? '▾' : '▸' }}</span>
+              </button>
+            } @else {
+              <div class="px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-widest text-neutral-500">{{ grupo.titulo }}</div>
+            }
           } @else {
             <div class="pt-3"></div>
           }
+          @if (compacto() || grupo.itens.length === 1 || secaoAberta(grupo.id)) {
           @for (item of grupo.itens; track item.url) {
             <a [routerLink]="item.url" routerLinkActive="active" (click)="menuAberto = false"
               class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition"
@@ -105,6 +133,7 @@ function gravarRecolhido(v: boolean): void {
               @if (!compacto()) { <span>{{ item.rotulo }}</span> }
             </a>
           }
+          }
         }
 
         <!-- Botão recolher/expandir (só desktop) -->
@@ -125,7 +154,8 @@ function gravarRecolhido(v: boolean): void {
         <div class="fixed inset-0 z-20 bg-black/60 backdrop-blur-xs lg:hidden" (click)="menuAberto = false"></div>
       }
 
-      <main class="bo-main" [class.recolhido]="compacto()"><router-outlet /></main>
+      <main class="bo-main" [class.recolhido]="compacto()"><app-navegacao-contextual [telas]="telas" (verTodas)="megaAberto = true" /><router-outlet /></main>
+      @if (megaAberto) { <app-mega-menu [telas]="telas" (fechar)="megaAberto = false" /> }
     </div>
   `
 })
@@ -133,8 +163,14 @@ export class LayoutComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
 
+  protected readonly favoritos = inject(FavoritosService);
   menuAberto = false;
   usuarioAberto = false;
+  megaAberto = false;
+  /** Todas as telas conhecidas, para a busca e o menu completo. */
+  readonly telas = TODAS_AS_TELAS;
+  /** Seções recolhidas ou abertas à mão pelo operador; sem escolha, ficam abertas. */
+  private secoesManuais: Record<string, boolean> = {};
 
   @HostListener('document:keydown.escape')
   aoPressionarEsc(): void {
@@ -162,29 +198,38 @@ export class LayoutComponent {
   operadorEmail = this.auth.operador()?.email ?? '';
   marca = iniciais(this.operadorNome);
 
-  grupos: { titulo: string; itens: ItemMenu[] }[] = [
+  secaoAberta(id: SecaoId) { return this.secoesManuais[id] ?? true; }
+  alternarSecao(id: SecaoId) { this.secoesManuais = { ...this.secoesManuais, [id]: !this.secaoAberta(id) }; }
+  favoritosDoMenu() { const ids = this.favoritos.ids(); return this.telas.filter(t => ids.includes(t.id)); }
+
+  grupos: { id: SecaoId; titulo: string; itens: ItemMenu[] }[] = [
     {
-      titulo: 'Comercial',
+      id: 'comercial', titulo: 'Comercial',
       itens: [
         { rotulo: 'Clientes', url: '/clientes', icone: 'clientes' },
         { rotulo: 'Contratações', url: '/contratacoes', icone: 'contratos' },
         { rotulo: 'Instâncias', url: '/instancias', icone: 'instancias' },
-        { rotulo: 'Cobranças', url: '/cobrancas', icone: 'cobrancas' },
-        { rotulo: 'Financeiro', url: '/financeiro', icone: 'financeiro' },
-        { rotulo: 'Relatórios', url: '/relatorios', icone: 'relatorios' },
-        { rotulo: 'Logs', url: '/logs', icone: 'logs' }
+        { rotulo: 'Cobranças', url: '/cobrancas', icone: 'cobrancas' }
       ]
     },
-    {titulo: 'Orientações',itens: [{rotulo: 'Ajuda',url: '/ajuda',icone: 'ajuda'}]},
     {
-      titulo: 'Catálogo',
+      id: 'financeiro', titulo: 'Financeiro',
+      itens: [
+        { rotulo: 'Financeiro', url: '/financeiro', icone: 'financeiro' },
+        { rotulo: 'Relatórios', url: '/relatorios', icone: 'relatorios' }
+      ]
+    },
+    { id: 'operacao', titulo: 'Operação', itens: [{ rotulo: 'Logs', url: '/logs', icone: 'logs' }] },
+    {
+      id: 'catalogo', titulo: 'Catálogo',
       itens: [
         { rotulo: 'Produtos', url: '/catalogo/produtos', icone: 'produto' },
         { rotulo: 'Recursos', url: '/catalogo/recursos', icone: 'recurso' },
         { rotulo: 'Planos e preços', url: '/catalogo/planos', icone: 'plano' },
         { rotulo: 'Adicionais', url: '/catalogo/adicionais', icone: 'adicional' }
       ]
-    }
+    },
+    { id: 'orientacoes', titulo: 'Orientações', itens: [{ rotulo: 'Ajuda', url: '/ajuda', icone: 'ajuda' }] }
   ];
 
   alternarRecolhido(): void {
