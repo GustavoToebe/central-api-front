@@ -41,7 +41,7 @@ export const TODAS_AS_TELAS: TelaNav[] = [
   { id: 'clientes/novo', rotulo: 'Novo cliente', url: '/clientes/novo', secao: 'comercial', noMenu: false, palavras: 'cadastrar cliente paróquia' },
   { id: 'contratacoes/nova', rotulo: 'Nova contratação', url: '/contratacoes/nova', secao: 'comercial', noMenu: false, palavras: 'criar assinatura instância provisionar' },
   { id: 'financeiro?lancamentos', rotulo: 'Lançamentos financeiros', url: '/financeiro', consulta: { aba: 'lancamentos' }, secao: 'financeiro', noMenu: false, palavras: 'despesa receita baixa pagamento provisão' },
-  { id: 'financeiro?contas', rotulo: 'Banco/caixa', url: '/financeiro', consulta: { aba: 'contas' }, secao: 'financeiro', noMenu: false, palavras: 'caixa banco saldo' },
+  { id: 'financeiro?contas', rotulo: 'Conta bancária', url: '/financeiro', consulta: { aba: 'contas' }, secao: 'financeiro', noMenu: false, palavras: 'caixa banco saldo' },
   { id: 'financeiro?plano', rotulo: 'Plano de contas', url: '/financeiro', consulta: { aba: 'plano-de-contas' }, secao: 'financeiro', noMenu: false, palavras: 'grupo conta contábil categoria' },
   { id: 'relatorios/banco-caixa', rotulo: 'Relatório de banco/caixa', url: '/relatorios/banco-caixa', secao: 'financeiro', noMenu: false, palavras: 'movimentação bancária saldo' },
   { id: 'relatorios/demonstrativo', rotulo: 'Demonstrativo do resultado do exercício', url: '/relatorios/demonstrativo', secao: 'financeiro', noMenu: false, palavras: 'resultado dre lucro' },

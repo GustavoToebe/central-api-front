@@ -236,7 +236,7 @@ export class LayoutComponent {
       itens: [
         { rotulo: 'Financeiro', url: '/financeiro', icone: 'financeiro', filhos: [
           { id: 'financeiro?lancamentos', rotulo: 'Lançamentos', consulta: { aba: 'lancamentos' }, icone: 'financeiro' },
-          { id: 'financeiro?contas', rotulo: 'Banco/caixa', consulta: { aba: 'contas' }, icone: 'banco' },
+          { id: 'financeiro?contas', rotulo: 'Conta bancária', consulta: { aba: 'contas' }, icone: 'banco' },
           { id: 'financeiro?plano', rotulo: 'Plano de contas', consulta: { aba: 'plano-de-contas' }, icone: 'arvore' }
         ] },
         { rotulo: 'Relatórios', url: '/relatorios', icone: 'relatorios' }
