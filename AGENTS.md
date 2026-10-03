@@ -71,31 +71,24 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 - Confirmação é painel na própria tela, nunca `confirm()`/`alert()` do navegador.
 - Antes de commitar: `npm test` e `npm run build:prod` verdes.
 
-## Segurança e CI na branch de melhorias
+## Segurança e CI
 
 - `core/auth/destino-api.ts` compara origem e fronteira do caminho antes de anexar Bearer, cookies e XSRF. Não substituir por `startsWith` na URL completa.
-- Pull requests executam testes e build; publicação apenas na main. Testes Angular são obrigatórios antes do build de produção.
+- Pull requests executam testes e build; publicação só na `main`. Testes Angular antes do build de produção.
+- Depois de mexer em `CentralApiService`, rode `python scripts/verificar-contrato-api.py` ([contrato da API](docs/contrato-api.md)).
 
 ## Fontes e estado verificável
 
-- MFA de operador: `docs/mfa.md`, configuração em `features/perfil/mfa-config.component.ts`, segundo passo no login. Segredo/códigos só em memória e limpos ao destruir; não gerar QR por serviço externo. Erros MFA de confirmação não devem renovar/repetir a requisição.
+- [Estado local](docs/estado-projeto.json) e [índice](docs/README.md). Histórico e plano não definem a versão implantada; precedência em [fontes e retomada](docs/desenvolvimento/fontes-e-retomada.md).
+- Rode `python scripts/verificar-docs.py` ao mudar docs, schema ou migrations e atualize o estado junto.
+- Trabalhar na branch autorizada pelo usuário (`melhoria/ecossistema-sem-ia` nesta etapa). Publicação depende do fluxo e da autorização vigentes; commit e push não são implantação.
 
-- [Estado local](docs/estado-projeto.json) e [índice](docs/README.md). Histórico/plano não define a versão implantada.
-- Executar `python scripts/verificar-docs.py` ao mudar docs, schema ou migrations; atualizar o estado junto.
-- Nesta tarefa, usar `melhoria/ecossistema-sem-ia`, conforme pedido do usuário. Publicação depende do fluxo e autorização vigentes.
+## Regras por funcionalidade
 
-- Financeiro operacional: docs/financeiro.md e rota /financeiro. Provisões por vencimento, realizado por baixa; assinaturas automáticas no resumo, saldo por conta apenas manual.
-
-- Nova rodada de produto: docs/consumo-instancias.md: consulta de contratação sob demanda, HTTP fora da transação, sem dados pessoais/zero fictício.
-
-- Ajuda: docs/ajuda.md, features/ajuda/ajuda-temas.ts. Conteúdo estático de uso, busca local, sem dados de negócio/HTML dinâmico. Revisar orientações ao mudar fluxos. Parâmetro tema usa apenas IDs do catálogo; Servirea filtra por permissões.
-
-- [Fontes e retomada](docs/desenvolvimento/fontes-e-retomada.md): precedência, histórico e registro de evidências.
-
-- Rodada 6–10: Histórico de consumo sob demanda: docs/historico-consumo.md; não gerar zeros para consultas ausentes nem gravar dados pessoais.
-
-- Rodada 11–17: docs/testes-navegacao.md.
-
-- F06/F26: docs/painel-instancias.md. /instancias com filtro por nível e atualização manual; nunca exibir dado de pessoas.
-
-- T17: docs/contrato-api.md. Depois de mexer em serviços de API rode `python scripts/verificar-contrato-api.py` (lê o contrato do back vizinho).
+| Área | Documento | Regra que não pode ser quebrada |
+|---|---|---|
+| MFA do operador | [mfa](docs/mfa.md) | Segredo e códigos só em memória e limpos ao destruir; sem QR por serviço externo; erro de confirmação não renova nem repete a requisição |
+| Financeiro operacional | [financeiro](docs/financeiro.md) | Provisões por vencimento, realizado por baixa; saldo por conta só manual |
+| Consumo e instâncias | [consumo-instancias](docs/consumo-instancias.md), [historico-consumo](docs/historico-consumo.md), [painel-instancias](docs/painel-instancias.md) | Consulta sob demanda; sem dado de pessoas; ausência nunca é zero; atualização manual limitada |
+| Ajuda | [ajuda](docs/ajuda.md) | Conteúdo estático; `tema` só com IDs do catálogo |
+| Navegação | [testes-navegacao](docs/testes-navegacao.md) | Rotas e guards cobertos por teste |
