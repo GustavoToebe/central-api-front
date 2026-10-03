@@ -22,6 +22,7 @@ export const routes: Routes = [
       { path: 'ajustes', loadComponent: () => import('./features/ajustes/ajustes.component').then(m => m.AjustesComponent) },
       { path: 'ajuda', loadComponent: () => import('./features/ajuda/ajuda.component').then(m => m.AjudaComponent) },
       { path: 'logs', loadComponent: () => import('./features/logs/logs.component').then(m => m.LogsComponent) },
+      { path: 'contas-bancarias', loadComponent: () => import('./features/financeiro/contas-bancarias.component').then(m => m.ContasBancariasComponent) },
       { path: 'financeiro', loadComponent: () => import('./features/financeiro/financeiro.component').then(m => m.FinanceiroComponent) },
       { path: 'relatorios', loadComponent: () => import('./features/relatorios/relatorios.component').then(m => m.RelatoriosComponent) },
       { path: 'relatorios/:tipo', loadComponent: () => import('./features/relatorios/relatorio-financeiro.component').then(m => m.RelatorioFinanceiroComponent) },

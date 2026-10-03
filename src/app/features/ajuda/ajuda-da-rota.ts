@@ -5,6 +5,7 @@ const REGRAS: readonly (readonly [string, string])[] = [
   ['/contratacoes/nova', 'primeiros-passos'],
   ['/instancias', 'instancias'],
   ['/cobrancas', 'cobrancas'],
+  ['/contas-bancarias', 'financeiro'],
   ['/financeiro', 'financeiro'],
   ['/relatorios', 'relatorios'],
   ['/logs', 'logs'],

@@ -41,17 +41,16 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
   @ViewChild('formulario') formulario?: NgForm;
   readonly hoje = hojeLocal();
   /** Abas por endereço: /financeiro?aba=plano-de-contas abre direto o plano de contas. */
-  private static readonly ABAS: Record<string, 'movimentos' | 'contas' | 'plano'> = { lancamentos: 'movimentos', contas: 'contas', 'plano-de-contas': 'plano' };
-  aba: 'movimentos' | 'contas' | 'plano' = FinanceiroComponent.ABAS[this.rota.snapshot.queryParamMap.get('aba') ?? ''] ?? 'movimentos';
+  private static readonly ABAS: Record<string, 'movimentos' | 'plano'> = { lancamentos: 'movimentos', 'plano-de-contas': 'plano' };
+  aba: 'movimentos' | 'plano' = FinanceiroComponent.ABAS[this.rota.snapshot.queryParamMap.get('aba') ?? ''] ?? 'movimentos';
   readonly rotuloTipo = ROTULO_TIPO;
   filtro: Filtros = { de: this.hoje.slice(0, 7) + '-01', ate: new Date(Number(this.hoje.slice(0,4)), Number(this.hoje.slice(5,7)), 0).toLocaleDateString('en-CA'), nome: '', contaId: '', categoriaId: '', situacao: '', tipo: '', pagina: 0, tamanho: 30 };
   contas: Conta[] = []; categorias: Categoria[] = []; movimentos: Movimento[] = [];
   contasAtivas: Conta[] = []; contasContabeisAtivas: Categoria[] = [];
   total = 0; resumo: Resumo | null = null;
   carregando = false; salvando = false; erro = '';
-  modal: 'movimento' | 'conta' | 'grupo' | 'contaContabil' | 'baixa' | null = null;
+  modal: 'movimento' | 'grupo' | 'contaContabil' | 'baixa' | null = null;
   editandoId: string | null = null; baixando: Movimento | null = null; dataPagamento = this.hoje;
-  contaForm: Omit<Conta, 'id'> = { nome: '', saldoInicial: 0, dataSaldoInicial: this.hoje, ativo: true };
   categoriaForm: CategoriaRequest = { nome: '', ativo: true, tipo: 'DESPESA', grupoId: null };
   /** O tipo do grupo não muda enquanto ele tiver contas contábeis. */
   tipoTravado = false;
@@ -92,11 +91,6 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
     this.movimentoForm = m ? { descricao: m.descricao, tipo: m.tipo, valor: m.valor, vencimento: m.vencimento, contaId: m.contaId, categoriaId: m.categoriaId, observacoes: m.observacoes ?? '', versao: m.versao } : this.novoMovimento();
     this.modal = 'movimento';
   }
-  abrirConta(c?: Conta) {
-    this.editandoId = c?.id ?? null;
-    this.contaForm = c ? { nome: c.nome, saldoInicial: c.saldoInicial, dataSaldoInicial: c.dataSaldoInicial, ativo: c.ativo } : { nome: '', saldoInicial: 0, dataSaldoInicial: this.hoje, ativo: true };
-    this.modal = 'conta';
-  }
   /** Grupo: organiza o plano de contas. Sem `grupo`, é novo (com o tipo escolhido). */
   abrirGrupo(grupo?: Categoria, tipo: Tipo = 'DESPESA') {
     this.editandoId = grupo?.id ?? null;
@@ -128,7 +122,7 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
     const g = c?.grupoId ? this.categorias.find(x => x.id === c.grupoId) : null;
     return c ? (g ? `${g.nome} › ${c.nome}` : c.nome) : '';
   }
-  mudarAba(aba: 'movimentos' | 'contas' | 'plano') {
+  mudarAba(aba: 'movimentos' | 'plano') {
     this.aba = aba; this.cd.markForCheck();
     const nome = Object.entries(FinanceiroComponent.ABAS).find(([, v]) => v === aba)?.[0];
     void this.roteador.navigate([], { relativeTo: this.rota, queryParams: { aba: nome }, replaceUrl: true });
@@ -145,7 +139,6 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
     this.salvando = true;
     try {
       switch (this.modal) {
-        case 'conta': await this.api.salvarConta(this.editandoId, this.contaForm); break;
         case 'grupo': case 'contaContabil': await this.api.salvarCategoria(this.editandoId, { ...this.categoriaForm, grupoId: this.modal === 'grupo' ? null : this.categoriaForm.grupoId }); break;
         case 'movimento': await this.api.salvarMovimento(this.editandoId, this.movimentoForm); break;
         case 'baixa': if (this.baixando) await this.api.baixar(this.baixando, this.dataPagamento); break;

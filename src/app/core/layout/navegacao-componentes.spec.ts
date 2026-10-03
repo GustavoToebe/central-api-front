@@ -103,8 +103,8 @@ describe('Menu completo (Central)', () => {
     spyOn(router, 'navigate').and.resolveTo(true);
     const fechou = jasmine.createSpy('fechou');
     f.componentInstance.fechar.subscribe(fechou);
-    f.componentInstance.abrir(TODAS_AS_TELAS.find(t => t.id === 'financeiro?contas')!);
-    expect(router.navigate).toHaveBeenCalledWith(['/financeiro'], { queryParams: { aba: 'contas' } });
+    f.componentInstance.abrir(TODAS_AS_TELAS.find(t => t.id === 'financeiro?plano')!);
+    expect(router.navigate).toHaveBeenCalledWith(['/financeiro'], { queryParams: { aba: 'plano-de-contas' } });
     expect(fechou).toHaveBeenCalled();
   });
 });
@@ -125,7 +125,7 @@ describe('Navegação contextual (Central)', () => {
     expect(f.nativeElement.querySelector('[data-tela-atual]').textContent).toContain('Plano de contas');
     const chips = Array.from(f.nativeElement.querySelectorAll('[data-irma]') as NodeListOf<HTMLElement>).map(e => e.textContent!.trim());
     expect(chips).toContain('Lançamentos financeiros');
-    expect(chips).toContain('Conta bancária');
+    expect(chips).toContain('Contas bancárias');
     expect(chips).not.toContain('Financeiro');
     expect(chips).toContain('Relatórios');
   });

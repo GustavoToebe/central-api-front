@@ -36,7 +36,7 @@ describe('Navegação por seções (Central)', () => {
 
   it('quem começa com o termo vem antes de quem só contém', () => {
     expect(buscarTelas(TODAS_AS_TELAS, 'relatorio')[0].rotulo.toLowerCase()).toContain('relatório');
-    expect(buscarTelas(TODAS_AS_TELAS, 'bancária')[0].rotulo).toBe('Conta bancária');
+    expect(buscarTelas(TODAS_AS_TELAS, 'bancária')[0].rotulo).toBe('Contas bancárias');
   });
 
   it('acha a tela pelo endereço, com aba, subcaminho e sem correspondência', () => {
