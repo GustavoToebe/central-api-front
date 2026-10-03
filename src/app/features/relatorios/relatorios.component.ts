@@ -13,7 +13,6 @@ import { CATALOGO_RELATORIOS, RelatorioCatalogo } from './relatorios.models';
   template: `
     <div class="space-y-5">
       <app-cabecalho-pagina titulo="Relatórios" subtitulo="Escolha um relatório, informe o período e imprima ou baixe em planilha (CSV).">
-        <a acoes class="bo-btn-ghost" routerLink="/ajuda" [queryParams]="{ tema: 'relatorios' }">Ajuda dos relatórios</a>
       </app-cabecalho-pagina>
       <div>
         <label class="bo-label" for="busca-relatorio">Pesquisar relatório</label>

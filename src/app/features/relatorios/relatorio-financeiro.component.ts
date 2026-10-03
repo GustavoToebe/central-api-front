@@ -28,7 +28,6 @@ function hojeLocal(): string {
     <div class="space-y-5">
       <app-cabecalho-pagina [titulo]="info?.titulo ?? 'Relatório'" [subtitulo]="info?.descricao ?? ''">
         <a acoes class="bo-btn-ghost nao-imprimir" routerLink="/relatorios">Todos os relatórios</a>
-        <a acoes class="bo-btn-ghost nao-imprimir" routerLink="/ajuda" [queryParams]="{ tema: 'relatorios' }">Ajuda</a>
       </app-cabecalho-pagina>
 
       @if (!info) {

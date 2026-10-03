@@ -1,3 +1,4 @@
+import { AjudaLinkComponent } from '../comum/ajuda-link.component';
 import { CampoCompetenciaComponent } from '../comum/campo-competencia.component';
 import { CampoDataComponent } from '../comum/campo-data.component';
 import { NumeroComponent } from '../comum/numero.component';
@@ -26,7 +27,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
 
 @Component({
   selector: 'app-contratacao-detalhe',
-  imports: [FormsModule, RouterLink, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent, NumeroComponent, CampoDataComponent, CampoCompetenciaComponent],
+  imports: [FormsModule, RouterLink, AjudaLinkComponent, PagamentoModalComponent, CobrancaDetalheModalComponent, LogsComponent, NumeroComponent, CampoDataComponent, CampoCompetenciaComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/contratacoes" class="bo-link">← Contratações</a>
@@ -38,6 +39,7 @@ type AcaoComMotivo = 'bloquear' | 'desbloquear' | 'cancelar' | 'suporte';
             <div class="text-xs font-extrabold uppercase tracking-wider text-neutral-500">{{ c.produtoCodigo }}</div>
             <h1 class="bo-title">{{ c.nomeInstancia }}<app-numero [numero]="c.sequencial" /></h1>
             <p class="bo-sub"><a [routerLink]="['/clientes', c.clienteId]" class="hover:text-white">Ver cliente</a> · slug {{ c.slugInstancia }}</p>
+            <div class="mt-2"><app-ajuda-link /></div>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <span class="bo-chip" [class]="tomSituacao(c.situacaoComercial)">{{ rotuloSituacao(c.situacaoComercial) }}</span>

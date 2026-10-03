@@ -1,10 +1,11 @@
+import { AjudaLinkComponent } from '../comum/ajuda-link.component';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CONTRASTES_CENTRAL, FONTES_CENTRAL, PALETAS_CENTRAL, ThemeService } from '../../core/theme/theme.service';
 
 @Component({
   selector: 'app-ajustes',
-  imports: [RouterLink],
+  imports: [RouterLink, AjudaLinkComponent],
   template: `
     <div class="mx-auto max-w-3xl space-y-6">
       <div>
@@ -12,6 +13,7 @@ import { CONTRASTES_CENTRAL, FONTES_CENTRAL, PALETAS_CENTRAL, ThemeService } fro
           Preferências
         </div>
         <h1 class="mt-3 text-2xl font-black text-white">Ajustes visuais</h1>
+        <div class="mt-2"><app-ajuda-link /></div>
         <p class="text-sm text-neutral-400">
           Personalize a cor de destaque, a escala do texto e a ergonomia do painel. As preferências ficam salvas neste navegador.
         </p>

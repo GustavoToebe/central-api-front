@@ -1,3 +1,4 @@
+import { AjudaLinkComponent } from '../comum/ajuda-link.component';
 import { NumeroComponent } from '../comum/numero.component';
 import { Component, OnInit, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +11,7 @@ import { rotuloTipoCliente } from '../comum/rotulos';
 
 @Component({
   selector: 'app-cliente-detalhe',
-  imports: [RouterLink, FormsModule, GradeContratacoesComponent, NumeroComponent],
+  imports: [RouterLink, FormsModule, GradeContratacoesComponent, NumeroComponent, AjudaLinkComponent],
   template: `
     <div class="space-y-6">
       <a routerLink="/clientes" class="bo-link">← Clientes</a>
@@ -20,6 +21,7 @@ import { rotuloTipoCliente } from '../comum/rotulos';
           <div>
             <h1 class="bo-title">{{ cliente.nome }}<app-numero [numero]="cliente.sequencial" /></h1>
             <p class="bo-sub">{{ rotuloTipoCliente(cliente.tipo) }} · {{ cliente.documento }}</p>
+            <div class="mt-2"><app-ajuda-link /></div>
           </div>
           <div class="flex gap-2">
             @if (elegiveis.length) {
