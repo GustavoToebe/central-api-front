@@ -15,7 +15,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink, CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent],
   template: `
     <div class="space-y-4">
-      <app-cabecalho-pagina titulo="Clientes"
+      <app-cabecalho-pagina titulo="Clientes" [exportacao]="dadosExportacao" [exportacaoOcupada]="carregando"
         subtitulo="Quem paga. Cada cliente pode ter várias contratações, de aplicativos diferentes.">
         <a routerLink="/clientes/novo" class="bo-btn" acoes>Novo cliente</a>
       </app-cabecalho-pagina>
@@ -61,6 +61,7 @@ import { RouterLink } from '@angular/router';
   `
 })
 export class ClientesListComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'clientes', titulo: 'Central · Clientes', colunas: ['Nome', 'Tipo', 'Documento'], linhas: this.filtradosCache.map(c => [c.nome, c.tipo, c.documento]) });
   private api = inject(CentralApiService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);

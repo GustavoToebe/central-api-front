@@ -15,7 +15,7 @@ import { EstadoListaComponent } from '../comum/estado-lista.component';
   imports: [FormsModule, RouterLink, GradeContratacoesComponent, CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent],
   template: `
     <div class="space-y-4">
-      <app-cabecalho-pagina titulo="Contratações"
+      <app-cabecalho-pagina titulo="Contratações" [exportacao]="dadosExportacao" [exportacaoOcupada]="carregando"
         subtitulo="Cada contratação é uma instância de um aplicativo (no Servirea, uma paróquia).">
         <a routerLink="/contratacoes/nova" class="bo-btn" acoes>Nova contratação</a>
       </app-cabecalho-pagina>
@@ -49,6 +49,7 @@ import { EstadoListaComponent } from '../comum/estado-lista.component';
   `
 })
 export class ContratacoesListComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'contratacoes', titulo: 'Central · Contratações', colunas: ['Cliente', 'Instância', 'Produto', 'Plano', 'Periodicidade', 'Valor (R$)', 'Situação'], linhas: this.filtradosCache.map(c => [c.clienteNome, c.nomeInstancia, c.produtoCodigo, c.planoCodigo, c.periodicidade, c.valor, c.situacaoComercial]) });
   private api = inject(CentralApiService);
   private cdr = inject(ChangeDetectorRef);
 

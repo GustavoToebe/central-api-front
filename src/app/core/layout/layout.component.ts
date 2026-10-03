@@ -1,6 +1,7 @@
 import { Component, HostListener, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { ConfirmacaoNavegacaoService } from '../guards/confirmacao-navegacao.service';
 import { iniciais } from '../../features/comum/rotulos';
 import { BuscaGlobalComponent } from './busca-global.component';
 import { FavoritosService } from './favoritos.service';
@@ -160,7 +161,7 @@ function gravarRecolhido(v: boolean): void {
         <div class="fixed inset-0 z-20 bg-black/60 backdrop-blur-xs lg:hidden" (click)="menuAberto = false"></div>
       }
 
-      <main class="bo-main" [class.recolhido]="compacto()"><app-navegacao-contextual [telas]="telas" (verTodas)="megaAberto = true" /><router-outlet /></main>
+      <main class="bo-main" [class.recolhido]="compacto()"><app-navegacao-contextual [telas]="telas" (verTodas)="megaAberto = true" /><router-outlet (activate)="navegacao.registrar($event)" (deactivate)="navegacao.registrar(null)" /></main>
       @if (megaAberto) { <app-mega-menu [telas]="telas" (fechar)="megaAberto = false" /> }
     </div>
   `
@@ -168,6 +169,7 @@ function gravarRecolhido(v: boolean): void {
 export class LayoutComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+  readonly navegacao = inject(ConfirmacaoNavegacaoService);
 
   protected readonly favoritos = inject(FavoritosService);
   menuAberto = false;
@@ -267,7 +269,7 @@ export class LayoutComponent {
 
   async sair(): Promise<void> {
     this.usuarioAberto = false;
+    if (!await this.router.navigate(['/login'])) return;
     await this.auth.logout();
-    await this.router.navigate(['/login']);
   }
 }

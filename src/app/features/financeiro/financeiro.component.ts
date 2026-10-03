@@ -11,6 +11,8 @@ import { ModalComponent } from '../comum/modal.component';
 import { RodapeFormComponent } from '../comum/rodape-form.component';
 import { FinanceiroApiService } from './financeiro-api.service';
 import { PlanoContasListaComponent } from './plano-contas-lista.component';
+import { coletarExportacao } from '../comum/coletar-exportacao';
+import { TabelaExportacao } from '../comum/exportacao-tabela';
 import { Categoria, CategoriaRequest, Conta, Filtros, Movimento, MovimentoRequest, ROTULO_TIPO, Resumo, Tipo } from './financeiro.models';
 
 function hojeLocal(): string {
@@ -22,6 +24,14 @@ function hojeLocal(): string {
   templateUrl: './financeiro.component.html', styleUrl: './financeiro.component.scss'
 })
 export class FinanceiroComponent implements OnInit, OnDestroy {
+  private filtroExportacao?: Filtros;
+  readonly dadosExportacao = async (): Promise<TabelaExportacao> => {
+    if (this.aba === 'plano') return { nome: 'plano-contas', titulo: 'Central · Plano de contas', colunas: ['Nome', 'Tipo', 'Grupo', 'Situação'], linhas: this.categorias.map(c => [c.nome, c.tipo, c.ehGrupo ? 'Grupo' : this.categorias.find(g => g.id === c.grupoId)?.nome ?? '', c.ativo ? 'Ativa' : 'Inativa']) };
+    const filtro = this.filtroExportacao;
+    if (!filtro) throw new Error('Busque os lançamentos antes de exportar.');
+    const itens = await coletarExportacao(pagina => this.api.listar({ ...filtro, pagina }), () => !this.destruido);
+    return { nome: 'lancamentos-financeiros', titulo: 'Central · Lançamentos financeiros', contexto: `Período: ${filtro.de} a ${filtro.ate} · Busca: ${filtro.nome || 'todas'} · Tipo: ${filtro.tipo || 'todos'} · Situação: ${filtro.situacao || 'todas'}`, colunas: ['Descrição', 'Tipo', 'Situação', 'Valor (R$)', 'Vencimento', 'Data da baixa', 'Conta/banco', 'Conta contábil'], linhas: itens.map(m => [m.descricao, m.tipo, m.situacao, m.valor, m.vencimento, m.dataPagamento, m.conta, m.categoria]) };
+  };
   private readonly api = inject(FinanceiroApiService);
   private readonly cd = inject(ChangeDetectorRef);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -78,6 +88,7 @@ export class FinanceiroComponent implements OnInit, OnDestroy {
       this.contasAtivas = contas.filter(c => c.ativo);
       this.contasContabeisAtivas = categorias.filter(c => !c.ehGrupo && c.ativo && categorias.find(g => g.id === c.grupoId)?.ativo);
       this.movimentos = pagina.itens; this.total = pagina.total; this.resumo = resumo;
+      this.filtroExportacao = f;
     } catch (e) {
       if (geracao === this.geracao) { this.erro = (e as Error).message; this.movimentos = []; this.resumo = null; this.total = 0; }
     } finally { if (!this.destruido && geracao === this.geracao) { this.carregando = false; this.cd.markForCheck(); } }

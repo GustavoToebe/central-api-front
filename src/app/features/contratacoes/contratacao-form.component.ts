@@ -1,5 +1,5 @@
-import { Component, OnInit, inject, input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject, input } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
@@ -17,13 +17,13 @@ import { RodapeFormComponent } from '../comum/rodape-form.component';
   selector: 'app-contratacao-form',
   imports: [FormsModule, RouterLink, CampoDataComponent, SelectBuscaComponent, CabecalhoPaginaComponent, RodapeFormComponent],
   template: `
-    <div class="mx-auto max-w-4xl space-y-6">
+    <div class="w-full min-w-0 space-y-6">
       <app-cabecalho-pagina titulo="Nova contratação"
         subtitulo="Ao salvar, a Central manda o aplicativo criar a instância e convidar o administrador (em até um minuto).">
         <a [routerLink]="voltar()" class="bo-link" acoes>← Voltar</a>
       </app-cabecalho-pagina>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
-      <form class="space-y-6" (ngSubmit)="salvar()">
+      <form #formulario="ngForm" class="space-y-6" (ngSubmit)="salvar()">
         <section class="bo-card grid gap-4 p-5 md:grid-cols-2">
           <label class="md:col-span-2"><span class="bo-label">Cliente *</span>
             <app-select-busca name="clienteId" [(ngModel)]="form.clienteId" [opcoes]="opcoesClientes" placeholder="Escolha o cliente" />
@@ -112,6 +112,9 @@ import { RodapeFormComponent } from '../comum/rodape-form.component';
   `
 })
 export class ContratacaoFormComponent implements OnInit {
+  @ViewChild('formulario') formulario?: NgForm;
+  private salvo = false;
+  hasPendingChanges(): boolean { return !this.salvo && (this.salvando || !!this.formulario?.dirty); }
   readonly emailValido = emailValido;
   private api = inject(CentralApiService);
   private router = inject(Router);
@@ -185,7 +188,7 @@ export class ContratacaoFormComponent implements OnInit {
     this.salvando = true;
     this.erro = '';
     this.api.criarContratacao(montarContratacaoRequest(this.form)).subscribe({
-      next: c => void this.router.navigate(['/contratacoes', c.id]),
+      next: c => { this.salvo = true; void this.router.navigate(['/contratacoes', c.id]); },
       error: e => { this.salvando = false; this.erro = mensagemApi(e, 'Não foi possível criar a contratação.'); }
     });
   }

@@ -1,7 +1,7 @@
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { NumeroComponent } from '../comum/numero.component';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Periodicidade, Plano, Produto, Recurso } from '../../core/api/central.models';
@@ -18,7 +18,7 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
   imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent],
   template: `
     <div class="space-y-6">
-      <app-cabecalho-pagina titulo="Planos e preços" subtitulo="Preço por periodicidade, limites e funcionalidades de cada plano.">
+      <app-cabecalho-pagina titulo="Planos e preços" [exportacao]="dadosExportacao" subtitulo="Preço por periodicidade, limites e funcionalidades de cada plano.">
         <button type="button" class="bo-btn" acoes [disabled]="!produtoId || !recursosCarregados" (click)="novo()">Novo plano</button>
       </app-cabecalho-pagina>
       <select class="bo-field max-w-xs" name="produto" [(ngModel)]="produtoId" (ngModelChange)="trocarProduto()">
@@ -27,7 +27,7 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
       </select>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
-        <form class="bo-card space-y-5 p-5" (ngSubmit)="salvar()">
+        <form #formulario="ngForm" class="bo-card space-y-5 p-5" (ngSubmit)="salvar()">
           @if (editandoId) { <p class="text-sm font-semibold">Plano <app-numero [numero]="numeroEdicao" /></p> }
           <div class="grid gap-3 md:grid-cols-4">
             <label><span class="bo-label">Código *</span><input class="bo-field" name="codigo" [(ngModel)]="form.codigo" placeholder="PROFISSIONAL" [disabled]="!!editandoId"></label>
@@ -106,6 +106,9 @@ import { LinhaRecursoDoPlano, limitesSemValor, montarPlanoRequest } from './cata
   `
 })
 export class PlanosComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'planos', titulo: 'Central · Planos', colunas: ['Código', 'Nome', 'Situação', 'Preços vigentes'], linhas: this.planos.map(p => [p.codigo, p.nome, p.ativo ? 'Ativo' : 'Inativo', p.precosVigentes.map(v => `${v.periodicidade}: ${v.valor}`).join(' · ')]) });
+  @ViewChild('formulario') formulario?: NgForm;
+  hasPendingChanges(): boolean { return this.salvando || (this.editando && !!this.formulario?.dirty); }
   private api = inject(CentralApiService);
 
   produtos: Produto[] = [];

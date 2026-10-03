@@ -31,7 +31,7 @@ import { Selecao } from '../comum/selecao';
   ],
   template: `
     <div class="space-y-8">
-      <app-cabecalho-pagina titulo="Cobranças"
+      <app-cabecalho-pagina titulo="Cobranças" [exportacao]="dadosExportacao" [exportacaoOcupada]="carregando"
         subtitulo="Todas as contratações. Clique numa linha para ver o detalhamento.">
       </app-cabecalho-pagina>
 
@@ -149,6 +149,7 @@ import { Selecao } from '../comum/selecao';
   `
 })
 export class CobrancasComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'cobrancas', titulo: 'Central · Cobranças', colunas: ['Cliente', 'Instância', 'Produto', 'Plano', 'Vencimento', 'Valor (R$)', 'Situação', 'Pago em', 'Valor pago (R$)'], linhas: this.linhas.map(c => [c.clienteNome, c.nomeInstancia, c.produtoCodigo, c.planoNome, c.vencimento, c.valor, c.status, c.pagoEm, c.valorPago]) });
   private api = inject(CentralApiService);
   readonly cdr = inject(ChangeDetectorRef);
 

@@ -15,11 +15,22 @@
   ],
   "ajuda": {
     "rota": "/ajuda",
-    "temas": 11,
+    "temas": 16,
     "conteudo": "Estático, versionado com os fluxos da aplicação."
   },
   "ambiente_local_atual": {
     "manual": "docs/ambiente-local-atual.md",
     "bases_novas": true
+  },
+  "ajustes_pdf": {
+    "manual": "docs/ajustes-pdf.md",
+    "data": "2026-10-03",
+    "formatos": [
+      "csv",
+      "json",
+      "xlsx",
+      "pdf",
+      "png"
+    ]
   }
 }

@@ -1,8 +1,8 @@
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { EstadoListaComponent } from '../comum/estado-lista.component';
 import { NumeroComponent } from '../comum/numero.component';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Adicional, Produto, Recurso } from '../../core/api/central.models';
@@ -14,7 +14,7 @@ import { montarAdicionalRequest } from './catalogo.form';
   imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent, EstadoListaComponent],
   template: `
     <div class="space-y-6">
-      <app-cabecalho-pagina titulo="Adicionais" subtitulo="Pacotes que somam a um limite sem trocar de plano (ex.: +50 voluntários).">
+      <app-cabecalho-pagina titulo="Adicionais" [exportacao]="dadosExportacao" subtitulo="Pacotes que somam a um limite sem trocar de plano (ex.: +50 voluntários).">
         <button type="button" class="bo-btn" acoes [disabled]="!produtoId || !recursosCarregados" (click)="novo()">Novo adicional</button>
       </app-cabecalho-pagina>
       <select class="bo-field max-w-xs" name="produto" [(ngModel)]="produtoId" (ngModelChange)="trocarProduto()">
@@ -23,7 +23,7 @@ import { montarAdicionalRequest } from './catalogo.form';
       </select>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
-        <form class="bo-card grid gap-3 p-5 md:grid-cols-6" (ngSubmit)="salvar()">
+        <form #formulario="ngForm" class="bo-card grid gap-3 p-5 md:grid-cols-6" (ngSubmit)="salvar()">
           @if (editandoId) { <p class="text-sm font-semibold md:col-span-6">Adicional <app-numero [numero]="numeroEdicao" /></p> }
           <label><span class="bo-label">Código *</span><input class="bo-field" name="codigo" [(ngModel)]="form.codigo"></label>
           <label class="md:col-span-2"><span class="bo-label">Nome *</span><input class="bo-field" name="nome" [(ngModel)]="form.nome"></label>
@@ -61,6 +61,9 @@ import { montarAdicionalRequest } from './catalogo.form';
   `
 })
 export class AdicionaisComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'adicionais', titulo: 'Central · Adicionais', colunas: ['Código', 'Nome', 'Recurso', 'Quantidade', 'Preço (R$)', 'Situação'], linhas: this.adicionais.map(a => [a.codigo, a.nome, a.recursoCodigo, a.quantidade, a.preco, a.ativo ? 'Ativo' : 'Inativo']) });
+  @ViewChild('formulario') formulario?: NgForm;
+  hasPendingChanges(): boolean { return this.salvando || (this.editando && !!this.formulario?.dirty); }
   private api = inject(CentralApiService);
 
   produtos: Produto[] = [];

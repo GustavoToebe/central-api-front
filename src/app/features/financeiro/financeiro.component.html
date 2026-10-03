@@ -1,5 +1,5 @@
 <div class="space-y-5">
-  <app-cabecalho-pagina titulo="Financeiro" subtitulo="Despesas do SaaS, outras receitas e provisões.">
+  <app-cabecalho-pagina titulo="Financeiro" [exportacao]="dadosExportacao" [exportacaoOcupada]="carregando" subtitulo="Despesas do SaaS, outras receitas e provisões.">
     <div acoes>
       <a routerLink="/cobrancas" class="bo-btn-ghost">Cobranças de assinaturas</a>
       @if (aba === 'movimentos') { <button class="bo-btn" (click)="abrirMovimento()" [disabled]="carregando || !contasAtivas.length || !contasContabeisAtivas.length">Novo lançamento</button> }

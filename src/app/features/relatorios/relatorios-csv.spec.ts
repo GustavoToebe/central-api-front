@@ -24,6 +24,11 @@ describe('CSV dos relatórios', () => {
     expect(montarCsv([['a', null, 2]])).toBe('﻿a;;2');
   });
 
+  it('não executa fórmulas vindas de descrições ao abrir o CSV', () => {
+    expect(montarCsv([['=HYPERLINK("https://exemplo.invalid")', '+cmd', '-3,00']]))
+      .toBe('﻿"\'=HYPERLINK(""https://exemplo.invalid"")";\'+cmd;-3,00');
+  });
+
   it('banco/caixa traz saldo anterior, movimentos e totais por conta', () => {
     const b: BancoCaixa = {
       de: '2026-10-01', ate: '2026-10-31', saldoAnterior: 100, entradas: 30, saidas: 20, saldoFinal: 110, observacao: '', contas: [{

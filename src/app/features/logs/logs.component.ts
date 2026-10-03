@@ -1,3 +1,4 @@
+import { TabelaExportacao } from '../comum/exportacao-tabela';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -22,7 +23,7 @@ import { EstadoListaComponent } from '../comum/estado-lista.component';
   template: `
     <div class="space-y-4">
       @if (!contratacaoId()) {
-        <app-cabecalho-pagina titulo="Logs"
+        <app-cabecalho-pagina [exportacao]="exportacao" [exportacaoOcupada]="carregando" titulo="Logs"
           subtitulo="Erros de servidor que os aplicativos tiveram (últimos 90 dias).">
         </app-cabecalho-pagina>
       }
@@ -106,6 +107,12 @@ export class LogsComponent implements OnInit {
   /** Preenchido na aba "Erros" da contratação. */
   readonly contratacaoId = input<string>();
 
+  readonly exportacao = (): TabelaExportacao => {
+    if (this.erros.length >= 500) throw new Error('Reduza o período ou a busca: a consulta aceita até 500 erros. A exportação não será truncada.');
+    return { nome: 'logs', titulo: 'Erros dos aplicativos',
+      colunas: ['Quando', 'Cliente', 'Produto', 'Instância', 'Status', 'Método', 'Rota', 'Mensagem', 'Request ID'],
+      linhas: this.erros.map(e => [e.ocorridoEm, e.clienteNome ?? '', e.produtoCodigo, e.nomeInstancia ?? '', e.status, e.metodo, e.rota, e.mensagem ?? '', e.requestId ?? '']) };
+  };
   produtos: Produto[] = [];
   erros: ErroAplicativo[] = [];
   filtro: FiltroErros = filtroVazio();

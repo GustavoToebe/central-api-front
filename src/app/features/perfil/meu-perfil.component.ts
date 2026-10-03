@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -16,9 +16,9 @@ import { MfaConfigComponent } from './mfa-config.component';
   selector: 'app-meu-perfil',
   imports: [FormsModule, OlhoSenhaComponent, CabecalhoPaginaComponent, RodapeFormComponent, MfaConfigComponent],
   template: `
-    <div class="max-w-xl space-y-6">
+    <div class="w-full min-w-0 space-y-6">
       <app-cabecalho-pagina titulo="Meu perfil" [subtitulo]="nome + ' · ' + email" />
-      <form class="bo-card space-y-4 p-5" (ngSubmit)="salvar()">
+      <form #formulario="ngForm" class="bo-card space-y-4 p-5" (ngSubmit)="salvar()">
         <h2 class="border-b border-[#262626] pb-2 text-sm font-extrabold uppercase tracking-widest text-neutral-400">Trocar senha</h2>
         <label class="block"><span class="bo-label">Senha atual</span>
           <div class="relative"><input #atual class="bo-field pr-11" type="password" name="senhaAtual" [(ngModel)]="senhaAtual"
@@ -39,6 +39,8 @@ import { MfaConfigComponent } from './mfa-config.component';
   `
 })
 export class MeuPerfilComponent {
+  @ViewChild('formulario') formulario?: NgForm;
+  hasPendingChanges(): boolean { return this.salvando || !!this.formulario?.dirty; }
   private api = inject(CentralApiService);
   private auth = inject(AuthService);
 
@@ -62,6 +64,7 @@ export class MeuPerfilComponent {
       next: () => {
         this.salvando = false;
         this.senhaAtual = this.novaSenha = this.confirmacao = '';
+        this.formulario?.form.markAsPristine();
         this.ok = 'Senha trocada. As outras sessões abertas foram encerradas.';
       },
       error: e => { this.salvando = false; this.erro = mensagemApi(e, 'Não foi possível trocar a senha.'); }

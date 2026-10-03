@@ -20,7 +20,7 @@ function hojeLocal(): string {
   template: `
 <div class="space-y-5">
   <app-cabecalho-pagina [titulo]="id ? 'Editar conta bancária' : 'Nova conta bancária'" subtitulo="Dados do banco, chaves PIX e saldo inicial.">
-    <label acoes class="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="ativoTopo" [(ngModel)]="form.ativo" [ngModelOptions]="{ standalone: true }" data-ativo /> Conta ativa</label>
+    <label acoes class="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="ativoTopo" [(ngModel)]="form.ativo" [ngModelOptions]="{ standalone: true }" (ngModelChange)="marcarPendente()" data-ativo /> Conta ativa</label>
   </app-cabecalho-pagina>
   @if (erro) { <div class="bo-card p-4 text-rose-400" role="alert">{{ erro }}</div> }
   @if (carregando) { <p class="bo-card p-6 text-neutral-400" role="status">Carregando…</p> } @else {
@@ -93,6 +93,9 @@ export class ContaBancariaFormComponent implements OnInit {
   id: string | null = this.rota.snapshot.paramMap.get('id');
   form: ContaRequest = this.novo();
   carregando = false; salvando = false; erro = ''; aviso = '';
+  private salvo = false;
+  marcarPendente() { this.formulario?.form.markAsDirty(); }
+  hasPendingChanges(): boolean { return !this.salvo && (this.salvando || !!this.formulario?.dirty); }
 
   async ngOnInit() {
     if (!this.id) return;
@@ -130,6 +133,7 @@ export class ContaBancariaFormComponent implements OnInit {
     this.salvando = true; this.cd.markForCheck();
     try {
       await this.api.salvarConta(this.id, this.paraEnvio());
+      this.salvo = true;
       await this.roteador.navigate(['/contas-bancarias']);
     } catch (e) { this.aviso = (e as Error).message; }
     finally { this.salvando = false; this.cd.markForCheck(); }

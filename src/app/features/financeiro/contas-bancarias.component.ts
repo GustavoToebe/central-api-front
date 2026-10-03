@@ -17,7 +17,7 @@ const sem = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
   imports: [CommonModule, FormsModule, RouterLink, CabecalhoPaginaComponent, BarraFiltrosComponent, EstadoListaComponent],
   template: `
 <div class="space-y-5">
-  <app-cabecalho-pagina titulo="Contas bancárias" subtitulo="O caixa e as contas bancárias da Central: banco, titular, agência, conta e chaves PIX.">
+  <app-cabecalho-pagina titulo="Contas bancárias" [exportacao]="dadosExportacao" [exportacaoOcupada]="carregando" subtitulo="O caixa e as contas bancárias da Central: banco, titular, agência, conta e chaves PIX.">
     <a acoes class="bo-btn" routerLink="/contas-bancarias/nova" data-nova-conta>Nova conta</a>
   </app-cabecalho-pagina>
   @if (erro) { <div class="bo-card p-4 text-rose-400" role="alert">{{ erro }} <button class="bo-btn-ghost ml-3" (click)="carregar()">Tentar novamente</button></div> }
@@ -43,6 +43,7 @@ const sem = (x: string) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
 </div>`
 })
 export class ContasBancariasComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'contas-bancarias', titulo: 'Central · Contas bancárias', colunas: ['Nome', 'Banco', 'Tipo', 'Situação'], linhas: this.visiveis().map(c => [c.nome, c.banco ?? '', c.tipoConta ?? 'OUTRA', c.ativo ? 'Ativa' : 'Inativa']) });
   private readonly api = inject(FinanceiroApiService);
   private readonly cd = inject(ChangeDetectorRef);
   contas: Conta[] = [];

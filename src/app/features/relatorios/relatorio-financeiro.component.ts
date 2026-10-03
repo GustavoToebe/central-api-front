@@ -8,7 +8,7 @@ import { mensagemApi } from '../../core/api/api-error';
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { CampoDataComponent } from '../comum/campo-data.component';
 import { Conta } from '../financeiro/financeiro.models';
-import { baixarCsv, csvBancoCaixa, csvDemonstrativo, csvPorTipo } from './relatorios-csv';
+import { exportarRelatorio, FormatoRelatorio } from './exportar-relatorio';
 import { BancoCaixa, Demonstrativo, PorTipo, RelatorioCatalogo, RelatorioId, Visao, relatorioPorId } from './relatorios.models';
 
 function hojeLocal(): string {
@@ -52,7 +52,12 @@ function hojeLocal(): string {
           }
           <button type="submit" class="bo-btn" [disabled]="carregando()" data-gerar>{{ carregando() ? 'Gerando...' : 'Gerar relatório' }}</button>
           <button type="button" class="bo-btn-ghost" [disabled]="!temDados()" (click)="imprimir()" data-imprimir>Imprimir</button>
-          <button type="button" class="bo-btn-ghost" [disabled]="!temDados()" (click)="baixar()" data-csv>Baixar CSV</button>
+          <label class="bo-label" for="formato-relatorio">Formato
+            <select id="formato-relatorio" name="formato" class="bo-field" [(ngModel)]="formato">
+              <option value="csv">CSV</option><option value="json">JSON</option><option value="xlsx">Excel (XLSX)</option><option value="pdf">PDF</option><option value="png">Imagem (PNG)</option>
+            </select>
+          </label>
+          <button type="button" class="bo-btn-ghost" [disabled]="!temDados() || exportando()" (click)="baixar()" data-csv>{{ exportando() ? 'Preparando...' : 'Baixar arquivo' }}</button>
         </form>
 
         @if (erro()) { <div class="bo-card p-4 text-rose-400" role="alert" data-erro>{{ erro() }}</div> }
@@ -64,6 +69,7 @@ function hojeLocal(): string {
           </div>
         }
 
+        <div #conteudoRelatorio>
         @if (porTipo(); as r) {
           <section class="bo-card area-relatorio space-y-3 p-4" data-relatorio-tipo>
             <h2 class="text-lg font-bold">{{ r.tipo === 'DESPESA' ? 'Despesas' : 'Receitas' }} {{ r.visao === 'REALIZADO' ? 'realizadas' : 'previstas' }}</h2>
@@ -161,6 +167,7 @@ function hojeLocal(): string {
             </section>
           </section>
         }
+        </div>
       }
     </div>
   `
@@ -171,6 +178,7 @@ export class RelatorioFinanceiroComponent implements OnDestroy {
   private readonly cd = inject(ChangeDetectorRef);
   private readonly sub: Subscription;
   private geracao = 0;
+  private destruido = false;
 
   info: RelatorioCatalogo | undefined;
   de = hojeLocal().slice(0, 7) + '-01';
@@ -178,6 +186,7 @@ export class RelatorioFinanceiroComponent implements OnDestroy {
   visao: Visao = 'REALIZADO';
   contaId = '';
   geradoEm = new Date();
+  formato: FormatoRelatorio = 'csv';
 
   readonly contas = signal<Conta[]>([]);
   readonly porTipo = signal<PorTipo | null>(null);
@@ -185,6 +194,7 @@ export class RelatorioFinanceiroComponent implements OnDestroy {
   readonly demo = signal<Demonstrativo | null>(null);
   readonly carregando = signal(false);
   readonly erro = signal('');
+  readonly exportando = signal(false);
 
   constructor() {
     this.sub = this.rota.paramMap.subscribe(p => {
@@ -195,7 +205,7 @@ export class RelatorioFinanceiroComponent implements OnDestroy {
       this.cd.markForCheck();
     });
   }
-  ngOnDestroy() { this.sub.unsubscribe(); ++this.geracao; }
+  ngOnDestroy() { this.destruido = true; this.sub.unsubscribe(); ++this.geracao; }
 
   temDados() { return !!(this.porTipo() || this.banco() || this.demo()); }
 
@@ -208,9 +218,9 @@ export class RelatorioFinanceiroComponent implements OnDestroy {
     this.carregando.set(true); this.limpar();
     try {
       const id: RelatorioId = this.info.id;
-      if (id === 'despesas' || id === 'receitas') this.porTipo.set(await firstValueFrom(this.api.relatorioPorTipo(id, this.de, this.ate, this.visao)));
-      else if (id === 'banco-caixa') this.banco.set(await firstValueFrom(this.api.relatorioBancoCaixa(this.de, this.ate, this.contaId || undefined)));
-      else this.demo.set(await firstValueFrom(this.api.relatorioDemonstrativo(this.de, this.ate)));
+      if (id === 'despesas' || id === 'receitas') { const r = await firstValueFrom(this.api.relatorioPorTipo(id, this.de, this.ate, this.visao)); if (geracao === this.geracao) this.porTipo.set(r); }
+      else if (id === 'banco-caixa') { const r = await firstValueFrom(this.api.relatorioBancoCaixa(this.de, this.ate, this.contaId || undefined)); if (geracao === this.geracao) this.banco.set(r); }
+      else { const r = await firstValueFrom(this.api.relatorioDemonstrativo(this.de, this.ate)); if (geracao === this.geracao) this.demo.set(r); }
       if (geracao === this.geracao) this.geradoEm = new Date();
     } catch (e) {
       if (geracao === this.geracao) this.erro.set(mensagemApi(e, 'Não foi possível gerar o relatório.'));
@@ -221,10 +231,14 @@ export class RelatorioFinanceiroComponent implements OnDestroy {
 
   imprimir() { window.print(); }
 
-  baixar() {
+  async baixar() {
     if (!this.info) return;
-    const nome = `relatorio-${this.info.id}-${this.de}-a-${this.ate}.csv`;
-    const r = this.porTipo(), b = this.banco(), d = this.demo();
-    if (r) baixarCsv(nome, csvPorTipo(r)); else if (b) baixarCsv(nome, csvBancoCaixa(b)); else if (d) baixarCsv(nome, csvDemonstrativo(d));
+    const dados = this.porTipo() ?? this.banco() ?? this.demo();
+    if (!dados || this.exportando()) return;
+    const nome = `relatorio-${this.info.id}-${dados.de}-a-${dados.ate}`;
+    this.exportando.set(true); this.erro.set('');
+    try { await exportarRelatorio(nome, this.info.titulo, this.formato, dados, () => !this.destruido); }
+    catch { this.erro.set('Não foi possível gerar o arquivo. Reduza o período ou escolha CSV/Excel para relatórios grandes.'); }
+    finally { this.exportando.set(false); this.cd.markForCheck(); }
   }
 }

@@ -89,6 +89,19 @@ export const TEMAS: readonly TemaAjuda[] = [
     relacionados: ['cobrancas'],
   },
   {
+    id: 'contas-bancarias', titulo: 'Contas bancárias e caixa', secao: 'financeiro', url: '/contas-bancarias',
+    resumo: 'Cadastre onde a Central recebe ou paga dinheiro. Cada lançamento manual usa uma conta bancária ou caixa e uma conta contábil.',
+    passos: [
+      'Abra Contas bancárias e use Nova conta. Escolha um nome que identifique claramente o banco ou o caixa.',
+      'Para conta corrente ou poupança, informe banco, agência, número e titular. Para dinheiro físico, escolha Caixa.',
+      'Digite o saldo inicial e a data a partir da qual vai registrar movimentações. Depois do primeiro lançamento, esses valores não podem ser alterados.',
+      'Cadastre as chaves PIX, se houver, e marque uma como principal. Depois use a conta nos lançamentos do Financeiro.',
+    ],
+    cuidados: ['As cobranças automáticas das assinaturas não têm vínculo bancário até serem conciliadas fora deste módulo.', 'Uma conta inativa mantém o histórico, mas não deve receber lançamentos novos.'],
+    perguntas: [{ pergunta: 'Por que minha cobrança paga não aparece no saldo deste banco?', resposta: 'A receita da assinatura aparece no resultado, mas a cobrança ainda não está ligada a uma conta bancária. Não a cadastre de novo como receita manual.' }],
+    relacionados: ['financeiro', 'relatorios'],
+  },
+  {
     id: 'financeiro', titulo: 'Financeiro: plano de contas, lançamentos e saldos', secao: 'financeiro', url: '/financeiro',
     resumo: 'Controla o dinheiro da Central: despesas (VPS, e-mail, serviços), receitas manuais, contas ou bancos e plano de contas.',
     passos: [
@@ -117,7 +130,7 @@ export const TEMAS: readonly TemaAjuda[] = [
       'Escolha o período (data inicial e final) e atualize. Os totais e as linhas mudam conforme o período.',
       'Relatório de banco/caixa mostra as movimentações e o saldo por conta. Despesas e receitas listam os valores por conta contábil.',
       'O Demonstrativo do resultado do exercício soma receitas e subtrai despesas, por grupo e conta contábil, e mostra o resultado do período.',
-      'Use Exportar CSV para abrir na planilha ou Imprimir para uma versão limpa em papel ou PDF.',
+      'Escolha CSV, JSON, Excel, PDF ou imagem e use Baixar arquivo. Para imprimir em papel, use Imprimir.',
     ],
     cuidados: [
       'Valores realizados usam a data da baixa; provisões, o vencimento. O relatório indica de qual dos dois está falando.',
@@ -126,7 +139,7 @@ export const TEMAS: readonly TemaAjuda[] = [
     ],
     perguntas: [
       { pergunta: 'O resultado do período não fecha com o que eu esperava.', resposta: 'Confira se há lançamentos pendentes sem baixa e se o período inclui o mês inteiro. Depois compare o relatório de receitas com o de despesas.' },
-      { pergunta: 'Posso levar o relatório para o contador?', resposta: 'Sim: exporte o CSV ou use Imprimir e salve como PDF.' },
+      { pergunta: 'Posso levar o relatório para o contador?', resposta: 'Sim: baixe CSV ou Excel para análise, ou PDF para leitura. Confira o período antes de compartilhar.' },
     ],
     relacionados: ['financeiro', 'cobrancas'],
   },

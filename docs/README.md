@@ -40,3 +40,5 @@
 - [Painel de instâncias](painel-instancias.md): F06/F26, cartões por nível e atualização manual.
 
 - [Contrato da API](contrato-api.md): T17, conferência das chamadas do front contra o contrato versionado.
+
+- [Ajustes do PDF: formulários, ajuda e exportações](ajustes-pdf.md).

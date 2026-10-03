@@ -1,8 +1,8 @@
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { EstadoListaComponent } from '../comum/estado-lista.component';
 import { NumeroComponent } from '../comum/numero.component';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Produto, Recurso, RecursoDoApp, TipoRecurso } from '../../core/api/central.models';
@@ -18,7 +18,7 @@ import { montarRecursoRequest } from './catalogo.form';
   imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent, EstadoListaComponent],
   template: `
     <div class="space-y-6">
-      <app-cabecalho-pagina titulo="Recursos" subtitulo="O que um plano limita (voluntários, usuários, armazenamento) ou libera (funcionalidades).">
+      <app-cabecalho-pagina titulo="Recursos" [exportacao]="dadosExportacao" subtitulo="O que um plano limita (voluntários, usuários, armazenamento) ou libera (funcionalidades).">
         <button type="button" class="bo-btn" acoes [disabled]="!produtos.length" (click)="novo()">Novo recurso</button>
       </app-cabecalho-pagina>
       <select class="bo-field max-w-xs" name="filtro" [(ngModel)]="produtoId" (ngModelChange)="carregar()">
@@ -27,7 +27,7 @@ import { montarRecursoRequest } from './catalogo.form';
       </select>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
-        <form class="bo-card grid gap-3 p-5 md:grid-cols-3 xl:grid-cols-6" (ngSubmit)="salvar()">
+        <form #formulario="ngForm" class="bo-card grid gap-3 p-5 md:grid-cols-3 xl:grid-cols-6" (ngSubmit)="salvar()">
           @if (editandoId) { <p class="text-sm font-semibold md:col-span-3 xl:col-span-6">Recurso <app-numero [numero]="numeroEdicao" /></p> }
           <label><span class="bo-label">Produto *</span>
             <select class="bo-field" name="produto" [(ngModel)]="form.produtoId" (ngModelChange)="carregarSugestoes()" [disabled]="!!editandoId">
@@ -89,6 +89,9 @@ import { montarRecursoRequest } from './catalogo.form';
   `
 })
 export class RecursosComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'recursos', titulo: 'Central · Recursos', colunas: ['Produto', 'Código', 'Nome', 'Tipo', 'Unidade', 'Valor padrão'], linhas: this.recursos.map(r => [this.nomeProduto(r.produtoId), r.codigo, r.nome, r.tipo, r.unidade, r.valorPadrao]) });
+  @ViewChild('formulario') formulario?: NgForm;
+  hasPendingChanges(): boolean { return this.salvando || (this.editando && !!this.formulario?.dirty); }
   private api = inject(CentralApiService);
 
   produtos: Produto[] = [];

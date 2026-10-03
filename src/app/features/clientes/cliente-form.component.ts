@@ -1,5 +1,5 @@
-import { Component, OnInit, inject, input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject, input } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
@@ -16,13 +16,13 @@ import {
   selector: 'app-cliente-form',
   imports: [FormsModule, RouterLink, MascaraDirective, CabecalhoPaginaComponent, RodapeFormComponent],
   template: `
-    <div class="mx-auto max-w-4xl space-y-6">
+    <div class="w-full min-w-0 space-y-6">
       <app-cabecalho-pagina [titulo]="id() ? 'Editar cliente' : 'Novo cliente'">
         <a [routerLink]="voltar()" class="bo-link" acoes>← Voltar</a>
       </app-cabecalho-pagina>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (form) {
-        <form class="space-y-6" (ngSubmit)="salvar()">
+        <form #formulario="ngForm" class="space-y-6" (ngSubmit)="salvar()">
           <section class="bo-card grid gap-4 p-5 md:grid-cols-4">
             <label class="md:col-span-1"><span class="bo-label">Tipo *</span>
               <select class="bo-field" name="tipo" [(ngModel)]="form.tipo" (ngModelChange)="trocarTipo()">
@@ -90,7 +90,7 @@ import {
                 <label class="flex items-center gap-2 pb-3 text-sm">
                   <input type="radio" name="ctPrincipal" [checked]="c.principal" (change)="marcarPrincipal(i)"> Principal
                 </label>
-                <button type="button" class="bo-link pb-3" (click)="form.contatos.splice(i, 1)">Excluir</button>
+                <button type="button" class="bo-link pb-3" (click)="removerContato(i)">Excluir</button>
               </div>
             } @empty {
               <p class="bo-sub">Nenhum contato.</p>
@@ -105,6 +105,9 @@ import {
   `
 })
 export class ClienteFormComponent implements OnInit {
+  @ViewChild('formulario') formulario?: NgForm;
+  private salvo = false;
+  hasPendingChanges(): boolean { return !this.salvo && (this.salvando || !!this.formulario?.dirty); }
   voltar(): string[] {
     const id = this.id();
     return id ? ['/clientes', id] : ['/clientes'];
@@ -138,6 +141,12 @@ export class ClienteFormComponent implements OnInit {
 
   adicionarContato(): void {
     this.form?.contatos.push({ nome: '', email: '', telefone: '', principal: !this.form.contatos.length });
+    this.formulario?.form.markAsDirty();
+  }
+
+  removerContato(i: number): void {
+    this.form?.contatos.splice(i, 1);
+    this.formulario?.form.markAsDirty();
   }
 
   documentoValido(): boolean {
@@ -164,10 +173,12 @@ export class ClienteFormComponent implements OnInit {
     if (endereco.bairro) this.form.bairro = endereco.bairro;
     if (endereco.cidade) this.form.cidade = endereco.cidade;
     if (endereco.uf) this.form.uf = endereco.uf;
+    this.formulario?.form.markAsDirty();
   }
 
   marcarPrincipal(i: number): void {
     this.form?.contatos.forEach((c, j) => c.principal = j === i);
+    this.formulario?.form.markAsDirty();
   }
 
   salvar(): void {
@@ -179,7 +190,7 @@ export class ClienteFormComponent implements OnInit {
     const id = this.id();
     const chamada = id ? this.api.atualizarCliente(id, corpo) : this.api.criarCliente(corpo);
     chamada.subscribe({
-      next: c => void this.router.navigate(['/clientes', c.id]),
+      next: c => { this.salvo = true; void this.router.navigate(['/clientes', c.id]); },
       error: e => { this.salvando = false; this.erro = mensagemApi(e, 'Não foi possível salvar o cliente.'); }
     });
   }

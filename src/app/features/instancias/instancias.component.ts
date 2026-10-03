@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
+import { coletarExportacao } from '../comum/coletar-exportacao';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { mensagemApi } from '../../core/api/api-error';
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
@@ -18,7 +19,7 @@ import { NivelInstancia, PaginaInstancias } from './instancias.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-5">
-      <app-cabecalho-pagina titulo="Instâncias" subtitulo="Último resumo de consumo guardado de cada paróquia provisionada.">
+      <app-cabecalho-pagina titulo="Instâncias" [exportacao]="dadosExportacao" [exportacaoOcupada]="carregando()" subtitulo="Último resumo de consumo guardado de cada paróquia provisionada.">
         <div acoes><button class="bo-btn" type="button" [disabled]="atualizando() || carregando()" (click)="atualizar()" data-atualizar>
           {{ atualizando() ? 'Consultando…' : 'Atualizar as mais antigas' }}</button></div>
       </app-cabecalho-pagina>
@@ -63,6 +64,12 @@ import { NivelInstancia, PaginaInstancias } from './instancias.models';
   `
 })
 export class InstanciasComponent implements OnInit, OnDestroy {
+  private destruido = false;
+  readonly dadosExportacao = async () => {
+    const filtro = this.filtro;
+    const itens = await coletarExportacao(async pagina => { const r = await firstValueFrom(this.api.instancias(filtro, pagina)); return { ...r, itens: r.itens.map(i => ({ ...i, id: i.contratacaoId })) }; }, () => !this.destruido);
+    return { nome: 'instancias', titulo: 'Central · Instâncias', contexto: `Nível: ${filtro || 'todos'}`, colunas: ['Cliente', 'Instância', 'Plano', 'Situação', 'Nível', 'Consultado em', 'Defasado'], linhas: itens.map(i => [i.cliente, i.instancia, i.plano, i.situacaoComercial, this.rotuloNivel(i.nivel), i.consultadoEm, i.defasado ? 'Sim' : 'Não']) };
+  };
   private readonly api = inject(CentralApiService);
 
   readonly niveis: NivelInstancia[] = ['CRITICO', 'ATENCAO', 'OK', 'SEM_DADOS'];
@@ -121,6 +128,7 @@ export class InstanciasComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.destruido = true;
     this.leitura?.unsubscribe();
     this.escrita?.unsubscribe();
   }

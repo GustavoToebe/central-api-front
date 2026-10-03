@@ -1,8 +1,8 @@
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
 import { EstadoListaComponent } from '../comum/estado-lista.component';
 import { NumeroComponent } from '../comum/numero.component';
-import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { mensagemApi } from '../../core/api/api-error';
 import { CentralApiService } from '../../core/api/central-api.service';
 import { Produto } from '../../core/api/central.models';
@@ -13,12 +13,12 @@ import { montarProdutoRequest } from './catalogo.form';
   imports: [FormsModule, NumeroComponent, CabecalhoPaginaComponent, EstadoListaComponent],
   template: `
     <div class="space-y-6">
-      <app-cabecalho-pagina titulo="Produtos" subtitulo="Os aplicativos do ecossistema. O código precisa ser o que o app pede (o Servirea usa SERVIREA).">
+      <app-cabecalho-pagina titulo="Produtos" [exportacao]="dadosExportacao" subtitulo="Os aplicativos do ecossistema. O código precisa ser o que o app pede (o Servirea usa SERVIREA).">
         <button type="button" class="bo-btn" acoes (click)="novo()">Novo produto</button>
       </app-cabecalho-pagina>
       @if (erro) { <div class="bo-erro">{{ erro }}</div> }
       @if (editando) {
-        <form class="bo-card grid gap-3 p-5 md:grid-cols-4" (ngSubmit)="salvar()">
+        <form #formulario="ngForm" class="bo-card grid gap-3 p-5 md:grid-cols-4" (ngSubmit)="salvar()">
           @if (editandoId) { <p class="text-sm font-semibold md:col-span-4">Produto <app-numero [numero]="numeroEdicao" /></p> }
           <label><span class="bo-label">Código *</span><input class="bo-field" name="codigo" [(ngModel)]="form.codigo"></label>
           <label><span class="bo-label">Nome *</span><input class="bo-field" name="nome" [(ngModel)]="form.nome"></label>
@@ -53,6 +53,9 @@ import { montarProdutoRequest } from './catalogo.form';
   `
 })
 export class ProdutosComponent implements OnInit {
+  readonly dadosExportacao = () => ({ nome: 'produtos', titulo: 'Central · Produtos', colunas: ['Código', 'Nome', 'Situação'], linhas: this.produtos.map(p => [p.codigo, p.nome, p.ativo ? 'Ativo' : 'Inativo']) });
+  @ViewChild('formulario') formulario?: NgForm;
+  hasPendingChanges(): boolean { return this.salvando || (this.editando && !!this.formulario?.dirty); }
   private api = inject(CentralApiService);
 
   produtos: Produto[] = [];

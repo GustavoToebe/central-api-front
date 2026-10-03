@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CabecalhoPaginaComponent } from '../comum/cabecalho-pagina.component';
@@ -24,7 +24,7 @@ function textoDoTema(t: TemaAjuda): string {
    <section class="space-y-3" [attr.data-secao-ajuda]="grupo.id">
     <h2 class="text-xs font-extrabold uppercase tracking-widest text-neutral-500">{{ grupo.titulo }}</h2>
     @for (tema of grupo.temas; track tema.id) {
-     <details class="bo-card p-5" [open]="tema.id === temaInicial() || !!busca()" [attr.data-tema]="tema.id" [id]="'tema-' + tema.id">
+     <details class="bo-card scroll-mt-28 p-5" [open]="tema.id === temaInicial() || !!busca()" [attr.data-tema]="tema.id" [id]="'tema-' + tema.id">
       <summary class="cursor-pointer text-lg font-bold">{{ tema.titulo }}</summary>
       <p class="mt-3 text-sm" data-resumo>{{ tema.resumo }}</p>
       <h3 class="mt-4 text-sm font-bold">Passo a passo</h3>
@@ -58,6 +58,11 @@ export class AjudaComponent {
   readonly busca = signal('');
   readonly temas = computed(() => { const termo = normalizar(this.busca().trim()); return TEMAS.filter(t => !termo || normalizar(textoDoTema(t)).includes(termo)); });
   readonly grupos = computed(() => SECOES.map(s => ({ id: s.id, titulo: s.titulo, temas: this.temas().filter(t => t.secao === s.id) })).filter(g => g.temas.length));
+  private readonly focarTema = effect(() => {
+    const id = this.temaInicial();
+    if (!id || !this.temas().some(t => t.id === id)) return;
+    setTimeout(() => document.getElementById(`tema-${id}`)?.scrollIntoView({ block: 'start' }), 0);
+  });
 
   /** Temas relacionados, no máximo três. */
   relacionados(tema: TemaAjuda): TemaAjuda[] {

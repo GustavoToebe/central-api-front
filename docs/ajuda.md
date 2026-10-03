@@ -13,3 +13,5 @@ Validação: executar npm test, npm run build:prod e python scripts/verificar-do
 222 testes aprovados; build de produção, checagem documental e git diff --check aprovados. IDs únicos e atalhos com rotas existentes conferidos. Backends sem alteração e sem reexecução de testes nesta etapa. Homologação visual em staging pendente.
 
 Ajuda reformulada em 02/10/2026: 15 temas agrupados pelas seções do menu, cada um com "para que serve", passo a passo, cuidados, perguntas frequentes e temas relacionados (a busca olha todos esses textos). Toda tela do painel tem o botão Ajuda: o app-cabecalho-pagina o inclui sozinho (src/app/features/ajuda/ajuda-da-rota.ts mapeia rota para tema; semAjuda desliga) e as telas sem esse cabeçalho usam app-ajuda-link. Os testes exigem que toda rota do painel aponte para um tema existente e que cada tema esteja completo. Novos temas: relatórios financeiros, instâncias, logs e ajustes; o financeiro descreve o plano de contas (grupo e conta contábil).
+
+03/10/2026: tópicos contextuais abrem expandidos e rolam até o conteúdo; contas bancárias possuem tema próprio. Exportações e modelo de importação descritos em [ajustes do PDF](ajustes-pdf.md).

@@ -6,7 +6,8 @@ export type CelulaCsv = string | number | null;
 export function numeroPtBr(n: number): string { return n.toFixed(2).replace('.', ','); }
 
 function celula(v: CelulaCsv): string {
-  const t = v === null ? '' : String(v);
+  const bruto = v === null ? '' : String(v);
+  const t = /^[=+@\t\r]/.test(bruto) || /^-(?!\d+(?:,\d+)?$)/.test(bruto) ? `'${bruto}` : bruto;
   return /[;"\r\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
 }
 
