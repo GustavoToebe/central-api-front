@@ -88,7 +88,7 @@ Detalhe, tabelas e valores em `docs/design-system.md`. Leia antes de mexer em te
 | Área | Documento | Regra que não pode ser quebrada |
 |---|---|---|
 | MFA do operador | [mfa](docs/mfa.md) | Segredo e códigos só em memória e limpos ao destruir; sem QR por serviço externo; erro de confirmação não renova nem repete a requisição |
-| Financeiro operacional | [financeiro](docs/financeiro.md) | Provisões por vencimento, realizado por baixa; saldo por conta só manual |
+| Financeiro operacional | [financeiro](docs/financeiro.md), [relatórios](docs/relatorios.md) | Provisões por vencimento, realizado por baixa; saldo por conta só manual; lançamento só em conta contábil; relatório novo entra em `CATALOGO_RELATORIOS` |
 | Consumo e instâncias | [consumo-instancias](docs/consumo-instancias.md), [historico-consumo](docs/historico-consumo.md), [painel-instancias](docs/painel-instancias.md) | Consulta sob demanda; sem dado de pessoas; ausência nunca é zero; atualização manual limitada |
 | Ajuda | [ajuda](docs/ajuda.md) | Conteúdo estático; `tema` só com IDs do catálogo |
 | Navegação | [testes-navegacao](docs/testes-navegacao.md) | Rotas e guards cobertos por teste |

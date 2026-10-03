@@ -31,7 +31,7 @@ describe('CentralApiService', () => {
   const pagamento: RegistrarPagamentoRequest = { cobrancaIds: ['cb1'], pagoEm: '2026-09-25', formaPagamento: 'PIX', valorPago: null, observacao: null };
 
   const contaFinanceira = { nome:'Caixa', saldoInicial:0, dataSaldoInicial:'2026-10-01', ativo:true };
-  const categoriaFinanceira = { nome:'Infraestrutura', ativo:true };
+  const categoriaFinanceira = { nome:'Infraestrutura', ativo:true, tipo:'DESPESA' as const, grupoId:null };
   const movimentoFinanceiro: MovimentoRequest = {descricao:'VPS',tipo:'DESPESA',valor:89.9,vencimento:'2026-10-01',contaId:'c',categoriaId:'g',observacoes:null,versao:2};
   const movimento = {id:'m',versao:2} as Movimento;
   const casos: [string, (s: CentralApiService) => Observable<unknown>, string, string, unknown][] = [

@@ -1,6 +1,7 @@
 import { ConsumoInstancia } from '../../features/consumo/consumo.models';
 import { NivelInstancia, PaginaInstancias, ResultadoAtualizacao } from '../../features/instancias/instancias.models';
-import { Categoria, Conta, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
+import { BancoCaixa, Demonstrativo, PorTipo, Visao } from '../../features/relatorios/relatorios.models';
+import { Categoria, CategoriaRequest, Conta, Filtros, Movimento, MovimentoRequest, Pagina, Resumo } from '../../features/financeiro/financeiro.models';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, shareReplay, tap, throwError } from 'rxjs';
@@ -29,9 +30,19 @@ export class CentralApiService {
     for (const [chave, valor] of Object.entries(filtro)) if (valor !== '') params = params.set(chave, String(valor));
     return this.http.get<Pagina>(`${this.api}/financeiro/movimentos`, { params });
   }
+  // ---- Relatórios financeiros (só leitura)
+  relatorioPorTipo(tipo: 'despesas' | 'receitas', de: string, ate: string, visao: Visao) {
+    return this.http.get<PorTipo>(`${this.api}/financeiro/relatorios/${tipo}`, { params: { de, ate, visao } });
+  }
+  relatorioBancoCaixa(de: string, ate: string, contaId?: string) {
+    return this.http.get<BancoCaixa>(`${this.api}/financeiro/relatorios/banco-caixa`, { params: { de, ate, ...(contaId ? { contaId } : {}) } });
+  }
+  relatorioDemonstrativo(de: string, ate: string) {
+    return this.http.get<Demonstrativo>(`${this.api}/financeiro/relatorios/demonstrativo`, { params: { de, ate } });
+  }
   resumoOperacional(de: string, ate: string) { return this.http.get<Resumo>(`${this.api}/financeiro/resumo`, { params: { de, ate } }); }
   salvarContaFinanceira(id: string | null, dados: Omit<Conta, 'id'>) { return id ? this.http.put<Conta>(`${this.api}/financeiro/contas/${id}`, dados) : this.http.post<Conta>(`${this.api}/financeiro/contas`, dados); }
-  salvarCategoriaFinanceira(id: string | null, dados: Omit<Categoria, 'id'>) { return id ? this.http.put<Categoria>(`${this.api}/financeiro/categorias/${id}`, dados) : this.http.post<Categoria>(`${this.api}/financeiro/categorias`, dados); }
+  salvarCategoriaFinanceira(id: string | null, dados: CategoriaRequest) { return id ? this.http.put<Categoria>(`${this.api}/financeiro/categorias/${id}`, dados) : this.http.post<Categoria>(`${this.api}/financeiro/categorias`, dados); }
   salvarMovimentoFinanceiro(id: string | null, dados: MovimentoRequest) { return id ? this.http.put<Movimento>(`${this.api}/financeiro/movimentos/${id}`, dados) : this.http.post<Movimento>(`${this.api}/financeiro/movimentos`, dados); }
   baixarMovimentoFinanceiro(m: Movimento, dataPagamento: string) { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/baixar`, { versao: m.versao, dataPagamento }); }
   acaoMovimentoFinanceiro(m: Movimento, acao: 'estornar' | 'cancelar') { return this.http.post<Movimento>(`${this.api}/financeiro/movimentos/${m.id}/${acao}`, { versao: m.versao }); }

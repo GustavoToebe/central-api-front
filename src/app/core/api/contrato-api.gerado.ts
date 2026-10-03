@@ -347,13 +347,18 @@ export interface FinanceiroDtos_BaixaRequest {
 
 export interface FinanceiroDtos_CategoriaRequest {
   ativo: boolean;
+  grupoId?: string | null;
   nome?: string | null;
+  tipo?: MovimentoFinanceiro_Tipo | null;
 }
 
 export interface FinanceiroDtos_CategoriaResponse {
   ativo: boolean;
+  ehGrupo: boolean;
+  grupoId?: string | null;
   id?: string | null;
   nome?: string | null;
+  tipo?: MovimentoFinanceiro_Tipo | null;
 }
 
 export interface FinanceiroDtos_CobrancaDetalhe {
@@ -709,6 +714,86 @@ export interface OperadorResumo {
 
 export type Periodicidade = 'MENSAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
 
+export interface RelatorioFinanceiroDtos_BancoCaixa {
+  ate?: string | null;
+  contas?: RelatorioFinanceiroDtos_ContaBanco[] | null;
+  de?: string | null;
+  entradas?: number | null;
+  observacao?: string | null;
+  saidas?: number | null;
+  saldoAnterior?: number | null;
+  saldoFinal?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_ContaBanco {
+  ativo: boolean;
+  entradas?: number | null;
+  id?: string | null;
+  movimentos?: RelatorioFinanceiroDtos_MovimentoBanco[] | null;
+  nome?: string | null;
+  saidas?: number | null;
+  saldoAnterior?: number | null;
+  saldoFinal?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_ContaContabilLinha {
+  id?: string | null;
+  lancamentos?: RelatorioFinanceiroDtos_Lancamento[] | null;
+  nome?: string | null;
+  total?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_Demonstrativo {
+  aPagar?: number | null;
+  aReceber?: number | null;
+  ate?: string | null;
+  de?: string | null;
+  despesas?: RelatorioFinanceiroDtos_PorTipo | null;
+  receitas?: RelatorioFinanceiroDtos_PorTipo | null;
+  resultado?: number | null;
+  resultadoPrevisto?: number | null;
+  saldos?: FinanceiroDtos_SaldoConta[] | null;
+  totalDespesas?: number | null;
+  totalReceitas?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_GrupoLinha {
+  comercial: boolean;
+  contas?: RelatorioFinanceiroDtos_ContaContabilLinha[] | null;
+  id?: string | null;
+  nome?: string | null;
+  total?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_Lancamento {
+  contaBanco?: string | null;
+  data?: string | null;
+  descricao?: string | null;
+  id?: string | null;
+  valor?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_MovimentoBanco {
+  contaContabil?: string | null;
+  data?: string | null;
+  descricao?: string | null;
+  entrada?: number | null;
+  id?: string | null;
+  saida?: number | null;
+  saldo?: number | null;
+}
+
+export interface RelatorioFinanceiroDtos_PorTipo {
+  ate?: string | null;
+  de?: string | null;
+  grupos?: RelatorioFinanceiroDtos_GrupoLinha[] | null;
+  tipo?: MovimentoFinanceiro_Tipo | null;
+  total?: number | null;
+  visao?: RelatorioFinanceiroDtos_Visao | null;
+}
+
+export type RelatorioFinanceiroDtos_Visao = 'REALIZADO' | 'PREVISTO';
+
 export type SituacaoComercial = 'TRIAL' | 'ATIVA' | 'INADIMPLENTE' | 'BLOQUEADA' | 'CANCELADA';
 
 export type SituacaoProvisionamento = 'PENDENTE' | 'PROCESSANDO' | 'ATIVA' | 'ERRO';
@@ -797,6 +882,10 @@ export interface ContratoRotas {
   "POST /financeiro/movimentos/{id}/baixar": { corpo: FinanceiroDtos_BaixaRequest; resposta: FinanceiroDtos_MovimentoResponse };
   "POST /financeiro/movimentos/{id}/cancelar": { corpo: FinanceiroDtos_VersaoRequest; resposta: FinanceiroDtos_MovimentoResponse };
   "POST /financeiro/movimentos/{id}/estornar": { corpo: FinanceiroDtos_VersaoRequest; resposta: FinanceiroDtos_MovimentoResponse };
+  "GET /financeiro/relatorios/banco-caixa": { corpo: null; resposta: RelatorioFinanceiroDtos_BancoCaixa };
+  "GET /financeiro/relatorios/demonstrativo": { corpo: null; resposta: RelatorioFinanceiroDtos_Demonstrativo };
+  "GET /financeiro/relatorios/despesas": { corpo: null; resposta: RelatorioFinanceiroDtos_PorTipo };
+  "GET /financeiro/relatorios/receitas": { corpo: null; resposta: RelatorioFinanceiroDtos_PorTipo };
   "GET /financeiro/resumo": { corpo: null; resposta: financeiro_FinanceiroDtos_Resumo };
   "GET /instancias": { corpo: null; resposta: InstanciasVisaoService_Pagina };
   "POST /instancias/atualizacao": { corpo: null; resposta: InstanciasVisaoService_ResultadoVarredura };

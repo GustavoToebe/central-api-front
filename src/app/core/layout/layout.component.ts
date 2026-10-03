@@ -6,7 +6,7 @@ import { iniciais } from '../../features/comum/rotulos';
 interface ItemMenu {
   rotulo: string;
   url: string;
-  icone: 'clientes' | 'contratos' | 'cobrancas' | 'instancias' | 'financeiro' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional' | 'ajustes' | 'ajuda';
+  icone: 'clientes' | 'contratos' | 'cobrancas' | 'instancias' | 'financeiro' | 'relatorios' | 'logs' | 'produto' | 'recurso' | 'plano' | 'adicional' | 'ajustes' | 'ajuda';
 }
 
 const CHAVE_RECOLHIDO = 'central.menuRecolhido';
@@ -92,6 +92,7 @@ function gravarRecolhido(v: boolean): void {
                   @case ('contratos') { <path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/> }
                   @case ('cobrancas') { <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M15 15h3"/> }
                   @case ('instancias') { <rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/> }
+                  @case ('relatorios') { <path d="M5 19V9M10 19V5M15 19v-7M20 19V8"/> }
                   @case ('financeiro') { <path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/> }
                   @case ('logs') { <path d="M12 3l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/> }
                   @case ('produto') { <rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/> }
@@ -170,6 +171,7 @@ export class LayoutComponent {
         { rotulo: 'Instâncias', url: '/instancias', icone: 'instancias' },
         { rotulo: 'Cobranças', url: '/cobrancas', icone: 'cobrancas' },
         { rotulo: 'Financeiro', url: '/financeiro', icone: 'financeiro' },
+        { rotulo: 'Relatórios', url: '/relatorios', icone: 'relatorios' },
         { rotulo: 'Logs', url: '/logs', icone: 'logs' }
       ]
     },

@@ -19,6 +19,7 @@
 - [MFA](mfa.md): configuração no perfil, segundo passo de login e dados transitórios.
 
 - [Financeiro operacional](financeiro.md): comportamento, contratos e limitações.
+- [Relatórios financeiros](relatorios.md): catálogo com pesquisa, período, impressão e CSV.
 
 ## Quatro entregas de produto — 01/10/2026
 

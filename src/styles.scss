@@ -516,3 +516,20 @@ select.bo-field option { background: #0f0f13; color: var(--text-ink); }
 .bo-cal-dia.escolhido { background: var(--brand); color: #fff; font-weight: 700; }
 .bo-cal-dia:disabled { color: #3f3f3f; cursor: not-allowed; }
 .bo-link:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Relatórios financeiros (T14): linhas de grupo e total na tela e folha de impressão limpa (fundo branco, sem menu). */
+.so-impressao { display: none; }
+.rel-grupo td { background: rgba(255, 255, 255, 0.04); }
+.rel-total td { border-top: 2px solid #3a3a42; }
+@media print {
+  @page { margin: 12mm; }
+  html, body, .bo { background: #fff !important; color: #000 !important; }
+  .bo-top, .bo-rail, .nao-imprimir { display: none !important; }
+  .bo-main { margin: 0 !important; padding: 0 !important; }
+  .so-impressao { display: block; margin-bottom: 8px; color: #000; }
+  .bo-card, .bo-table, .bo-table td, .bo-table th { background: #fff !important; color: #000 !important; box-shadow: none !important; border-color: #999 !important; }
+  .rel-grupo td { background: #eee !important; }
+  .text-emerald-400, .text-rose-400, .text-amber-300, .text-neutral-400 { color: #000 !important; }
+  .bo-table-rolagem { overflow: visible !important; max-height: none !important; }
+  tr { break-inside: avoid; }
+}
